@@ -1,0 +1,44 @@
+@startuml premier
+
+class Game {
+}
+
+
+class GameConfig {
+    + {static} window_h : int
+    + {static} window_w : int
+}
+
+class GameState {
+    - player : Player
+    - bats : Bat[]
+    
+    + draw( window : Surface ) : void
+}
+
+class Moving_Entity {
+    + rect : Rect
+    + position : float[]
+    + acceleration : float[]
+    + vitesse : float[]
+}
+
+class Bat {
+    ia( self ) : void
+}
+
+
+class Player {
+    update_pos( self ) : void
+}
+
+
+GameConfig <-- Game 
+GameState <-- Game 
+
+Player <-- GameState 
+Bat <-- GameState 
+Moving_Entity <|-- Bat
+Moving_Entity<|-- Player
+
+@enduml
