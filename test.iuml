@@ -3,7 +3,6 @@
 class Game {
 }
 
-
 class GameConfig {
     + {static} window_h : int
     + {static} window_w : int
