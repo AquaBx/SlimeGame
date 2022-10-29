@@ -1,5 +1,5 @@
 class Config:
-    WINDOW_H = 1080
+    WINDOW_H = 700
     WINDOW_W = 1920
     Y_PLATEFORM = 516
 
