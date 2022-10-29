@@ -8,7 +8,7 @@ def game_loop(window):
     quitting=False
     clock = pygame.time.Clock()
 
-    blocks = [ Block(Config.BLOCK_SIZE*i,Config.WINDOW_H-Config.BLOCK_SIZE,Config.BLOCK_SIZE,Config.BLOCK_SIZE,True,"Assets/Tileset/tileMain2.png") for i in range(0,22) ]
+    blocks = [ Block(Config.BLOCK_SIZE*i,Config.WINDOW_H-Config.BLOCK_SIZE,Config.BLOCK_SIZE,Config.BLOCK_SIZE,True,f'Assets/Tileset/tileMain{i}.png') for i in range(1,20) ]
     
     player = Entity(10*Config.BLOCK_SIZE,Config.WINDOW_H-3*Config.BLOCK_SIZE,2*Config.BLOCK_SIZE,2*Config.BLOCK_SIZE)
     camera = Camera(player)
