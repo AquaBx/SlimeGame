@@ -16,3 +16,6 @@ Ce projet à été réalisé par:
 - Malo Thiebaud
 - Célia Josso
 - Vianney Hervé
+
+
+![uml](http://www.plantuml.com/plantuml/proxy?src=https://gitlab.istic.univ-rennes1.fr/cejosso/slime_game/-/raw/main/uml/example.puml)
