@@ -1,8 +1,8 @@
 class Config:
-    WINDOW_H = 700
+    WINDOW_H = 1080
     WINDOW_W = 1920
     Y_PLATEFORM = 516
 
     BLOCK_SIZE = WINDOW_H/12  
 
-    FPS = 1000000000000
+    FPS = 144
