@@ -28,14 +28,20 @@ class World():
         return False,-1
     
     def gravite(self,obj,dt):
-        gravite = 10*Config.BLOCK_SIZE*dt*dt
-        
-        obj.position.y += gravite
+        gravite = 10*Config.BLOCK_SIZE
+
+        obj.acceleration.y = gravite
+        obj.vitesse.y += obj.acceleration.y*dt     
+        obj.position.y += obj.vitesse.y*dt
+
         obj.rect.topleft = obj.position
 
         collide, ny = self.collision_mask(obj, self.blocks)
-        
+
+
         if collide :
+            obj.acceleration.y = 0
+            obj.vitesse.y = 0
             obj.position.y = ny
             obj.rect.bottomleft = obj.position
 

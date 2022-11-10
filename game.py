@@ -17,17 +17,17 @@ def game_loop(window):
     back = Config.back
 
     while not quitting:
+        camera.update()
         dt = 1 / clock.get_fps() if clock.get_fps() != 0 else 1 / Config.FPS
 
-        camera.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quitting = True
 
         player.move(dt)
-
         World.gravite(player,dt)
+
 
         window.blit(back, (0, 0))
 
@@ -36,7 +36,7 @@ def game_loop(window):
                       block.rect.top - camera.rect.top + Config.WINDOW_H / 2)
             window.blit(block.texture, ncoord)
 
-        player.blit_player(window, camera.rect.left, camera.rect.top)
+        player.blit_player(window, camera)
 
         pygame.display.flip()
 

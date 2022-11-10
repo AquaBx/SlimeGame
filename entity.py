@@ -40,7 +40,7 @@ class Entity:
 
         self.rect.topleft = self.position
 
-    def blit_player(self, window, x_cam, y_cam):
-        ncoord = (self.rect.left/2 + self.rect.right / 2 - x_cam + Config.WINDOW_W / 2,
-                  self.rect.top + - y_cam + Config.WINDOW_H / 2)
+    def blit_player(self, window, camera):
+        ncoord = (self.rect.left - camera.rect.left + Config.WINDOW_W / 2,
+                  self.rect.top - camera.rect.top + Config.WINDOW_H / 2)
         window.blit(self.texture, ncoord)
