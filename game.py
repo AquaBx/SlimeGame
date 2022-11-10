@@ -1,22 +1,23 @@
 from turtle import back
 import pygame
 from config import Config
-from block import Block
 from camera import Camera
-from entity import Entity
+import world
 
+World = world.World()
 
 def game_loop(window):
     clock = pygame.time.Clock()
     quitting = False
-    player = Entity.implement_player()
-    camera = Camera(player)
 
-    blocks = Block.implement_blocks()
+    player = World.player
+    blocks = World.blocks
+    camera = Camera(player)
 
     back = Config.back
 
     while not quitting:
+        dt = 1 / clock.get_fps() if clock.get_fps() != 0 else 1 / Config.FPS
 
         camera.update()
 
@@ -24,13 +25,18 @@ def game_loop(window):
             if event.type == pygame.QUIT:
                 quitting = True
 
-        player.move()
+        player.move(dt)
+
+        World.gravite(player,dt)
 
         window.blit(back, (0, 0))
 
-        Block.blit_blocks(blocks, window, camera.position.x, camera.position.y)
+        for block in blocks:
+            ncoord = (block.rect.left - camera.rect.left + Config.WINDOW_W / 2,
+                      block.rect.top - camera.rect.top + Config.WINDOW_H / 2)
+            window.blit(block.texture, ncoord)
 
-        player.blit_player(window, camera.position.x, camera.position.y)
+        player.blit_player(window, camera.rect.left, camera.rect.top)
 
         pygame.display.flip()
 
