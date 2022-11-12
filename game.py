@@ -4,7 +4,6 @@ from config import Config
 from camera import Camera
 import world
 import debug
-import timeit
 
 World = world.World()
 
@@ -28,13 +27,14 @@ def game_loop(window):
             if event.type == pygame.QUIT:
                 quitting = True
 
-        square_mid = pygame.Rect((Config.WINDOW_W-Config.BLOCK_SIZE)/2,(Config.WINDOW_H-Config.BLOCK_SIZE)/2,Config.BLOCK_SIZE,Config.BLOCK_SIZE)
 
         player.move(dt)
         World.gravite(player,dt)
 
         player.blit_player(window, camera)
-        pygame.draw.rect(window,pygame.Color(255,0,0),square_mid,)
+
+        # square_mid = pygame.Rect((Config.WINDOW_W-Config.BLOCK_SIZE)/2,(Config.WINDOW_H-Config.BLOCK_SIZE)/2,Config.BLOCK_SIZE,Config.BLOCK_SIZE)
+        # pygame.draw.rect(window,pygame.Color(255,0,0),square_mid,)
         
         for block in blocks:
             ncoord = camera.convert_coord(block.rect)
