@@ -37,11 +37,10 @@ def game_loop(window):
         pygame.draw.rect(window,pygame.Color(255,0,0),square_mid,)
         
         for block in blocks:
-            ncoord = (block.rect.left - block.rect.width/2  - camera.position.x + Config.WINDOW_W / 2,
-                      block.rect.bottom - camera.position.y + Config.WINDOW_H / 2)
+            ncoord = camera.convert_coord(block.rect)
             window.blit(block.texture, ncoord)
 
-        debug.debug(int(clock.get_fps()))
+        debug.debug(player.vitesse)
         pygame.display.update()
         clock.tick_busy_loop(Config.FPS)
 
