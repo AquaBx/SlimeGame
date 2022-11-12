@@ -40,7 +40,7 @@ def game_loop(window):
             ncoord = camera.convert_coord(block.rect)
             window.blit(block.texture, ncoord)
 
-        debug.debug(player.vitesse)
+        # debug.debug(player.vitesse)
         pygame.display.update()
         clock.tick_busy_loop(Config.FPS)
 

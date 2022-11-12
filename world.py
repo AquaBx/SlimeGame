@@ -2,7 +2,7 @@ from config import Config
 from block import Block
 from entity import Entity
 import pygame
-
+import debug
 class World():
     def __init__(self):
         self.blocks = [Block(Config.BLOCK_SIZE * i, Config.WINDOW_H - Config.BLOCK_SIZE,
@@ -31,6 +31,8 @@ class World():
         return False,-1
     
     def gravite(self,obj,dt):
+        debug.debug(obj.vitesse.y)
+
         y_vect = 10 * Config.BLOCK_SIZE
 
         gravite = pygame.Vector2(0, y_vect)
