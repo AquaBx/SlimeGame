@@ -19,8 +19,14 @@ class Camera:
         fonction qui va prendre en paramètre un rect d'un objet (entité ou block)
         et qui va ré-envoyer un nouveau rect de cet objet là ou il doit être dessiné à l'écran
         """
-        
-        newx = rect.left - self.rect.left + Config.WINDOW_W/2
-        newy = rect.top - self.rect.top + Config.WINDOW_H/2
+
+        fixed = False
+
+        newx = rect.left
+        newy = rect.top 
+
+        if not fixed :  
+            newx += Config.WINDOW_W/2 - self.rect.left
+            newy += Config.WINDOW_H/2 - self.rect.top 
 
         return pygame.Rect( newx , newy, rect.width, rect.height ) 

@@ -1,7 +1,5 @@
-from cmath import rect
 import pygame
 from config import *
-from camera import Camera
 
 class Entity:
 
@@ -26,14 +24,14 @@ class Entity:
         if keys_pressed[pygame.K_q]:
             self.acceleration.x -= 2 * Config.BLOCK_SIZE / dt
 
-        if keys_pressed[pygame.K_z]:
-            self.acceleration.y -= 2/10 * Config.BLOCK_SIZE / dt
+        # if keys_pressed[pygame.K_z]:
+        #     self.acceleration.y -= 2/10 * Config.BLOCK_SIZE / dt
 
-        if keys_pressed[pygame.K_s]:
-            self.acceleration.y += 2/10 * Config.BLOCK_SIZE / dt
+        # if keys_pressed[pygame.K_s]:
+        #     self.acceleration.y += 2/10 * Config.BLOCK_SIZE / dt
 
-        self.vitesse.y += self.acceleration.y * dt
-        self.position.y += self.vitesse.y * dt
+        # self.vitesse.y += self.acceleration.y * dt
+        # self.position.y += self.vitesse.y * dt
 
         self.vitesse.x += self.acceleration.x * dt
         self.position.x += self.vitesse.x * dt
