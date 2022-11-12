@@ -3,6 +3,8 @@ import pygame
 from config import Config
 from camera import Camera
 import world
+import debug
+import timeit
 
 World = world.World()
 
@@ -17,30 +19,32 @@ def game_loop(window):
     back = Config.back
 
     while not quitting:
-        camera.update()
         dt = 1 / clock.get_fps() if clock.get_fps() != 0 else 1 / Config.FPS
+        window.blit(back, (0, 0))
 
+        camera.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quitting = True
 
+        square_mid = pygame.Rect((Config.WINDOW_W-Config.BLOCK_SIZE)/2,(Config.WINDOW_H-Config.BLOCK_SIZE)/2,Config.BLOCK_SIZE,Config.BLOCK_SIZE)
+
         player.move(dt)
         World.gravite(player,dt)
 
-
-        window.blit(back, (0, 0))
-
+        player.blit_player(window, camera)
+        pygame.draw.rect(window,pygame.Color(255,0,0),square_mid,)
+        
         for block in blocks:
-            ncoord = (block.rect.left - camera.rect.left + Config.WINDOW_W / 2,
-                      block.rect.top - camera.rect.top + Config.WINDOW_H / 2)
+            ncoord = (block.rect.left - block.rect.width/2  - camera.position.x + Config.WINDOW_W / 2,
+                      block.rect.bottom - camera.position.y + Config.WINDOW_H / 2)
             window.blit(block.texture, ncoord)
 
-        player.blit_player(window, camera)
-
-        pygame.display.flip()
-
+        debug.debug(int(clock.get_fps()))
+        pygame.display.update()
         clock.tick_busy_loop(Config.FPS)
+
 
 
 if __name__ == '__main__':
