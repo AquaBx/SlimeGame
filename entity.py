@@ -18,7 +18,7 @@ class Entity:
         keys_pressed = pygame.key.get_pressed()
 
         self.acceleration.x = -self.vitesse.x * 1000 / Config.BLOCK_SIZE
-        self.acceleration.y = -self.vitesse.y * 1000 / Config.BLOCK_SIZE
+        self.acceleration.y = 0
 
         if keys_pressed[pygame.K_d]:
             self.acceleration.x += 2 * Config.BLOCK_SIZE / dt
@@ -27,10 +27,10 @@ class Entity:
             self.acceleration.x -= 2 * Config.BLOCK_SIZE / dt
 
         if keys_pressed[pygame.K_z]:
-            self.acceleration.y -= 2 * Config.BLOCK_SIZE / dt
+            self.acceleration.y -= 2/10 * Config.BLOCK_SIZE / dt
 
         if keys_pressed[pygame.K_s]:
-            self.acceleration.y += 2 * Config.BLOCK_SIZE / dt
+            self.acceleration.y += 2/10 * Config.BLOCK_SIZE / dt
 
         self.vitesse.y += self.acceleration.y * dt
         self.position.y += self.vitesse.y * dt
