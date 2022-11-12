@@ -28,7 +28,6 @@ class World():
 
             collide = pygame.sprite.collide_mask(mask1,mask2)
             if collide!=None:
-                print(collide,obj2.rect.top)
                 return True , obj2.rect.top
         return False,-1
     
@@ -47,10 +46,10 @@ class World():
         obj.rect.topleft = obj.position
 
         collide, ny = self.collision_mask(obj, self.blocks)
-        print(collide)
+
         if collide :
             # resistance = pygame.Vector2(0, -y_vect)
-            h = 2 * Config.BLOCK_SIZE
+            h = 5 * Config.BLOCK_SIZE
             obj.acceleration.y = -( 2 * gravite.y * h)**0.5/dt * int(pygame.key.get_pressed()[pygame.K_z])
             obj.vitesse.y = obj.acceleration.y*dt
             obj.position.y = ny + obj.vitesse.y*dt - obj.rect.height
