@@ -8,6 +8,9 @@ class World():
         self.blocks = [Block(Config.BLOCK_SIZE * i, Config.WINDOW_H - Config.BLOCK_SIZE,
                                 Config.BLOCK_SIZE, Config.BLOCK_SIZE, True,
                                 f'Assets/Tileset/tileMain{2}.png') for i in range(1, 20)]
+        self.blocks += [Block(Config.BLOCK_SIZE * (i-3), Config.WINDOW_H + 5*Config.BLOCK_SIZE,
+                                Config.BLOCK_SIZE, Config.BLOCK_SIZE, True,
+                                f'Assets/Tileset/tileMain{2}.png') for i in range(1, 5)]
         
         self.player = Entity(Config.BLOCK_SIZE,
                         Config.WINDOW_H - 2 * Config.BLOCK_SIZE,
