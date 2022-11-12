@@ -8,9 +8,9 @@ class World():
         self.blocks = [Block(Config.BLOCK_SIZE * i, Config.WINDOW_H - Config.BLOCK_SIZE,
                                 Config.BLOCK_SIZE, Config.BLOCK_SIZE, True,
                                 f'Assets/Tileset/tileMain{2}.png') for i in range(1, 20)]
-        self.blocks += [Block(Config.BLOCK_SIZE * (i-3), Config.WINDOW_H + 5*Config.BLOCK_SIZE,
+        self.blocks += [Block(Config.BLOCK_SIZE * (i-10), Config.WINDOW_H + 5*Config.BLOCK_SIZE,
                                 Config.BLOCK_SIZE, Config.BLOCK_SIZE, True,
-                                f'Assets/Tileset/tileMain{2}.png') for i in range(1, 5)]
+                                f'Assets/Tileset/tileMain{2}.png') for i in range(1, 20)]
         
         self.player = Entity(Config.BLOCK_SIZE,
                         Config.WINDOW_H - 2 * Config.BLOCK_SIZE,
@@ -31,7 +31,9 @@ class World():
         return False,-1
     
     def gravite(self,obj,dt):
-        gravite = pygame.Vector2(0, 10)
+        y_vect = 10 * Config.BLOCK_SIZE * dt
+
+        gravite = pygame.Vector2(0, y_vect)
         resistance = pygame.Vector2(0, 0)
 
         obj.acceleration.y = gravite[1]
@@ -44,7 +46,7 @@ class World():
 
 
         if collide :
-            resistance = pygame.Vector2(0, -10)
+            resistance = pygame.Vector2(0, -y_vect)
             obj.acceleration.y = 0
             obj.vitesse.y = 0
             obj.position.y = ny
