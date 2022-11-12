@@ -7,6 +7,9 @@ class Camera:
         self.position = self.link.position
     
     def convert_coord(self,rect):
+        """
+        fonction qui va prendre en paramètre
+        """
         #(block.rect.left - block.rect.width/2  - self.position.x + Config.WINDOW_W / 2,
         #              block.rect.bottom - camera.position.y + Config.WINDOW_H / 2)
 #
