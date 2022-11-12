@@ -46,7 +46,7 @@ class World():
 
         collide, ny = self.collision_mask(obj, self.blocks)
 
-        if collide :
+        if collide and not pygame.key.get_pressed()[pygame.K_z] :
             # resistance = pygame.Vector2(0, -y_vect)
             obj.acceleration.y = 0
             obj.vitesse.y = 0
