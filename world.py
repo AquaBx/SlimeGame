@@ -31,11 +31,12 @@ class World():
         return False,-1
     
     def gravite(self,obj,dt):
-        gravite = 10*Config.BLOCK_SIZE
+        gravite = pygame.Vector2(0, 10)
+        resistance = pygame.Vector2(0, 0)
 
-        obj.acceleration.y = gravite
+        obj.acceleration.y = gravite[1]
         obj.vitesse.y += obj.acceleration.y*dt     
-        obj.position.y += obj.vitesse.y*dt
+        obj.position.y += gravite[1] + resistance[1]
 
         obj.rect.topleft = obj.position
 
@@ -43,6 +44,7 @@ class World():
 
 
         if collide :
+            resistance = pygame.Vector2(0, -10)
             obj.acceleration.y = 0
             obj.vitesse.y = 0
             obj.position.y = ny
