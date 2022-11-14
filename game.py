@@ -1,9 +1,10 @@
-from turtle import back
 import pygame
 from config import Config
 from camera import Camera
 import world
 import debug
+from morgann_textes import Messages
+
 
 World = world.World()
 
@@ -16,9 +17,13 @@ def game_loop(window):
     camera = Camera(player)
 
     back = Config.back
+    msg = Messages()
+    text = "Hello World"
 
     while not quitting:
+
         dt = 1 / clock.get_fps() if clock.get_fps() != 0 else 1 / Config.FPS
+                
         window.blit(back, (0, 0))
 
         camera.update()
@@ -40,6 +45,14 @@ def game_loop(window):
             ncoord = camera.convert_coord(block.rect)
             window.blit(block.texture, ncoord)
 
+        #créer une condition pour afficher un message (astuce, panneau, dialogue...), ainsi que la possibilté de modifier le contenu du message
+        FALLING_TXT = "You are falling !"
+        IN_AIR_TXT = "Slime believes he can fly !"
+        if player.position.y > 516 : # Simple test pour afficher le message selon une condition particulière, il sera à effacer
+            msg.display_message(window,FALLING_TXT,Config.WINDOW_W*0.8,30,40,(0,255,255))
+        if player.position.y < 560 :
+            msg.display_message(window,IN_AIR_TXT,Config.WINDOW_W*0.8,30,50,msg.GREY)
+
         # debug.debug(player.vitesse)
         pygame.display.update()
         clock.tick_busy_loop(Config.FPS)
@@ -49,6 +62,6 @@ def game_loop(window):
 if __name__ == '__main__':
     pygame.init()
     window = pygame.display.set_mode((Config.WINDOW_W, Config.WINDOW_H))
-    pygame.display.set_caption("Premier Jeu")
+    pygame.display.set_caption("Slime Game")
     game_loop(window)
     pygame.quit()
