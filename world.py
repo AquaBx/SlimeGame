@@ -1,26 +1,34 @@
 from config import GameConfig
-from gameobject import Ground,Player
+
+from assets.scripts.gameobject import GameObject, Ground, Player
 import pygame
+from pygame import Vector2 as v2
+from pygame import transform, image
 import numpy as np
 
+from camera import Camera
+
 class World():
-    def __init__(self):
-        self.background = pygame.transform.scale( pygame.image.load("Assets/Sprites/Background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
+    def __init__(self) -> None:
+        self.background = transform.scale( image.load("Assets/Sprites/Background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
+        # remplacer par le chargement de la map
+        self.blocks: np.ndarray[GameObject] = np.full((3, 3), None)
+        for i in range(3):
+            for j in range(3):
+                self.blocks[i, j] = Ground(0, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), f"assets/sprites/statics/ground.png")
+        self.player = Player(0, 0, GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
 
-        self.blocks = np.array( [ [ Ground(True,pygame.Vector2(i*GameConfig.BLOCK_SIZE,j*GameConfig.BLOCK_SIZE), 'Assets/Sprites/Statics/ground.png') for i in range(3) ] for j in range(3) ]  )
-        
-        self.player = Player(0, 0, GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, [f'Assets/Sprites/Dynamics/GreenSlime/Grn_Idle{i}.png' for i in range(1,11)])
-
-    def update(self,camera):
-
+    def update(self) -> None:
         self.player.update_frame()
         self.player.update()
         # World.gravite(player,dt)
+
+    def draw(self, camera: Camera) -> None:
         self.player.draw(camera)
-        
+
         for j in range( max(0, int(camera.rect.left / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks[0]) , int(camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
             for i in range( max(0, int(camera.rect.top / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks) ,  int(camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
-                self.blocks[i][j].draw( camera )
+                self.blocks[i, j].draw(camera)
 
     def collision_mask(self, obj1, obj_arr):
         """
