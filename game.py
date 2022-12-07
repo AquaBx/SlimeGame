@@ -1,35 +1,49 @@
-import pygame
-from config import GameConfig,GameState
+import pygame as pg
+from pygame.time import Clock
+
+from config import GameConfig, GameState
 from camera import Camera
-import world
-import debug
+from world import World
 
-World = world.World()
+class Game:
+    def __init__(self) -> None:
+        pg.init();
+        GameConfig.initialise()
+        self.clock: Clock = Clock()
+        self.should_quit: bool = False
+        self.world: World = World()
+        self.camera: Camera = Camera(self.world.player)
 
-def game_loop():
-    clock = pygame.time.Clock()
-    quitting = False
+    def __del__(self) -> None:
+        pg.quit()
 
-    camera = Camera(World.player)
+    def loop(self) -> None:
+        while not self.should_quit:
+            GameState.dt = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.FPS
+            self.__process_events()
+            self.__update()
+            self.__draw()
+            self.clock.tick_busy_loop(GameConfig.FPS)
 
-    while not quitting:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quitting = True
+    def __process_events(self) -> None:
+        for ev in pg.event.get():
+            if ev.type == pg.QUIT:
+                self.should_quit = True
 
-        GameState.dt = 1 / clock.get_fps() if clock.get_fps() != 0 else 1 / GameConfig.FPS
-        GameConfig.WINDOW.blit(World.background, (0, 0))
+    def __update(self) -> None:
+        self.camera.update()
+        self.world.update()
 
-        camera.update()
-        World.update(camera)
+    def __draw(self) -> None:
+        # GameConfig.WINDOW.blit(World.background, (0, 0))
+        GameConfig.WINDOW.fill('Black')
+        self.world.draw(self.camera)
+        # debug.debug(self.clock.get_fps())
+        pg.display.update()
 
-        debug.debug(clock.get_fps())
-        pygame.display.update()
+# to avoid global variable instances in main function
+def main() -> None:
+    Game().loop()
 
-        clock.tick_busy_loop(GameConfig.FPS)
-
-if __name__ == '__main__':
-    pygame.init()
-    pygame.display.set_caption("Premier Jeu")
-    game_loop()
-    pygame.quit()
+if __name__ == "__main__":
+    main()
