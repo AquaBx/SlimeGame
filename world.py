@@ -1,6 +1,6 @@
 from config import GameConfig
 
-from assets.scripts.gameobject import GameObject, Ground, Player
+from Assets.scripts.gameobject import GameObject, Ground, Player
 import pygame
 from pygame import Vector2 as v2
 from pygame import transform, image
@@ -15,8 +15,8 @@ class World():
         self.blocks: np.ndarray[GameObject] = np.full((3, 3), None)
         for i in range(3):
             for j in range(3):
-                self.blocks[i, j] = Ground(0, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), f"assets/sprites/statics/ground.png")
-        self.player = Player(0, 0, GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+                self.blocks[i, j] = Ground(0, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")
+        self.player = Player(0, 0, GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, [f"Assets/Sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
 
     def update(self) -> None:
         self.player.update_frame()
