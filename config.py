@@ -1,16 +1,10 @@
 import pygame
 
-
-class Config:
-    clock = pygame.time.Clock()
-
-    WINDOW_H = 720
-    WINDOW_W = 1280
-    Y_PLATEFORM = 516
-
-    BLOCK_SIZE = WINDOW_H / 12
-
+class GameConfig:
+    WINDOW_SIZE = pygame.Vector2(1280,720)
+    WINDOW = pygame.display.set_mode((WINDOW_SIZE.x, WINDOW_SIZE.y))
+    BLOCK_SIZE = WINDOW_SIZE.y / 12
     FPS = 144
 
-    back = pygame.transform.scale(
-        pygame.image.load("Assets/Background/BG-sky.png"), (WINDOW_W, WINDOW_H))
+class GameState:
+    dt = 1/60

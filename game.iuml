@@ -1,0 +1,48 @@
+@startuml test
+
+class Parent {
+    + public_member: type
+    # protected_member: type
+    - private_member: type
+
+    {static} static_member: type
+
+    + public_method(param: type): return_type
+    # public_method(param: type): return_type
+    - public_method(param: type): return_type
+
+    {static} static_method(param: type): return_type
+}
+
+class Entity {
+    + position : Pygame.Vector2D
+    + vitesse : Pygame.Vector2D
+    + acceleration : Pygame.Vector2D
+    + rect : Pygame.Rect
+
+    + textures_idle : Pygame.Texture[]
+    + masks_idle: Pygame.Mask[]
+    + text_count: int
+
+    blit() : void
+    
+    update_mask() : void
+
+    get_text() : Pygame.Texture
+}
+
+class Block {
+
+}
+
+class Game {
+
+}
+
+class World {
+
+}
+
+Parent <|-- Child
+
+@enduml
