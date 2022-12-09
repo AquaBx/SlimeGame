@@ -22,9 +22,19 @@ class GameObject(IGameObject):
         self.state: int = state
         self.position: v2 = position
         self.taille: v2 = taille
+        self._mask = mask.Mask(self.taille, True)
 
     def update(self) -> None: pass
     def draw(self) -> None: pass
+    
+    @property
+    def mask(self) -> Mask:
+        return self._mask;
+
+    @mask.setter
+    def mask(self, value: Mask) -> Mask:
+        self._mask = value
+        return self._mask
 
     @property
     def rect(self) -> Rect:
