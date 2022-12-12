@@ -15,17 +15,17 @@ class World():
         self.background = transform.scale( image.load("Assets/Sprites/Background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
         # remplacer par le chargement de la map
         self.blocks = np.array([
-            [Ground(1, v2(j*GameConfig.BLOCK_SIZE, 0*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(10)],
-            [Ground(1, v2(0*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")]+[Empty(0, v2(j*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE)) for j in range(1,9)]+[Ground(1, v2(9*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
-            [Ground(1, v2(j*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(8)]+[Empty(0, v2(8*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE))]+[Ground(1, v2(9*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
-            [Ground(1, v2(0*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")]+[Empty(0, v2(j*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE)) for j in range(1,9)]+[Ground(1, v2(9*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
-            [Ground(1, v2(j*GameConfig.BLOCK_SIZE, 4*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(10)],
+            [Ground(1, v2(j, 0), f"Assets/Sprites/Statics/ground.png") for j in range(10)],
+            [Ground(1, v2(0, 1), f"Assets/Sprites/Statics/ground.png")]+[Empty(0, v2(j, 1)) for j in range(1,9)]+[Ground(1, v2(9, 1), f"Assets/Sprites/Statics/ground.png")],
+            [Ground(1, v2(j, 2), f"Assets/Sprites/Statics/ground.png") for j in range(8)]+[Empty(0, v2(8, 2))]+[Ground(1, v2(9, 2), f"Assets/Sprites/Statics/ground.png")],
+            [Ground(1, v2(0, 3), f"Assets/Sprites/Statics/ground.png")]+[Empty(0, v2(j, 3)) for j in range(1,9)]+[Ground(1, v2(9, 3), f"Assets/Sprites/Statics/ground.png")],
+            [Ground(1, v2(j, 4), f"Assets/Sprites/Statics/ground.png") for j in range(10)],
         ])
         # self.blocks: np.ndarray[GameObject] = np.full((3, 3), None)
         # for i in range(3):
         #     for j in range(3):
-        #         self.blocks[i, j] = Ground(0, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), f"assets/sprites/statics/ground.png")
-        self.player = Player(GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+        #         self.blocks[i, j] = Ground(0, v2(j, i, f"assets/sprites/statics/ground.png")
+        self.player = Player(v2(1,1), GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
         self.camera: Camera = Camera(self.player)
 
     def update(self) -> None:
@@ -75,8 +75,8 @@ class World():
         # | | | | |
         # for now there is a out of bound exception when we are not on the grid anymore
 
-        x1 = int( self.player.position.x//int(GameConfig.BLOCK_SIZE) )
-        y1 = int( self.player.position.y//int(GameConfig.BLOCK_SIZE) )
+        x1 = int( self.player.position_matrix.x )
+        y1 = int( self.player.position_matrix.y )
 
         collide, ny = self.collision_mask(self.player, [
             self.blocks[y1, x1],
@@ -86,14 +86,14 @@ class World():
         ])
 
         debug((x1,y1),10)
-        debug(self.blocks[y1, x1],30)
-        debug(self.blocks[y1+1, x1],50)
-        debug(self.blocks[y1, x1+1],70)
-        debug(self.blocks[y1+1, x1+1],90)
+        debug(self.blocks[y1, x1].position_matrix,30)
+        debug(self.blocks[y1+1, x1].position_matrix,50)
+        debug(self.blocks[y1, x1+1].position_matrix,70)
+        debug(self.blocks[y1+1, x1+1].position_matrix,90)
 
 
         if collide:
-            print("collide",self.player.mask.get_at((0,0)),ny.mask.get_at((0,0)))
+            debug("collide",120)
             # resistance = pygame.Vector2(0, -y_vect)
             # h = 5 * GameConfig.BLOCK_SIZE
             # self.player.acceleration.y = -( 2 * gravite.y * h)**0.5/GameState.dt * int(pg.key.get_pressed()[pg.K_z])

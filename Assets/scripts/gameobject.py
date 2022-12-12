@@ -20,7 +20,12 @@ class GameObject(IGameObject):
 
     def __init__(self, state: int, position: v2, taille: v2) -> None:
         self.state: int = state
-        self.position: v2 = position
+
+        position.x *= GameConfig.BLOCK_SIZE # convertit les coordonnées matrices vers coordonnées réelles
+        position.y *= GameConfig.BLOCK_SIZE # //
+
+        self.position: v2 = position 
+
         self.taille: v2 = taille
         self._mask = mask.Mask(self.taille, True)
 
@@ -28,8 +33,12 @@ class GameObject(IGameObject):
     def draw(self, camera: Camera) -> None: pass
 
     @property
+    def position_matrix(self) -> Mask:
+        return v2(self.position.x/60,self.position.y/60)
+
+    @property
     def mask(self) -> Mask:
-        return self._mask;
+        return self._mask
 
     @mask.setter
     def mask(self, value: Mask) -> Mask:
@@ -100,9 +109,8 @@ class Ground(Static):
 
 class Player(Dynamic):
 
-    def __init__(self, x: float, y: float, w: int, h: int, spritesheet: list[str]) -> None:
+    def __init__(self, position: v2, w: int, h: int, spritesheet: list[str]) -> None:
         state: int = 0
-        position = v2(x, y)
         taille = v2(w, h)
         animations = [ transform.scale(image.load(src), (w, h)) for src in spritesheet ]
 
