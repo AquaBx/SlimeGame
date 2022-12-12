@@ -131,14 +131,14 @@ class Player(Dynamic):
         if keys_pressed[pg.K_q]:
             self.acceleration.x -= 2 * GameConfig.BLOCK_SIZE / GameState.dt
 
-        # if keys_pressed[pygame.K_z]:
-        #     self.acceleration.y -= 2/10 * Config.BLOCK_SIZE / Config.dt
+        if keys_pressed[pg.K_z]:
+            self.acceleration.y -= GameConfig.BLOCK_SIZE / GameState.dt
 
-        # if keys_pressed[pygame.K_s]:
-        #     self.acceleration.y += 2/10 * Config.BLOCK_SIZE / Config.dt
-
-        # self.vitesse.y += self.acceleration.y * Config.dt
-        # self.position.y += self.vitesse.y * Config.dt
+        if keys_pressed[pg.K_s]:
+            self.acceleration.y += GameConfig.BLOCK_SIZE / GameState.dt
 
         self.vitesse.x += self.acceleration.x * GameState.dt
         self.position.x += self.vitesse.x * GameState.dt
+
+        self.vitesse.y += self.acceleration.y * GameState.dt
+        self.position.y += self.vitesse.y * GameState.dt
