@@ -46,7 +46,7 @@ class World():
                 self.blocks[i, j].draw(self.camera)
 
     def gravite(self,obj):
-        y_vect = 50 * GameConfig.BLOCK_SIZE
+        y_vect = 5 * GameConfig.BLOCK_SIZE
         gravite = v2(0, y_vect)
         obj.acceleration.y = gravite[1] # + resistance[1]
         obj.vitesse.y += self.player.acceleration.y*GameState.dt
