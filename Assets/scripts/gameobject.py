@@ -24,7 +24,7 @@ class GameObject(IGameObject):
         self.taille: v2 = taille
 
     def update(self) -> None: pass
-    def draw(self) -> None: pass
+    def draw(self, camera: Camera) -> None: pass
 
     @property
     def rect(self) -> Rect:
@@ -63,6 +63,16 @@ class Dynamic(GameObject):
     def draw(self, camera: Camera) -> None:
         rect = camera.transform_coord(self.rect)
         GameConfig.WINDOW.blit(self.texture, rect)
+
+class Empty(GameObject):
+    def __init__(self, index: int, position: v2) -> None:
+        taille = v2(GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE)
+        super().__init__(index, position, taille)
+    def update(self) -> None: pass
+
+    @property
+    def mask(self) -> Mask:
+        return mask.Mask.clear()
 
 class Ground(Static):
 

@@ -1,6 +1,6 @@
 from config import GameConfig
 
-from Assets.scripts.gameobject import GameObject, Ground, Player
+from Assets.scripts.gameobject import GameObject, Ground, Player, Empty
 import pygame
 from pygame import Vector2 as v2
 from pygame import transform, image
@@ -12,11 +12,18 @@ class World():
     def __init__(self) -> None:
         self.background = transform.scale( image.load("Assets/Sprites/Background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
         # remplacer par le chargement de la map
-        self.blocks: np.ndarray[GameObject] = np.full((3, 3), None)
-        for i in range(3):
-            for j in range(3):
-                self.blocks[i, j] = Ground(0, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")
-        self.player = Player(0, 0, GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, [f"Assets/Sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+        self.blocks = np.array([
+            [Ground(0, v2(j*GameConfig.BLOCK_SIZE, 0*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(10)],
+            [Ground(0, v2(0*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")]+[Empty(0, v2(j*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE)) for j in range(1,9)]+[Ground(0, v2(9*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
+            [Ground(0, v2(j*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(8)]+[Empty(0, v2(8*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE))]+[Ground(0, v2(9*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
+            [Ground(0, v2(0*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")]+[Empty(0, v2(j*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE)) for j in range(1,9)]+[Ground(0, v2(9*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
+            [Ground(0, v2(j*GameConfig.BLOCK_SIZE, 4*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(10)],
+        ])
+        # self.blocks: np.ndarray[GameObject] = np.full((3, 3), None)
+        # for i in range(3):
+        #     for j in range(3):
+        #         self.blocks[i, j] = Ground(0, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")
+        self.player = Player(GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, [f"Assets/Sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
 
     def update(self) -> None:
         self.player.update_frame()
