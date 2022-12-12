@@ -5,15 +5,7 @@ from pygame import Vector2 as v2
 import numpy as np
 
 from config import GameConfig
-
 from Assets.scripts.gameobject import GameObject, Ground, Player,Empty
-import pygame
-from pygame import Vector2 as v2
-from pygame import transform, image
-import numpy as np
-
-from Assets.scripts.gameobject import GameObject, Ground, Player
-
 from camera import Camera
 
 class World():
@@ -45,8 +37,8 @@ class World():
         link.draw(self.camera)
         link.sante -= 0.0001
         health_percent = link.sante/link.santemax * GameConfig.BLOCK_SIZE*5
-        pygame.draw.rect(GameConfig.WINDOW,"red",pygame.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE*5,GameConfig.BLOCK_SIZE/2))
-        pygame.draw.rect(GameConfig.WINDOW,"green",pygame.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,health_percent,GameConfig.BLOCK_SIZE/2))
+        pg.draw.rect(GameConfig.WINDOW,"red",pg.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE*5,GameConfig.BLOCK_SIZE/2))
+        pg.draw.rect(GameConfig.WINDOW,"green",pg.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,health_percent,GameConfig.BLOCK_SIZE/2))
 
         for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
             for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
