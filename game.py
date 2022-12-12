@@ -2,7 +2,6 @@ import pygame as pg
 from pygame.time import Clock
 
 from config import GameConfig, GameState
-from camera import Camera
 from world import World
 
 class Game:
@@ -12,7 +11,6 @@ class Game:
         self.clock: Clock = Clock()
         self.should_quit: bool = False
         self.world: World = World()
-        self.camera: Camera = Camera(self.world.player)
 
     def __del__(self) -> None:
         pg.quit()
@@ -31,13 +29,12 @@ class Game:
                 self.should_quit = True
 
     def __update(self) -> None:
-        self.camera.update()
         self.world.update()
 
     def __draw(self) -> None:
         # GameConfig.WINDOW.blit(World.background, (0, 0))
         GameConfig.WINDOW.fill('Black')
-        self.world.draw(self.camera)
+        self.world.draw()
         # debug.debug(self.clock.get_fps())
         pg.display.update()
 
