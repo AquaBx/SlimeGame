@@ -52,7 +52,7 @@ class World():
         obj.vitesse.y += self.player.acceleration.y*GameState.dt
         obj.position.y += self.player.vitesse.y*GameState.dt
 
-    def collide(obj):
+    def collide(self,obj):
         x1 = int( obj.position_matrix.x )
         y1 = int( obj.position_matrix.y )
         blocks_arround = {
