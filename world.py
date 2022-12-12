@@ -8,6 +8,8 @@ from config import GameConfig
 from Assets.scripts.gameobject import GameObject, Ground, Player,Empty
 from camera import Camera
 
+from debug import debug
+
 class World():
     def __init__(self) -> None:
         self.background = transform.scale( image.load("Assets/Sprites/Background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
@@ -30,7 +32,7 @@ class World():
         self.camera.update()
         self.player.update_frame()
         self.player.update()
-        # self.gravite()
+        self.gravite()
 
     def draw(self) -> None:
         link = self.camera.link
@@ -53,7 +55,7 @@ class World():
             collide = obj1.mask.overlap(obj2.mask, offset)
             if collide != None:
                 sprite.collide_mask
-                return (True , obj2.rect.top)
+                return (True , obj2)
         return (False, -1)
 
     def gravite(self) -> None:
@@ -72,15 +74,26 @@ class World():
         # | |*|*| |
         # | | | | |
         # for now there is a out of bound exception when we are not on the grid anymore
+
+        x1 = int( self.player.position.x//int(GameConfig.BLOCK_SIZE) )
+        y1 = int( self.player.position.y//int(GameConfig.BLOCK_SIZE) )
+
         collide, ny = self.collision_mask(self.player, [
-            self.blocks[int(self.player.position.y)//int(GameConfig.BLOCK_SIZE), int(self.player.position.x)//int(GameConfig.BLOCK_SIZE)],
-            self.blocks[int(self.player.position.y+self.player.taille.y)//int(GameConfig.BLOCK_SIZE), int(self.player.position.x)//int(GameConfig.BLOCK_SIZE)],
-            self.blocks[int(self.player.position.y)//int(GameConfig.BLOCK_SIZE), int(self.player.position.x+self.player.taille.x)//int(GameConfig.BLOCK_SIZE)],
-            self.blocks[int(self.player.position.y+self.player.taille.y)//int(GameConfig.BLOCK_SIZE), int(self.player.position.x+self.player.taille.x)//int(GameConfig.BLOCK_SIZE)]
+            self.blocks[y1, x1],
+            self.blocks[y1+1, x1],
+            self.blocks[y1, x1+1],
+            self.blocks[y1+1, x1+1]
         ])
 
+        debug((x1,y1),10)
+        debug(self.blocks[y1, x1],30)
+        debug(self.blocks[y1+1, x1],50)
+        debug(self.blocks[y1, x1+1],70)
+        debug(self.blocks[y1+1, x1+1],90)
+
+
         if collide:
-            pass
+            print("collide",self.player.mask.get_at((0,0)),ny.mask.get_at((0,0)))
             # resistance = pygame.Vector2(0, -y_vect)
             # h = 5 * GameConfig.BLOCK_SIZE
             # self.player.acceleration.y = -( 2 * gravite.y * h)**0.5/GameState.dt * int(pg.key.get_pressed()[pg.K_z])
