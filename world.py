@@ -52,23 +52,9 @@ class World():
         obj.vitesse.y += self.player.acceleration.y*GameState.dt
         obj.position.y += self.player.vitesse.y*GameState.dt
 
-    def update_pos(self,obj:GameObject) -> None:
-        
-        pos_avant = v2(obj.position.x,obj.position.y)
-
-        obj.update()
-        self.gravite(obj)
-
-        # we get all 4 blocs (*) based on the position of the player (p)
-        # | | | | |
-        # | |p|*| |
-        # | |*|*| |
-        # | | | | |
-        # for now there is a out of bound exception when we are not on the grid anymore
-
+    def collide(obj):
         x1 = int( obj.position_matrix.x )
         y1 = int( obj.position_matrix.y )
-
         blocks_arround = {
             "top-left" : { "ref":self.blocks[y1, x1] },
             "bottom-left" : { "ref":self.blocks[y1+1, x1] },
@@ -82,28 +68,41 @@ class World():
             collide = obj.mask.overlap(obj2.mask, offset)
             blocks_arround[key]["collide"] = True if collide else False
         
+        return blocks_arround
+
+    def update_pos(self,obj:GameObject) -> None:
+        
+        pos_avant = v2(obj.position.x,obj.position.y)
+
+        obj.update()
+        self.gravite(obj)
+
+        # we get all 4 blocs (*) based on the position of the player (p)
+        # | | | | |
+        # | |p|*| |
+        # | |*|*| |
+        # | | | | |
+        # for now there is a out of bound exception when we are not on the grid anymore
+       
+        blocks_collide = self.collide(obj)
         dir = obj.position - pos_avant
 
-        if dir.y < 0 and ( blocks_arround["top-left"]["collide"] or blocks_arround["top-right"]["collide"] ):
-            obj.position.y = blocks_arround["top-left"]["ref"].rect.bottom
+        if dir.y < 0 and ( blocks_collide["top-left"]["collide"] or blocks_collide["top-right"]["collide"] ):
+            obj.position.y = blocks_collide["top-left"]["ref"].rect.bottom
             obj.vitesse.y = 0
             obj.acceleration.y = 0
-        if dir.y > 0 and ( blocks_arround["bottom-right"]["collide"] or blocks_arround["bottom-left"]["collide"] ):
-            obj.position.y = blocks_arround["bottom-left"]["ref"].rect.top - blocks_arround["bottom-left"]["ref"].taille.x
+        if dir.y > 0 and ( blocks_collide["bottom-right"]["collide"] or blocks_collide["bottom-left"]["collide"] ):
+            obj.position.y = blocks_collide["bottom-left"]["ref"].rect.top - blocks_collide["bottom-left"]["ref"].taille.x
             obj.vitesse.y = 0
             obj.acceleration.y = 0
 
-        for key in blocks_arround:
-            obj2 = blocks_arround[key]["ref"]
-            offset: v2 = obj2.position - obj.position
-            collide = obj.mask.overlap(obj2.mask, offset)
-            blocks_arround[key]["collide"] = True if collide else False
+        blocks_collide = self.collide(obj) # on actualise les collisions pour avoir une meilleur gestion de l'axe x
 
-        if dir.x < 0 and ( blocks_arround["top-left"]["collide"] or blocks_arround["bottom-left"]["collide"] ):
-            obj.position.x = blocks_arround["top-left"]["ref"].rect.right
+        if dir.x < 0 and ( blocks_collide["top-left"]["collide"] or blocks_collide["bottom-left"]["collide"] ):
+            obj.position.x = blocks_collide["top-left"]["ref"].rect.right
             obj.vitesse.x = 0
             obj.acceleration.x = 0
-        if dir.x > 0 and ( blocks_arround["top-right"]["collide"] or blocks_arround["bottom-right"]["collide"] ):
-            obj.position.x = blocks_arround["top-right"]["ref"].rect.left - blocks_arround["top-right"]["ref"].taille.x
+        if dir.x > 0 and ( blocks_collide["top-right"]["collide"] or blocks_collide["bottom-right"]["collide"] ):
+            obj.position.x = blocks_collide["top-right"]["ref"].rect.left - blocks_collide["top-right"]["ref"].taille.x
             obj.vitesse.x = 0
             obj.acceleration.x = 0
