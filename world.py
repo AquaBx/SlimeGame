@@ -53,6 +53,12 @@ class World():
         obj.position.y += self.player.vitesse.y*GameState.dt
 
     def collide(self,obj):
+        # we get all 4 blocs (*) based on the position of the player (p)
+        # | | | | |
+        # | |p|*| |
+        # | |*|*| |
+        # | | | | |
+        # for now there is a out of bound exception when we are not on the grid anymore
         x1 = int( obj.position_matrix.x )
         y1 = int( obj.position_matrix.y )
         blocks_arround = {
@@ -76,13 +82,6 @@ class World():
 
         obj.update()
         self.gravite(obj)
-
-        # we get all 4 blocs (*) based on the position of the player (p)
-        # | | | | |
-        # | |p|*| |
-        # | |*|*| |
-        # | | | | |
-        # for now there is a out of bound exception when we are not on the grid anymore
        
         blocks_collide = self.collide(obj)
         dir = obj.position - pos_avant
@@ -91,7 +90,7 @@ class World():
             obj.position.y = blocks_collide["top-left"]["ref"].rect.bottom
             obj.vitesse.y = 0
             obj.acceleration.y = 0
-        if dir.y > 0 and ( blocks_collide["bottom-right"]["collide"] or blocks_collide["bottom-left"]["collide"] ):
+        elif dir.y > 0 and ( blocks_collide["bottom-right"]["collide"] or blocks_collide["bottom-left"]["collide"] ):
             obj.position.y = blocks_collide["bottom-left"]["ref"].rect.top - blocks_collide["bottom-left"]["ref"].taille.x
             obj.vitesse.y = 0
             obj.acceleration.y = 0
@@ -102,7 +101,7 @@ class World():
             obj.position.x = blocks_collide["top-left"]["ref"].rect.right
             obj.vitesse.x = 0
             obj.acceleration.x = 0
-        if dir.x > 0 and ( blocks_collide["top-right"]["collide"] or blocks_collide["bottom-right"]["collide"] ):
+        elif dir.x > 0 and ( blocks_collide["top-right"]["collide"] or blocks_collide["bottom-right"]["collide"] ):
             obj.position.x = blocks_collide["top-right"]["ref"].rect.left - blocks_collide["top-right"]["ref"].taille.x
             obj.vitesse.x = 0
             obj.acceleration.x = 0
