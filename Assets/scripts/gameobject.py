@@ -1,7 +1,7 @@
 from abc import ABC, abstractclassmethod
 
 import pygame as pg
-from pygame import key, image, mask, transform
+from pygame import key, image, mask, transform,Color
 from pygame import Vector2 as v2, Rect, Surface
 from pygame.mask import Mask
 
@@ -84,7 +84,9 @@ class Empty(GameObject):
 
     @property
     def mask(self) -> Mask:
-        return mask.Mask.clear()
+        mask = pg.mask.from_surface(pg.Surface((1,1)))
+        mask.set_at((0,0),0)
+        return mask.scale((GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE))
 
 class Ground(Static):
 
