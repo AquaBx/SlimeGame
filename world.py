@@ -21,11 +21,11 @@ class World():
         self.background = transform.scale( image.load("Assets/Sprites/Background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
         # remplacer par le chargement de la map
         self.blocks = np.array([
-            [Ground(0, v2(j*GameConfig.BLOCK_SIZE, 0*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(10)],
-            [Ground(0, v2(0*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")]+[Empty(0, v2(j*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE)) for j in range(1,9)]+[Ground(0, v2(9*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
-            [Ground(0, v2(j*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(8)]+[Empty(0, v2(8*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE))]+[Ground(0, v2(9*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
-            [Ground(0, v2(0*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")]+[Empty(0, v2(j*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE)) for j in range(1,9)]+[Ground(0, v2(9*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
-            [Ground(0, v2(j*GameConfig.BLOCK_SIZE, 4*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(10)],
+            [Ground(1, v2(j*GameConfig.BLOCK_SIZE, 0*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(10)],
+            [Ground(1, v2(0*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")]+[Empty(0, v2(j*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE)) for j in range(1,9)]+[Ground(1, v2(9*GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
+            [Ground(1, v2(j*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(8)]+[Empty(0, v2(8*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE))]+[Ground(1, v2(9*GameConfig.BLOCK_SIZE, 2*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
+            [Ground(1, v2(0*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")]+[Empty(0, v2(j*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE)) for j in range(1,9)]+[Ground(1, v2(9*GameConfig.BLOCK_SIZE, 3*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png")],
+            [Ground(1, v2(j*GameConfig.BLOCK_SIZE, 4*GameConfig.BLOCK_SIZE), f"Assets/Sprites/Statics/ground.png") for j in range(10)],
         ])
         # self.blocks: np.ndarray[GameObject] = np.full((3, 3), None)
         # for i in range(3):
@@ -41,7 +41,12 @@ class World():
         # self.gravite()
 
     def draw(self) -> None:
-        self.player.draw(self.camera)
+        link = self.camera.link
+        link.draw(self.camera)
+        link.sante -= 0.0001
+        health_percent = link.sante/link.santemax * GameConfig.BLOCK_SIZE*5
+        pygame.draw.rect(GameConfig.WINDOW,"red",pygame.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE*5,GameConfig.BLOCK_SIZE/2))
+        pygame.draw.rect(GameConfig.WINDOW,"green",pygame.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,health_percent,GameConfig.BLOCK_SIZE/2))
 
         for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
             for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):

@@ -58,6 +58,8 @@ class Dynamic(GameObject):
 
         self.animations: list[Surface] = animations
         self.animation_frame: int = 0
+        self.sante : int = 20
+        self.santemax : int = 20
 
         self.vitesse: v2 = v2(0.0, 0.0)
         self.acceleration: v2 = v2(0.0, 0.0)
