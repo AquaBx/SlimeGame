@@ -2,7 +2,7 @@ import pygame
 from config import Config
 from camera import Camera
 import world
-import debug
+#import debug
 from morgann_textes import Messages
 
 
@@ -18,7 +18,6 @@ def game_loop(window):
 
     back = Config.back
     msg = Messages()
-    text = "Hello World"
 
     while not quitting:
 
@@ -45,13 +44,26 @@ def game_loop(window):
             ncoord = camera.convert_coord(block.rect)
             window.blit(block.texture, ncoord)
 
-        #créer une condition pour afficher un message (astuce, panneau, dialogue...), ainsi que la possibilté de modifier le contenu du message
+        # créer une condition pour afficher un message (astuce, panneau, dialogue...), ainsi que la possibilté de modifier le contenu du message
+        # Initialisation de quelques messages prédéfinis comme constantes
+        LONG_TXT = "Ceci est un long long message qui va prendre plusieurs lignes et je ne sais pas quoi écrire pour prolonger ce texte mais je le prolonge quand même."
         FALLING_TXT = "You are falling !"
-        IN_AIR_TXT = "Slime believes he can fly !"
-        if player.position.y > 516 : # Simple test pour afficher le message selon une condition particulière, il sera à effacer
-            msg.display_message(window,FALLING_TXT,Config.WINDOW_W*0.8,30,40,(0,255,255))
-        if player.position.y < 560 :
-            msg.display_message(window,IN_AIR_TXT,Config.WINDOW_W*0.8,30,50,msg.GREY)
+        IN_AIR_TXT = "Slime believes he can fly ! Slime believes he can touch the sky ! Slime..."
+        font_size = 30
+
+        # for i in range(0,len(TEXT_LONG_DIVIDED)) :
+        #     msg.display_message(window,TEXT_LONG_DIVIDED[i],Config.WINDOW_W*0.6,40+i*font_size,font_size,msg.GREY)
+        #     msg_max_rect_width = msg.display_message(window,TEXT_LONG_DIVIDED[i],Config.WINDOW_W*0.6,40+i*font_size,font_size,msg.GREY)
+        msg.display_message(window,IN_AIR_TXT,Config.WINDOW_W*0.6,40,font_size,msg.GREY)        
+        if player.position.y > 888 : # Simples tests pour afficher les messages selon des conditions particulières, ils seront à effacer
+            msg.display_message(window,FALLING_TXT,Config.WINDOW_W*0.6,40,font_size,msg.RED)
+        if player.position.y < 480 :
+            msg.display_message(window,IN_AIR_TXT,Config.WINDOW_W*0.6,40,font_size,msg.GREEN)
+
+
+
+
+
 
         # debug.debug(player.vitesse)
         pygame.display.update()
