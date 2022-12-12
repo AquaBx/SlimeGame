@@ -4,7 +4,7 @@ from pygame import Vector2 as v2
 
 import numpy as np
 
-from config import GameConfig
+from config import GameConfig,GameState
 from Assets.scripts.gameobject import GameObject, Ground, Player,Empty
 from camera import Camera
 
@@ -31,8 +31,7 @@ class World():
     def update(self) -> None:
         self.camera.update()
         self.player.update_frame()
-        self.player.update()
-        self.gravite()
+        self.update_pos(self.player)
 
     def draw(self) -> None:
         link = self.camera.link
@@ -46,27 +45,19 @@ class World():
             for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
                 self.blocks[i, j].draw(self.camera)
 
-    def collision_mask(self, obj1: GameObject, others: np.ndarray[GameObject]) -> tuple[bool, int]:
-        """
-            le side est relative au deuxieme block
-        """
-        for obj2 in others:
-            offset: v2 = obj2.position - obj1.position
-            collide = obj1.mask.overlap(obj2.mask, offset)
-            if collide != None:
-                sprite.collide_mask
-                return (True , obj2)
-        return (False, -1)
-
-    def gravite(self) -> None:
+    def gravite(self,obj):
         y_vect = 50 * GameConfig.BLOCK_SIZE
-
         gravite = v2(0, y_vect)
-        # resistance = pygame.Vector2(0, 0)
+        obj.acceleration.y = gravite[1] # + resistance[1]
+        obj.vitesse.y += self.player.acceleration.y*GameState.dt
+        obj.position.y += self.player.vitesse.y*GameState.dt
 
-        # self.player.acceleration.y = gravite[1] # + resistance[1]
-        # self.player.vitesse.y += self.player.acceleration.y*GameState.dt
-        # self.player.position.y += self.player.vitesse.y*GameState.dt
+    def update_pos(self,obj:GameObject) -> None:
+        
+        pos_avant = v2(obj.position.x,obj.position.y)
+
+        obj.update()
+        self.gravite(obj)
 
         # we get all 4 blocs (*) based on the position of the player (p)
         # | | | | |
@@ -75,28 +66,44 @@ class World():
         # | | | | |
         # for now there is a out of bound exception when we are not on the grid anymore
 
-        x1 = int( self.player.position_matrix.x )
-        y1 = int( self.player.position_matrix.y )
+        x1 = int( obj.position_matrix.x )
+        y1 = int( obj.position_matrix.y )
 
-        collide, ny = self.collision_mask(self.player, [
-            self.blocks[y1, x1],
-            self.blocks[y1+1, x1],
-            self.blocks[y1, x1+1],
-            self.blocks[y1+1, x1+1]
-        ])
+        blocks_arround = {
+            "top-left" : { "ref":self.blocks[y1, x1] },
+            "bottom-left" : { "ref":self.blocks[y1+1, x1] },
+            "top-right" : { "ref":self.blocks[y1, x1+1] },
+            "bottom-right" : { "ref":self.blocks[y1+1, x1+1] }
+        }
+        
+        for key in blocks_arround:
+            obj2 = blocks_arround[key]["ref"]
+            offset: v2 = obj2.position - obj.position
+            collide = obj.mask.overlap(obj2.mask, offset)
+            blocks_arround[key]["collide"] = True if collide else False
+        
+        dir = obj.position - pos_avant
 
-        debug((x1,y1),10)
-        debug(self.blocks[y1, x1].position_matrix,30)
-        debug(self.blocks[y1+1, x1].position_matrix,50)
-        debug(self.blocks[y1, x1+1].position_matrix,70)
-        debug(self.blocks[y1+1, x1+1].position_matrix,90)
+        if dir.y < 0 and ( blocks_arround["top-left"]["collide"] or blocks_arround["top-right"]["collide"] ):
+            obj.position.y = blocks_arround["top-left"]["ref"].rect.bottom
+            obj.vitesse.y = 0
+            obj.acceleration.y = 0
+        if dir.y > 0 and ( blocks_arround["bottom-right"]["collide"] or blocks_arround["bottom-left"]["collide"] ):
+            obj.position.y = blocks_arround["bottom-left"]["ref"].rect.top - blocks_arround["bottom-left"]["ref"].taille.x
+            obj.vitesse.y = 0
+            obj.acceleration.y = 0
 
+        for key in blocks_arround:
+            obj2 = blocks_arround[key]["ref"]
+            offset: v2 = obj2.position - obj.position
+            collide = obj.mask.overlap(obj2.mask, offset)
+            blocks_arround[key]["collide"] = True if collide else False
 
-        if collide:
-            debug("collide",120)
-            # resistance = pygame.Vector2(0, -y_vect)
-            # h = 5 * GameConfig.BLOCK_SIZE
-            # self.player.acceleration.y = -( 2 * gravite.y * h)**0.5/GameState.dt * int(pg.key.get_pressed()[pg.K_z])
-            # obj.vitesse.y = obj.acceleration.y*dt
-            # obj.position.y = ny + obj.vitesse.y*dt - self.player.rect.height
-            # obj.rect.topleft = obj.position
+        if dir.x < 0 and ( blocks_arround["top-left"]["collide"] or blocks_arround["bottom-left"]["collide"] ):
+            obj.position.x = blocks_arround["top-left"]["ref"].rect.right
+            obj.vitesse.x = 0
+            obj.acceleration.x = 0
+        if dir.x > 0 and ( blocks_arround["top-right"]["collide"] or blocks_arround["bottom-right"]["collide"] ):
+            obj.position.x = blocks_arround["top-right"]["ref"].rect.left - blocks_arround["top-right"]["ref"].taille.x
+            obj.vitesse.x = 0
+            obj.acceleration.x = 0

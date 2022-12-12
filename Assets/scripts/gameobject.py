@@ -124,7 +124,6 @@ class Player(Dynamic):
         keys_pressed = key.get_pressed()
 
         self.acceleration.x = -self.vitesse.x * 1000 / GameConfig.BLOCK_SIZE
-        self.acceleration.y = 0
 
         if keys_pressed[pg.K_d]:
             self.acceleration.x += 2 * GameConfig.BLOCK_SIZE / GameState.dt
