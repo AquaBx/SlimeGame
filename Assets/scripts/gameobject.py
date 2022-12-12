@@ -25,7 +25,7 @@ class GameObject(IGameObject):
         self._mask = mask.Mask(self.taille, True)
 
     def update(self) -> None: pass
-    def draw(self) -> None: pass
+    def draw(self, camera: Camera) -> None: pass
 
     @property
     def mask(self) -> Mask:

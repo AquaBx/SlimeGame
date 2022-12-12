@@ -6,13 +6,13 @@ import numpy as np
 
 from config import GameConfig
 
-from Assets.scripts.gameobject import GameObject, Ground, Player
+from Assets.scripts.gameobject import GameObject, Ground, Player,Empty
 import pygame
 from pygame import Vector2 as v2
 from pygame import transform, image
 import numpy as np
 
-from assets.scripts.gameobject import GameObject, Ground, Player
+from Assets.scripts.gameobject import GameObject, Ground, Player
 
 from camera import Camera
 
@@ -38,7 +38,7 @@ class World():
         self.camera.update()
         self.player.update_frame()
         self.player.update()
-        self.gravite()
+        # self.gravite()
 
     def draw(self) -> None:
         self.player.draw(self.camera)
