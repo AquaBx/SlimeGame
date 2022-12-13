@@ -9,7 +9,7 @@ import struct
 
 import Assets.gpalette as gpalette
 from Assets.gpalette import ASSETS, Palette
-from Assets.scripts.gameobject import GameObject, Player,Empty
+from Assets.scripts.gameobject import GameObject, Player,Empty,Ground
 
 from camera import Camera
 
@@ -24,6 +24,7 @@ class World():
         self.background = transform.scale( image.load("assets/sprites/background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
         self.current_map = map
         self.load()
+
         self.player = Player(v2(1,1), v2(GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
         self.camera: Camera = Camera(self.player)
 
@@ -95,10 +96,13 @@ class World():
         }
         
         for key in blocks_arround:
-            obj2 = blocks_arround[key]["ref"]
-            offset: v2 = obj2.position - obj.position
-            collide = obj.mask.overlap(obj2.mask, offset)
-            blocks_arround[key]["collide"] = True if collide else False
+            if blocks_arround[key]["ref"].state != 0:
+                obj2 = blocks_arround[key]["ref"]
+                offset: v2 = obj2.position - obj.position
+                collide = obj.mask.overlap(obj2.mask, offset)
+                blocks_arround[key]["collide"] = True if collide else False
+            else:
+                blocks_arround[key]["collide"] = False
         
         return blocks_arround
 
@@ -110,6 +114,7 @@ class World():
         self.gravite(obj)
        
         blocks_collide = self.collide(obj)
+        debug((blocks_collide["top-left"],blocks_collide["top-left"]["ref"].mask))
         dir = obj.position - pos_avant
 
         if dir.y < 0 and ( blocks_collide["top-left"]["collide"] or blocks_collide["top-right"]["collide"] ):

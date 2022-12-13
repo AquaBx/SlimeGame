@@ -55,7 +55,10 @@ class Static(GameObject):
     def __init__(self, state: int, position: v2,taille:v2, texture: Surface) -> None:
         super().__init__(state, position,taille)
         self.texture: Surface = transform.scale(texture, self.taille)
-        self.mask: Mask = mask.from_surface(texture)
+    
+    @property
+    def mask(self):
+        return mask.from_surface(self.texture) 
 
     def draw(self, camera: Camera) -> None:
         rect = camera.transform_coord(self.rect)
@@ -77,10 +80,6 @@ class Dynamic(GameObject):
     @property
     def texture(self) -> Surface:
         return self.animations[self.animation_frame]
-
-    @property
-    def mask(self) -> Mask:
-        return mask.from_surface(self.texture) 
     
     def draw(self, camera: Camera) -> None:
         rect = camera.transform_coord(self.rect)
