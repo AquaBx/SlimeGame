@@ -15,6 +15,8 @@ from assets.scripts.gameobject import GameObject, Player, Static
 
 from camera import Camera
 
+from debug import debug
+
 class World():
     palette: Palette
     Palette: list = []
@@ -57,56 +59,77 @@ class World():
     def update(self) -> None:
         self.camera.update()
         self.player.update_frame()
-        self.player.update()
-        self.gravite()
+        self.update_pos(self.player)
 
     def draw(self) -> None:
+        link = self.camera.link
+        link.draw(self.camera)
+        link.sante -= 0.0001
+        health_percent = link.sante/link.santemax * GameConfig.BLOCK_SIZE*5
+        pg.draw.rect(GameConfig.WINDOW,"red",pg.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE*5,GameConfig.BLOCK_SIZE/2))
+        pg.draw.rect(GameConfig.WINDOW,"green",pg.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,health_percent,GameConfig.BLOCK_SIZE/2))
+
         for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
             for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
                 self.blocks[i, j].draw(self.camera)
 
-        self.player.draw(self.camera)
-
-    def collision_mask(self, obj1: GameObject, others: np.ndarray[GameObject]) -> tuple[bool, int]:
-        """
-            le side est relative au deuxieme block
-        """
-        for obj2 in others:
-            offset: v2 = obj2.position - obj1.position
-            collide = obj1.mask.overlap(obj2.mask, offset)
-            if collide != None:
-                sprite.collide_mask
-                return (True , obj2.rect.top)
-        return (False, -1)
-
-    def gravite(self) -> None:
-        y_vect = 50 * GameConfig.BLOCK_SIZE
-
+    def gravite(self,obj):
+        y_vect = 5 * GameConfig.BLOCK_SIZE
         gravite = v2(0, y_vect)
-        # resistance = pygame.Vector2(0, 0)
+        obj.acceleration.y = gravite[1] # + resistance[1]
+        obj.vitesse.y += self.player.acceleration.y*GameState.dt
+        obj.position.y += self.player.vitesse.y*GameState.dt
 
-        # self.player.acceleration.y = gravite[1] # + resistance[1]
-        # self.player.vitesse.y += self.player.acceleration.y*GameState.dt
-        # self.player.position.y += self.player.vitesse.y*GameState.dt
-
+    def collide(self,obj):
         # we get all 4 blocs (*) based on the position of the player (p)
         # | | | | |
         # | |p|*| |
         # | |*|*| |
         # | | | | |
         # for now there is a out of bound exception when we are not on the grid anymore
-        collide, ny = self.collision_mask(self.player, [
-            self.blocks[int(self.player.position.y)//int(GameConfig.BLOCK_SIZE), int(self.player.position.x)//int(GameConfig.BLOCK_SIZE)],
-            self.blocks[int(self.player.position.y+self.player.taille.y)//int(GameConfig.BLOCK_SIZE), int(self.player.position.x)//int(GameConfig.BLOCK_SIZE)],
-            self.blocks[int(self.player.position.y)//int(GameConfig.BLOCK_SIZE), int(self.player.position.x+self.player.taille.x)//int(GameConfig.BLOCK_SIZE)],
-            self.blocks[int(self.player.position.y+self.player.taille.y)//int(GameConfig.BLOCK_SIZE), int(self.player.position.x+self.player.taille.x)//int(GameConfig.BLOCK_SIZE)]
-        ])
+        x1 = int( obj.position_matrix.x )
+        y1 = int( obj.position_matrix.y )
+        blocks_arround = {
+            "top-left" : { "ref":self.blocks[y1, x1] },
+            "bottom-left" : { "ref":self.blocks[y1+1, x1] },
+            "top-right" : { "ref":self.blocks[y1, x1+1] },
+            "bottom-right" : { "ref":self.blocks[y1+1, x1+1] }
+        }
+        
+        for key in blocks_arround:
+            obj2 = blocks_arround[key]["ref"]
+            offset: v2 = obj2.position - obj.position
+            collide = obj.mask.overlap(obj2.mask, offset)
+            blocks_arround[key]["collide"] = True if collide else False
+        
+        return blocks_arround
 
-        if collide:
-            pass
-            # resistance = pygame.Vector2(0, -y_vect)
-            # h = 5 * GameConfig.BLOCK_SIZE
-            # self.player.acceleration.y = -( 2 * gravite.y * h)**0.5/GameState.dt * int(pg.key.get_pressed()[pg.K_z])
-            # obj.vitesse.y = obj.acceleration.y*dt
-            # obj.position.y = ny + obj.vitesse.y*dt - self.player.rect.height
-            # obj.rect.topleft = obj.position
+    def update_pos(self,obj:GameObject) -> None:
+        
+        pos_avant = v2(obj.position.x,obj.position.y)
+
+        obj.update()
+        self.gravite(obj)
+       
+        blocks_collide = self.collide(obj)
+        dir = obj.position - pos_avant
+
+        if dir.y < 0 and ( blocks_collide["top-left"]["collide"] or blocks_collide["top-right"]["collide"] ):
+            obj.position.y = blocks_collide["top-left"]["ref"].rect.bottom
+            obj.vitesse.y = 0
+            obj.acceleration.y = 0
+        elif dir.y > 0 and ( blocks_collide["bottom-right"]["collide"] or blocks_collide["bottom-left"]["collide"] ):
+            obj.position.y = blocks_collide["bottom-left"]["ref"].rect.top - blocks_collide["bottom-left"]["ref"].taille.x
+            obj.vitesse.y = 0
+            obj.acceleration.y = 0
+
+        blocks_collide = self.collide(obj) # on actualise les collisions pour avoir une meilleur gestion de l'axe x
+
+        if dir.x < 0 and ( blocks_collide["top-left"]["collide"] or blocks_collide["bottom-left"]["collide"] ):
+            obj.position.x = blocks_collide["top-left"]["ref"].rect.right
+            obj.vitesse.x = 0
+            obj.acceleration.x = 0
+        elif dir.x > 0 and ( blocks_collide["top-right"]["collide"] or blocks_collide["bottom-right"]["collide"] ):
+            obj.position.x = blocks_collide["top-right"]["ref"].rect.left - blocks_collide["top-right"]["ref"].taille.x
+            obj.vitesse.x = 0
+            obj.acceleration.x = 0
