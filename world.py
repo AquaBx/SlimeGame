@@ -122,7 +122,7 @@ class World():
             obj.vitesse.y = 0
             obj.acceleration.y = 0
         elif dir.y > 0 and ( blocks_collide["bottom-right"]["collide"] or blocks_collide["bottom-left"]["collide"] ):
-            obj.position.y = blocks_collide["bottom-left"]["ref"].rect.top - blocks_collide["bottom-left"]["ref"].taille.x
+            obj.position.y = blocks_collide["bottom-left"]["ref"].rect.top - obj.taille.y
             obj.vitesse.y = 0
             obj.acceleration.y = 0
 
@@ -133,6 +133,6 @@ class World():
             obj.vitesse.x = 0
             obj.acceleration.x = 0
         elif dir.x > 0 and ( blocks_collide["top-right"]["collide"] or blocks_collide["bottom-right"]["collide"] ):
-            obj.position.x = blocks_collide["top-right"]["ref"].rect.left - blocks_collide["top-right"]["ref"].taille.x
+            obj.position.x = blocks_collide["top-right"]["ref"].rect.left - obj.taille.x
             obj.vitesse.x = 0
             obj.acceleration.x = 0
