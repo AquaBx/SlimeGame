@@ -1,7 +1,7 @@
 import pygame
 from pygame import Vector2 as v2, Surface, Rect
 
-from Assets import Asset, SPRITE_DIR, SPRITE_TILE_SIZE
+from assets import Asset, SPRITE_DIR, SPRITE_TILE_SIZE
 from .scripts.gameobject import Ground
 
 ASSETS: dict[int, Asset] = {
