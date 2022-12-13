@@ -7,9 +7,9 @@ from config import GameConfig,GameState
 import numpy as np
 import struct
 
-import Assets.gpalette as gpalette
-from Assets.gpalette import ASSETS, Palette
-from Assets.scripts.gameobject import GameObject, Player,Empty,Ground
+import assets.gpalette as gpalette
+from assets.gpalette import ASSETS, Palette
+from assets.scripts.gameobject import GameObject, Player,Empty,Ground
 
 from camera import Camera
 
@@ -110,7 +110,16 @@ class World():
         
         pos_avant = v2(obj.position.x,obj.position.y)
 
+        obj.acceleration.x = -obj.vitesse.x * 1000 / GameConfig.BLOCK_SIZE
+
         obj.update()
+
+        obj.vitesse.x += obj.acceleration.x * GameState.dt
+        obj.position.x += obj.vitesse.x * GameState.dt
+
+        obj.vitesse.y += obj.acceleration.y * GameState.dt
+        obj.position.y += obj.vitesse.y * GameState.dt
+
         self.gravite(obj)
        
         blocks_collide = self.collide(obj)
