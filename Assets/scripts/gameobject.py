@@ -18,7 +18,7 @@ class IGameObject(ABC):
 
 class GameObject(IGameObject):
 
-    def __init__(self, state: int, position: v2) -> None:
+    def __init__(self, state: int, position: v2, taille:v2) -> None:
         self.state: int = state
 
         position.x *= GameConfig.BLOCK_SIZE # convertit les coordonnées matrices vers coordonnées réelles
@@ -52,8 +52,8 @@ class GameObject(IGameObject):
 
 class Static(GameObject):
 
-    def __init__(self, state: int, position: v2, texture: Surface) -> None:
-        super().__init__(state, position)
+    def __init__(self, state: int, position: v2,taille:v2, texture: Surface) -> None:
+        super().__init__(state, position,taille)
         self.texture: Surface = transform.scale(texture, self.taille)
         self.mask: Mask = mask.from_surface(texture)
 
@@ -63,8 +63,8 @@ class Static(GameObject):
 
 class Dynamic(GameObject):
 
-    def __init__(self, state: int, position: v2, animations: list[Surface]) -> None:
-        super().__init__(state, position)
+    def __init__(self, state: int, position: v2, taille:v2, animations: list[Surface]) -> None:
+        super().__init__(state, position,taille)
 
         self.animations: list[Surface] = animations
         self.animation_frame: int = 0
@@ -87,30 +87,27 @@ class Dynamic(GameObject):
         GameConfig.WINDOW.blit(self.texture, rect)
 
 class Empty(GameObject):
-    def __init__(self, index: int, position: v2) -> None:
-        taille = v2(GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE)
+    def __init__(self, index: int, position: v2,taille:v2) -> None:
         super().__init__(index, position, taille)
     def update(self) -> None: pass
 
     @property
     def mask(self) -> Mask:
-        mask = pg.mask.from_surface(pg.Surface((1,1)))
-        mask.set_at((0,0),0)
+        mask = pg.mask.from_surface(pg.Surface((0,0)))
         return mask.scale((GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE))
 
 class Ground(Static):
 
-    def __init__(self, index: int, position: v2, texture: Surface) -> None:
-        super().__init__(index, position, texture)
+    def __init__(self, index: int, position: v2,taille:v2, texture: Surface) -> None:
+        super().__init__(index, position,taille, texture)
 
     def update(self) -> None: pass
 
 class Player(Dynamic):
 
-    def __init__(self, position: v2, w: int, h: int, spritesheet: list[str]) -> None:
+    def __init__(self, position: v2, taille:v2, spritesheet: list[str]) -> None:
         state: int = 0
-        taille = v2(w, h)
-        animations = [ transform.scale(image.load(src), (w, h)) for src in spritesheet ]
+        animations = [ transform.scale(image.load(src), (taille.x, taille.y)) for src in spritesheet ]
 
         super().__init__(state, position, taille, animations)
 
@@ -124,10 +121,10 @@ class Player(Dynamic):
         self.acceleration.x = -self.vitesse.x * 1000 / GameConfig.BLOCK_SIZE
 
         if keys_pressed[pg.K_d]:
-            self.acceleration.x += 2 * GameConfig.BLOCK_SIZE / GameState.dt
+            self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.dt
 
         if keys_pressed[pg.K_q]:
-            self.acceleration.x -= 2 * GameConfig.BLOCK_SIZE / GameState.dt
+            self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.dt
 
         if keys_pressed[pg.K_z]:
             self.acceleration.y -= GameConfig.BLOCK_SIZE / GameState.dt

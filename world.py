@@ -1,17 +1,15 @@
 import pygame as pg
-from pygame import transform, image, sprite
-from pygame import Vector2 as v2
-
-from config import GameConfig
-
-from pygame import Vector2 as v2
 from pygame import transform, image
+from pygame import Vector2 as v2
+
+from config import GameConfig,GameState
+
 import numpy as np
 import struct
 
-import assets.gpalette as gpalette
-from assets.gpalette import ASSETS, Palette
-from assets.scripts.gameobject import GameObject, Player, Static
+import Assets.gpalette as gpalette
+from Assets.gpalette import ASSETS, Palette
+from Assets.scripts.gameobject import GameObject, Player,Empty
 
 from camera import Camera
 
@@ -26,7 +24,7 @@ class World():
         self.background = transform.scale( image.load("assets/sprites/background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
         self.current_map = map
         self.load()
-        self.player = Player(15, v2(0, 0), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+        self.player = Player(v2(1,1), v2(GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
         self.camera: Camera = Camera(self.player)
 
     def load(self):
@@ -50,11 +48,11 @@ class World():
             for j in range(map_dim[1]):
                 local_id, state, uuid = data[i, j]
                 if local_id == -1:
-                    self.blocks[i, j] = Static(0, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), World.DEFAULT_SURFACE)
+                    self.blocks[i, j] = Empty(0,v2(j, i),v2(GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE))
                     continue
                 script = gpalette.ASSETS[table[local_id].id].script
                 texture = World.palette.get_texture(local_id, state)
-                self.blocks[i, j] = script(state, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), texture)
+                self.blocks[i, j] = script(state, v2(j, i),v2(GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE), texture)
 
     def update(self) -> None:
         self.camera.update()
