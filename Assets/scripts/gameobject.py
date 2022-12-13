@@ -18,7 +18,7 @@ class IGameObject(ABC):
 
 class GameObject(IGameObject):
 
-    def __init__(self, state: int, position: v2, taille: v2) -> None:
+    def __init__(self, state: int, position: v2) -> None:
         self.state: int = state
 
         position.x *= GameConfig.BLOCK_SIZE # convertit les coordonnées matrices vers coordonnées réelles
@@ -29,6 +29,7 @@ class GameObject(IGameObject):
         self.taille: v2 = taille
         self._mask = mask.Mask(self.taille, True)
 
+    def draw(self, camera: Camera) -> None: pass
     def update(self) -> None: pass
     def draw(self, camera: Camera) -> None: pass
 
@@ -51,9 +52,9 @@ class GameObject(IGameObject):
 
 class Static(GameObject):
 
-    def __init__(self, state: int, position: v2, taille: v2, texture: Surface) -> None:
-        super().__init__(state, position, taille)
-        self.texture: Surface = texture
+    def __init__(self, state: int, position: v2, texture: Surface) -> None:
+        super().__init__(state, position)
+        self.texture: Surface = transform.scale(texture, self.taille)
         self.mask: Mask = mask.from_surface(texture)
 
     def draw(self, camera: Camera) -> None:
@@ -62,8 +63,8 @@ class Static(GameObject):
 
 class Dynamic(GameObject):
 
-    def __init__(self, state: int, position: v2, taille: v2, animations: list[Surface]) -> None:
-        super().__init__(state, position, taille)
+    def __init__(self, state: int, position: v2, animations: list[Surface]) -> None:
+        super().__init__(state, position)
 
         self.animations: list[Surface] = animations
         self.animation_frame: int = 0
@@ -99,11 +100,8 @@ class Empty(GameObject):
 
 class Ground(Static):
 
-    def __init__(self, index: int, position: v2, src: str) -> None:
-        texture = transform.scale(image.load(src), (GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE))
-        taille = v2(GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE)
-
-        super().__init__(index, position, taille, texture)
+    def __init__(self, index: int, position: v2, texture: Surface) -> None:
+        super().__init__(index, position, texture)
 
     def update(self) -> None: pass
 
