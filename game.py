@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, ".")
+
 import pygame as pg
 from pygame.time import Clock
 
@@ -10,7 +13,7 @@ class Game:
         GameConfig.initialise()
         self.clock: Clock = Clock()
         self.should_quit: bool = False
-        self.world: World = World()
+        self.world: World = World("default_0000")
 
     def __del__(self) -> None:
         pg.quit()
