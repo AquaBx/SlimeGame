@@ -20,7 +20,10 @@ class Game:
 
     def loop(self) -> None:
         while not self.should_quit:
+            
             GameState.dt = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.FPS
+            GameConfig.WINDOW.fill('Black')
+
             self.__process_events()
             self.__update()
             self.__draw()
@@ -36,7 +39,6 @@ class Game:
 
     def __draw(self) -> None:
         # GameConfig.WINDOW.blit(World.background, (0, 0))
-        GameConfig.WINDOW.fill('Black')
         self.world.draw()
         # debug.debug(self.clock.get_fps())
         pg.display.update()
