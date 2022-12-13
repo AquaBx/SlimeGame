@@ -2,28 +2,57 @@ import pygame as pg
 from pygame import transform, image, sprite
 from pygame import Vector2 as v2
 
-import numpy as np
-
 from config import GameConfig
 
 from pygame import Vector2 as v2
 from pygame import transform, image
 import numpy as np
+import struct
 
-from assets.scripts.gameobject import GameObject, Ground, Player
+import assets.gpalette as gpalette
+from assets.gpalette import ASSETS, Palette
+from assets.scripts.gameobject import GameObject, Player, Static
 
 from camera import Camera
 
 class World():
-    def __init__(self) -> None:
-        self.background = transform.scale( image.load("Assets/Sprites/Background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
-        # remplacer par le chargement de la map
-        self.blocks: np.ndarray[GameObject] = np.full((3, 3), None)
-        for i in range(3):
-            for j in range(3):
-                self.blocks[i, j] = Ground(0, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), f"assets/sprites/statics/ground.png")
-        self.player = Player(0, 0, GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE, [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+    palette: Palette
+    Palette: list = []
+    DEFAULT_SURFACE: pg.Surface = pg.Surface((0, 0))
+
+    def __init__(self, map: str) -> None:
+        self.background = transform.scale( image.load("assets/sprites/background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
+        self.current_map = map
+        self.load()
+        self.player = Player(15, v2(0, 0), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
         self.camera: Camera = Camera(self.player)
+
+    def load(self):
+        f = open(f"assets/maps/{self.current_map}.map", "rb")
+        map_dim: tuple[int, int] = struct.unpack("@bb", f.read(2))
+
+        data: np.ndarray = np.full(map_dim, None)
+        self.blocks: np.ndarray[GameObject] = np.full(map_dim, None)
+        for i in range(map_dim[0]):
+            for j in range(map_dim[1]):
+                data[i, j] = struct.unpack("@bbh", f.read(4))
+
+        table_size: int = struct.unpack("@b", f.read(1))[0]
+        table: dict[int, int] = {}
+        for _ in range(table_size):
+            local_id, global_id = struct.unpack("@bh", f.read(4))
+            table[local_id] = ASSETS[global_id]
+        World.palette = Palette(table)
+
+        for i in range(map_dim[0]):
+            for j in range(map_dim[1]):
+                local_id, state, uuid = data[i, j]
+                if local_id == -1:
+                    self.blocks[i, j] = Static(0, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), World.DEFAULT_SURFACE)
+                    continue
+                script = gpalette.ASSETS[table[local_id].id].script
+                texture = World.palette.get_texture(local_id, state)
+                self.blocks[i, j] = script(state, v2(j*GameConfig.BLOCK_SIZE, i*GameConfig.BLOCK_SIZE), texture)
 
     def update(self) -> None:
         self.camera.update()
@@ -32,11 +61,11 @@ class World():
         self.gravite()
 
     def draw(self) -> None:
-        self.player.draw(self.camera)
-
         for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
             for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
                 self.blocks[i, j].draw(self.camera)
+
+        self.player.draw(self.camera)
 
     def collision_mask(self, obj1: GameObject, others: np.ndarray[GameObject]) -> tuple[bool, int]:
         """
