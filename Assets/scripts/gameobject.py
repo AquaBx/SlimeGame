@@ -35,7 +35,11 @@ class GameObject(IGameObject):
 
     @property
     def position_matrix(self) -> Mask:
-        return v2(self.position.x/60,self.position.y/60)
+        return self.position/GameConfig.BLOCK_SIZE
+
+    @property
+    def position_matrix_center(self) -> Mask:
+        return v2(self.position + self.taille/2)/GameConfig.BLOCK_SIZE
 
     @property
     def mask(self) -> Mask:
