@@ -61,16 +61,16 @@ class World():
         self.update_pos(self.player)
 
     def draw(self) -> None:
+        for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
+            for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
+                self.blocks[i, j].draw(self.camera)
+                
         link = self.camera.link
         link.draw(self.camera)
         link.sante -= 0.0001
         health_percent = link.sante/link.santemax * GameConfig.BLOCK_SIZE*5
         pg.draw.rect(GameConfig.WINDOW,"red",pg.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE*5,GameConfig.BLOCK_SIZE/2))
         pg.draw.rect(GameConfig.WINDOW,"green",pg.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,health_percent,GameConfig.BLOCK_SIZE/2))
-
-        for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
-            for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
-                self.blocks[i, j].draw(self.camera)
 
     def gravite(self,obj):
         y_vect = 5 * GameConfig.BLOCK_SIZE
@@ -80,22 +80,20 @@ class World():
         obj.position.y += self.player.vitesse.y*GameState.dt
 
     def collide(self,obj):
-        # we get all 4 blocs (*) based on the position of the player (p)
-        # | | | | |
-        # | |p|*| |
-        # | |*|*| |
-        # | | | | |
+        # we get all 9 blocs based on the centered position of the player (0)
+        # | | | | | |
+        # | |0|1|2| |
+        # | |3|4|5| |
+        # | |6|7|8| |
+        # | | | | | |
         # for now there is a out of bound exception when we are not on the grid anymore
-        x1 = int( obj.position_matrix.x )
-        y1 = int( obj.position_matrix.y )
-        blocks_arround = {
-            "top-left" : { "ref":self.blocks[y1, x1] },
-            "bottom-left" : { "ref":self.blocks[y1+1, x1] },
-            "top-right" : { "ref":self.blocks[y1, x1+1] },
-            "bottom-right" : { "ref":self.blocks[y1+1, x1+1] }
-        }
-        
-        for key in blocks_arround:
+        jc = int( obj.position_matrix_center.x )
+        ic = int( obj.position_matrix_center.y )
+        blocks_arround = [
+            {"ref":self.blocks[i,j] } for i in range(ic-1,ic+2) for j in range(jc-1,jc+2)
+        ]
+
+        for key in range(len(blocks_arround)):
             if blocks_arround[key]["ref"].state != 0:
                 obj2 = blocks_arround[key]["ref"]
                 offset: v2 = obj2.position - obj.position
@@ -123,25 +121,27 @@ class World():
         self.gravite(obj)
        
         blocks_collide = self.collide(obj)
-        debug((blocks_collide["top-left"],blocks_collide["top-left"]["ref"].mask))
+        debug([blocks_collide[k]["collide"] for k in range(0,3)],30)
+        debug([blocks_collide[k]["collide"] for k in range(3,6)],60)
+        debug([blocks_collide[k]["collide"] for k in range(6,9)],90)
         dir = obj.position - pos_avant
 
-        if dir.y < 0 and ( blocks_collide["top-left"]["collide"] or blocks_collide["top-right"]["collide"] ):
-            obj.position.y = blocks_collide["top-left"]["ref"].rect.bottom
+        if dir.y < 0 and ( blocks_collide[0]["collide"] or blocks_collide[1]["collide"] or blocks_collide[2]["collide"] ):
+            obj.position.y = blocks_collide[0]["ref"].rect.bottom
             obj.vitesse.y = 0
             obj.acceleration.y = 0
-        elif dir.y > 0 and ( blocks_collide["bottom-right"]["collide"] or blocks_collide["bottom-left"]["collide"] ):
-            obj.position.y = blocks_collide["bottom-left"]["ref"].rect.top - obj.taille.y
+        elif dir.y > 0 and ( blocks_collide[6]["collide"] or blocks_collide[7]["collide"] or blocks_collide[8]["collide"] ):
+            obj.position.y = blocks_collide[6]["ref"].rect.top - obj.taille.y
             obj.vitesse.y = 0
             obj.acceleration.y = 0
 
         blocks_collide = self.collide(obj) # on actualise les collisions pour avoir une meilleur gestion de l'axe x
 
-        if dir.x < 0 and ( blocks_collide["top-left"]["collide"] or blocks_collide["bottom-left"]["collide"] ):
-            obj.position.x = blocks_collide["top-left"]["ref"].rect.right
+        if dir.x < 0 and ( blocks_collide[0]["collide"] or blocks_collide[3]["collide"] or blocks_collide[6]["collide"] ):
+            obj.position.x = blocks_collide[0]["ref"].rect.right
             obj.vitesse.x = 0
             obj.acceleration.x = 0
-        elif dir.x > 0 and ( blocks_collide["top-right"]["collide"] or blocks_collide["bottom-right"]["collide"] ):
-            obj.position.x = blocks_collide["top-right"]["ref"].rect.left - obj.taille.x
+        elif dir.x > 0 and ( blocks_collide[2]["collide"] or blocks_collide[5]["collide"] or blocks_collide[8]["collide"] ):
+            obj.position.x = blocks_collide[2]["ref"].rect.left - obj.taille.x
             obj.vitesse.x = 0
             obj.acceleration.x = 0
