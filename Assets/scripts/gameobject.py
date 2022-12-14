@@ -34,12 +34,24 @@ class GameObject(IGameObject):
     def draw(self, camera: Camera) -> None: pass
 
     @property
-    def position_matrix(self) -> Mask:
+    def position_matrix_top_left(self) -> Mask:
         return self.position/GameConfig.BLOCK_SIZE
 
     @property
     def position_matrix_center(self) -> Mask:
-        return v2(self.position + self.taille/2)/GameConfig.BLOCK_SIZE
+        return (self.position + self.taille/2)/GameConfig.BLOCK_SIZE
+
+    @property
+    def position_matrix_top_right(self) -> Mask:
+        return (self.position+v2(self.taille.x,0))/GameConfig.BLOCK_SIZE
+
+    @property
+    def position_matrix_bottom_left(self) -> Mask:
+        return (self.position+v2(0,self.taille.y))/GameConfig.BLOCK_SIZE
+    
+    @property
+    def position_matrix_bottom_right(self) -> Mask:
+        return (self.position + self.taille)/GameConfig.BLOCK_SIZE
 
     @property
     def mask(self) -> Mask:
