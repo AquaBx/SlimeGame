@@ -104,6 +104,24 @@ class World():
         
         return blocks_arround
 
+    def is_flying(self,obj:GameObject) -> None:
+        BL = obj.position_matrix_bottom_left
+        BR = obj.position_matrix_bottom_right
+
+        i1, j1 = int(BL.y), int(BL.x)
+        i2, j2 = int(BR.y), int(BR.x)
+
+        if BL.x == float(j1):
+            j1 += 1
+
+        if BR.x == float(j2):
+            j2 -= 1
+
+        if isinstance(self.blocks[i1,j1], Empty) and isinstance(self.blocks[i2,j2], Empty):
+            return True
+
+        return False
+
     def update_pos(self,obj:GameObject) -> None:
         
         pos_avant = v2(obj.position.x,obj.position.y)
@@ -112,14 +130,26 @@ class World():
 
         obj.update()
 
+        blocks_collide = self.collide(obj)
+
         obj.vitesse.x += obj.acceleration.x * GameState.dt
         obj.position.x += obj.vitesse.x * GameState.dt
+ 
+        is_flying = self.is_flying(obj)
 
-        obj.vitesse.y += obj.acceleration.y * GameState.dt
+        if is_flying:
+            obj.acceleration.y = max(0, 0.3 * GameConfig.BLOCK_SIZE / GameState.dt)
+            obj.vitesse.y += obj.acceleration.y * GameState.dt
+        else:
+            obj.acceleration.y = min(0, 0.3 * GameConfig.BLOCK_SIZE * obj.acceleration.y)
+            obj.vitesse.y = obj.acceleration.y * GameState.dt
+        
         obj.position.y += obj.vitesse.y * GameState.dt
 
-        self.gravite(obj)
-       
+
+            
+
+        debug( (is_flying,obj.acceleration), 600)
         blocks_collide = self.collide(obj)
         debug([blocks_collide[k]["collide"] for k in range(0,3)],30)
         debug([blocks_collide[k]["collide"] for k in range(3,6)],60)
