@@ -134,13 +134,13 @@ class Player(Dynamic):
         keys_pressed = key.get_pressed()
 
         if keys_pressed[pg.K_d]:
-            self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.dt
+            self.acceleration.x = + GameConfig.BLOCK_SIZE / GameState.dt
 
         if keys_pressed[pg.K_q]:
-            self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.dt
+            self.acceleration.x = - GameConfig.BLOCK_SIZE / GameState.dt
 
         if keys_pressed[pg.K_z]:
-            self.acceleration.y -= GameConfig.BLOCK_SIZE / GameState.dt
+            self.acceleration.y = - GameConfig.BLOCK_SIZE / GameState.dt
 
         if keys_pressed[pg.K_s]:
-            self.acceleration.y += GameConfig.BLOCK_SIZE / GameState.dt
+            self.acceleration.y = + GameConfig.BLOCK_SIZE / GameState.dt

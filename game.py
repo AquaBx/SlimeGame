@@ -14,6 +14,7 @@ class Game:
         self.clock: Clock = Clock()
         self.should_quit: bool = False
         self.world: World = World("default_0000")
+        self.world: World = World("test")
 
     def __del__(self) -> None:
         pg.quit()

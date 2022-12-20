@@ -26,7 +26,7 @@ class World():
         self.current_map = map
         self.load()
 
-        self.player = Player(v2(1,1), v2(0.95*GameConfig.BLOCK_SIZE,0.95*GameConfig.BLOCK_SIZE), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+        self.player = Player(v2(1,1), v2(GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
         self.camera: Camera = Camera(self.player)
 
     def load(self):
@@ -113,11 +113,11 @@ class World():
         i2, j2 = int(BR.y), int(BR.x)
 
         if BL.x == float(j1):
-            # j1 += 1
+            #j1 += 1
             pass
-
         if BR.x == float(j2):
             j2 -= 1
+            pass
 
         if isinstance(self.blocks[i1,j1], Empty) and isinstance(self.blocks[i2,j2], Empty):
             return True,None
@@ -127,13 +127,14 @@ class World():
         
         pos_avant = v2(obj.position.x,obj.position.y)
 
-        obj.acceleration.x = -obj.vitesse.x * 1000 / GameConfig.BLOCK_SIZE
+        obj.acceleration.x = 0
+        obj.acceleration.y = 0
 
         obj.update()
 
-        blocks_collide = self.collide(obj)
+        obj.acceleration.x -= obj.vitesse.x / ( GameState.dt * 8 )
 
-        
+        blocks_collide = self.collide(obj)
 
         obj.vitesse.x += obj.acceleration.x * GameState.dt
         obj.position.x += obj.vitesse.x * GameState.dt
@@ -147,17 +148,22 @@ class World():
             obj.vitesse.x = 0
             obj.acceleration.x = 0
         elif dir.x > 0 and ( blocks_collide[2]["collide"] or blocks_collide[5]["collide"] or blocks_collide[8]["collide"] ):
-            obj.position.x = blocks_collide[2]["ref"].rect.left - obj.taille.x
+            obj.position.x = blocks_collide[8]["ref"].rect.left - obj.taille.x
             obj.vitesse.x = 0
             obj.acceleration.x = 0
 
         is_flying,max_y = self.is_flying(obj)
+        
+        debug(obj.position_matrix_top_left,30)
+        debug(blocks_collide[6]["ref"].position_matrix_top_right,60)
+        debug(blocks_collide[8]["ref"].position_matrix_top_left,90)
+
         if is_flying:
-            obj.acceleration.y = max(0, 0.3 * GameConfig.BLOCK_SIZE / GameState.dt)
+            obj.acceleration.y = max(0, 10 * 9.81 * GameConfig.BLOCK_SIZE)
             obj.vitesse.y += obj.acceleration.y * GameState.dt
             obj.position.y += obj.vitesse.y * GameState.dt
         else:
-            obj.acceleration.y = min(0, 0.3 * GameConfig.BLOCK_SIZE * obj.acceleration.y)
+            obj.acceleration.y = min(0, 25 * obj.acceleration.y)
             obj.vitesse.y = obj.acceleration.y * GameState.dt
             obj.position.y = min(max_y-obj.taille.y, obj.position.y + obj.vitesse.y * GameState.dt )
 
@@ -170,6 +176,6 @@ class World():
             obj.vitesse.y = 0
             obj.acceleration.y = 0
         elif dir.y > 0 and ( blocks_collide[6]["collide"] or blocks_collide[7]["collide"] or blocks_collide[8]["collide"] ):
-            obj.position.y = blocks_collide[6]["ref"].rect.top - obj.taille.y
+            obj.position.y = blocks_collide[8]["ref"].rect.top - obj.taille.y
             obj.vitesse.y = 0
             obj.acceleration.y = 0
