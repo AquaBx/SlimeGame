@@ -2,59 +2,68 @@ import pygame as pg
 from pygame import transform, image
 from pygame import Vector2 as v2
 
-from config import GameConfig,GameState
+from config import GameConfig, GameState
 
 import numpy as np
 import struct
 
-import assets.gpalette as gpalette
-from assets.gpalette import ASSETS, Palette
-from assets.scripts.gameobject import GameObject, Player,Empty,Ground
+from assets import ASSETS
+import assets.saves
+from assets.palette import Palette
+from assets.scripts.gameobject import GameObject, Player, Empty, EmptyElement
 
 from camera import Camera
 
-from debug import debug
-
-
 class World():
-    palette: Palette
-    Palette: list = []
-    DEFAULT_SURFACE: pg.Surface = pg.Surface((0, 0))
 
-    def __init__(self, map: str) -> None:
-        self.background = transform.scale( image.load("assets/sprites/background/background.png"), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y) )
-        self.current_map = map
-        self.load()
+    def __init__(self, savestate: int) -> None:
+        self.savestate: int = savestate
+        self.save: dict = assets.saves.load(savestate)
+        if self.save["occupied"]:
+            self.deserialize(self.save["last_map"])
+            self.player = Player(v2(1, 1), 0.95*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+            self.camera: Camera = Camera(self.player)
+        else:
+            self.save = {
+                "occupied": True,
+                "last_map": "stage1",
+                "player": {
+                    "position": (1, 1)
+                }
+            }
+            self.deserialize("stage1")
+            self.player = Player(v2(1, 1), 0.95*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+            self.camera = Camera(self.player)
 
-        self.player = Player(v2(1,1), v2(0.95*GameConfig.BLOCK_SIZE,0.95*GameConfig.BLOCK_SIZE), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
-        self.camera: Camera = Camera(self.player)
+    def deserialize(self, file: str) -> None:
+        # on ouvre le fichier dans le dossier .../slime_game/assets/maps/
+        f = open(f"assets/maps/{file}.map", "rb")
 
-    def load(self):
-        f = open(f"assets/maps/{self.current_map}.map", "rb")
-        map_dim: tuple[int, int] = struct.unpack("@bb", f.read(2))
+        # on récupère en premier les informations de la palette
+        
+        # on lit la taille de la palette
+        table_length: int  = struct.unpack("@b", f.read(1))[0]
+        
+        # construit la liste des assets
+        table = [ ASSETS[global_id] for global_id in list(struct.unpack("@" + "h"*table_length, f.read(2*table_length)))]
+        Palette.load(table)
 
-        data: np.ndarray = np.full(map_dim, None)
-        self.blocks: np.ndarray[GameObject] = np.full(map_dim, None)
-        for i in range(map_dim[0]):
-            for j in range(map_dim[1]):
-                data[i, j] = struct.unpack("@bbh", f.read(4))
+        # on lit ensuite les dimensions de la grille
+        (grid_rows, grid_columns) = struct.unpack("@bb", f.read(2))
+        self.blocks = np.full((grid_rows, grid_columns), EmptyElement)
 
-        table_size: int = struct.unpack("@b", f.read(1))[0]
-        table: dict[int, int] = {}
-        for _ in range(table_size):
-            local_id, global_id = struct.unpack("@bh", f.read(4))
-            table[local_id] = ASSETS[global_id]
-        World.palette = Palette(table)
+        for i in range(grid_rows):
+            for j in range(grid_columns):
+                (id, state, uuid) = struct.unpack("@bbh", f.read(4))
+                if id == -1: continue
+                self.blocks[i, j] = table[id].script.create((i, j), id, state, uuid)
+                # StateElement(id, state, uuid, v2(j*Grid.tile_size, i*Grid.tile_size), palette.elements[id].spritesheet[state])
 
-        for i in range(map_dim[0]):
-            for j in range(map_dim[1]):
-                local_id, state, uuid = data[i, j]
-                if local_id == -1:
-                    self.blocks[i, j] = Empty(0,v2(j, i),v2(GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE))
-                    continue
-                script = gpalette.ASSETS[table[local_id].id].script
-                texture = World.palette.get_texture(local_id, state)
-                self.blocks[i, j] = script(state, v2(j, i),v2(GameConfig.BLOCK_SIZE, GameConfig.BLOCK_SIZE), texture)
+        # enfin on lit le background de la map
+        background_id: int = struct.unpack("@h", f.read(2))
+        self.background: pg.Surface = transform.scale(image.load(ASSETS[background_id].path), GameConfig.WINDOW_SIZE)
+        f.close()
+        return
 
     def update(self) -> None:
         self.camera.update()
