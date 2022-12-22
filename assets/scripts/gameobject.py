@@ -140,7 +140,7 @@ class Player(Dynamic):
             self.acceleration.x = - GameConfig.BLOCK_SIZE / GameState.dt
 
         if keys_pressed[pg.K_z]:
-            self.acceleration.y = - GameConfig.BLOCK_SIZE / GameState.dt
-
+            self.acceleration.y = - GameConfig.BLOCK_SIZE / GameState.dt 
+ 
         if keys_pressed[pg.K_s]:
             self.acceleration.y = + GameConfig.BLOCK_SIZE / GameState.dt
