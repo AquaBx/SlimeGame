@@ -26,7 +26,7 @@ class World():
         self.current_map = map
         self.load()
 
-        self.player = Player(v2(1,1), v2(GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+        self.player = Player(v2(1,62), v2(0.97*GameConfig.BLOCK_SIZE,0.97*GameConfig.BLOCK_SIZE), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
         self.camera: Camera = Camera(self.player)
 
     def load(self):
@@ -69,9 +69,14 @@ class World():
         link = self.camera.link
         link.draw(self.camera)
         link.sante -= 0.0001
-        health_percent = link.sante/link.santemax * GameConfig.BLOCK_SIZE*5
-        pg.draw.rect(GameConfig.WINDOW,"red",pg.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE*5,GameConfig.BLOCK_SIZE/2))
-        pg.draw.rect(GameConfig.WINDOW,"green",pg.Rect(GameConfig.BLOCK_SIZE/2,GameConfig.WINDOW_SIZE.y-GameConfig.BLOCK_SIZE,health_percent,GameConfig.BLOCK_SIZE/2))
+
+        scale = 1/7*GameConfig.WINDOW_SIZE.y/20
+        mr_left = GameConfig.WINDOW_SIZE.y/20
+        mr_bottom = GameConfig.WINDOW_SIZE.y-2*GameConfig.WINDOW_SIZE.y/20
+
+        health_percent = link.sante/link.santemax * 29 * scale
+        pg.draw.rect(GameConfig.WINDOW,(255,7,3),pg.Rect(GameConfig.WINDOW_SIZE.y/20+10*scale,mr_bottom+2*scale+1,health_percent,3*scale-1))
+        GameConfig.WINDOW.blit(transform.scale(image.load("assets/UI/healthbar.png"), (41*scale, GameConfig.WINDOW_SIZE.y/20)),(GameConfig.WINDOW_SIZE.y/20,mr_bottom))
 
     def gravite(self,obj):
         y_vect = 5 * GameConfig.BLOCK_SIZE
@@ -133,9 +138,6 @@ class World():
         obj.update()
 
         obj.acceleration.x -= obj.vitesse.x / ( GameState.dt * 8 )
-
-        blocks_collide = self.collide(obj)
-
         obj.vitesse.x += obj.acceleration.x * GameState.dt
         obj.position.x += obj.vitesse.x * GameState.dt
  

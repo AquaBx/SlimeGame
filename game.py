@@ -13,8 +13,7 @@ class Game:
         GameConfig.initialise()
         self.clock: Clock = Clock()
         self.should_quit: bool = False
-        self.world: World = World("default_0000")
-        self.world: World = World("test")
+        self.world: World = World("stage1")
 
     def __del__(self) -> None:
         pg.quit()
