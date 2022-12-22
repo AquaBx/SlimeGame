@@ -26,7 +26,7 @@ class World():
         self.current_map = map
         self.load()
 
-        self.player = Player(v2(1,62), v2(0.97*GameConfig.BLOCK_SIZE,0.97*GameConfig.BLOCK_SIZE), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+        self.player = Player(v2(1,62), v2(0.95*GameConfig.BLOCK_SIZE,0.95*GameConfig.BLOCK_SIZE), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
         self.camera: Camera = Camera(self.player)
 
     def load(self):
