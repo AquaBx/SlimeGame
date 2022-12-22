@@ -100,13 +100,14 @@ class World():
         ]
 
         for key in range(len(blocks_arround)):
-            if blocks_arround[key]["ref"].state != 0:
+            if isinstance(blocks_arround[key]["ref"], Empty):
+                blocks_arround[key]["collide"] = False
+            else:
                 obj2 = blocks_arround[key]["ref"]
                 offset: v2 = obj2.position - obj.position
                 collide = obj.mask.overlap(obj2.mask, offset)
                 blocks_arround[key]["collide"] = True if collide else False
-            else:
-                blocks_arround[key]["collide"] = False
+                
         
         return blocks_arround
 
@@ -137,7 +138,7 @@ class World():
 
         obj.update()
 
-        obj.acceleration.x -= obj.vitesse.x / ( GameState.dt * 8 )
+        obj.acceleration.x -= obj.vitesse.x / ( GameState.dt * 16 )
         obj.vitesse.x += obj.acceleration.x * GameState.dt
         obj.position.x += obj.vitesse.x * GameState.dt
  
@@ -156,16 +157,16 @@ class World():
 
         is_flying,max_y = self.is_flying(obj)
         
-        debug(obj.position_matrix_top_left,30)
-        debug(blocks_collide[6]["ref"].position_matrix_top_right,60)
-        debug(blocks_collide[8]["ref"].position_matrix_top_left,90)
+        debug([blocks_collide[i]["collide"] for i in range(0,3)],60)
+        debug([blocks_collide[i]["collide"] for i in range(3,6)],90)
+        debug([blocks_collide[i]["collide"] for i in range(6,9)],120)
 
         if is_flying:
-            obj.acceleration.y = max(0, 10 * 9.81 * GameConfig.BLOCK_SIZE)
+            obj.acceleration.y = max(0, 15 * 9.81 * GameConfig.BLOCK_SIZE)
             obj.vitesse.y += obj.acceleration.y * GameState.dt
             obj.position.y += obj.vitesse.y * GameState.dt
         else:
-            obj.acceleration.y = min(0, 25 * obj.acceleration.y)
+            obj.acceleration.y = min(0, 35 * obj.acceleration.y)
             obj.vitesse.y = obj.acceleration.y * GameState.dt
             obj.position.y = min(max_y-obj.taille.y, obj.position.y + obj.vitesse.y * GameState.dt )
 
