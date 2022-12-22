@@ -111,6 +111,8 @@ class Empty(GameObject):
         mask = pg.mask.from_surface(pg.Surface((0,0)))
         return mask.scale((GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE))
 
+EmptyElement: GameObject = GameObject(0, v2(0, 0), v2(0, 0))
+
 class Ground(Static):
 
     def __init__(self, index: int, position: v2,taille:v2, texture: Surface) -> None:
