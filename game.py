@@ -5,12 +5,14 @@ import pygame as pg
 from pygame.time import Clock
 
 from config import GameConfig, GameState
+from input import Input
 from world import World
 
 class Game:
     def __init__(self) -> None:
         pg.init();
         GameConfig.initialise()
+        Input.init()
         self.clock: Clock = Clock()
         self.should_quit: bool = False
         self.world: World = World("stage1")
