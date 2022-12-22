@@ -10,7 +10,7 @@ import struct
 from assets import ASSETS
 import assets.saves
 from assets.palette import Palette
-from assets.scripts.gameobject import GameObject, Player, Empty, EmptyElement
+from assets.scripts.gameobject import GameObject, Player, EmptyElement
 
 from camera import Camera
 
@@ -32,7 +32,7 @@ class World():
                 }
             }
             self.deserialize("stage1")
-            self.player = Player(v2(1, 1), 0.95*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+            self.player = Player(v2(5, 60), 0.95*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
             self.camera = Camera(self.player)
 
     def deserialize(self, file: str) -> None:
@@ -60,10 +60,9 @@ class World():
                 # StateElement(id, state, uuid, v2(j*Grid.tile_size, i*Grid.tile_size), palette.elements[id].spritesheet[state])
 
         # enfin on lit le background de la map
-        background_id: int = struct.unpack("@h", f.read(2))
+        background_id: int = struct.unpack("@h", f.read(2))[0]
         self.background: pg.Surface = transform.scale(image.load(ASSETS[background_id].path), GameConfig.WINDOW_SIZE)
         f.close()
-        return
 
     def update(self) -> None:
         self.camera.update()
@@ -104,7 +103,7 @@ class World():
         ]
 
         for key in range(len(blocks_arround)):
-            if blocks_arround[key]["ref"].state != 0:
+            if blocks_arround[key]["ref"] != EmptyElement:
                 obj2 = blocks_arround[key]["ref"]
                 offset: v2 = obj2.position - obj.position
                 collide = obj.mask.overlap(obj2.mask, offset)
@@ -128,7 +127,7 @@ class World():
         if BR.x == float(j2):
             j2 -= 1
 
-        if isinstance(self.blocks[i1,j1], Empty) and isinstance(self.blocks[i2,j2], Empty):
+        if self.blocks[i1,j1] == EmptyElement and self.blocks[i2,j2] == EmptyElement:
             return True,None
         return False,self.blocks[i2,j2].position.y
 
@@ -141,8 +140,6 @@ class World():
         obj.update()
 
         blocks_collide = self.collide(obj)
-
-        
 
         obj.vitesse.x += obj.acceleration.x * GameState.dt
         obj.position.x += obj.vitesse.x * GameState.dt
