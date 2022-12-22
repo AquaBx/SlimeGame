@@ -7,6 +7,7 @@ from pygame.mask import Mask
 
 from camera import Camera
 from config import GameConfig, GameState
+from input import Input
 
 class IGameObject(ABC):
 
@@ -131,16 +132,16 @@ class Player(Dynamic):
         self.animation_frame = int(self.animation_frame % len(self.animations))
 
     def update(self) -> None:
-        keys_pressed = key.get_pressed()
+        Input.update()
 
-        if keys_pressed[pg.K_d]:
+        if Input.is_pressed(pg.K_d):
             self.acceleration.x = + GameConfig.BLOCK_SIZE / GameState.dt
 
-        if keys_pressed[pg.K_q]:
+        if Input.is_pressed(pg.K_q):
             self.acceleration.x = - GameConfig.BLOCK_SIZE / GameState.dt
 
-        if keys_pressed[pg.K_z]:
+        if Input.is_pressed(pg.K_z):
             self.acceleration.y = - GameConfig.BLOCK_SIZE / GameState.dt
 
-        if keys_pressed[pg.K_s]:
+        if Input.is_pressed(pg.K_s):
             self.acceleration.y = + GameConfig.BLOCK_SIZE / GameState.dt
