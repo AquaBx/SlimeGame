@@ -1,6 +1,6 @@
 import os
 
-from .scripts.gameobject import Ground
+from .scripts.gameobject import Ground, Background
 
 class Asset:
     def __init__(self, global_id: int, path: str, script: type, name: str):
@@ -18,11 +18,13 @@ SAVE_DIR: str = f"{ASSET_DIR}/saves"
 SPRITE_TILE_SIZE: int = 16
 
 ASSETS: dict[int, Asset] = {
-    id: Asset(id, f"{SPRITE_DIR}/{path}", script, name) for id, (name, path, script) in enumerate([
-        # pas encore de scripts pour les background
-        ("blue_background", "background/background.png", None),
+    id: Asset(id, f"{SPRITE_DIR}/{path}", script, name) for id,(name,path,script) in enumerate([
+        ("brick_background", "background/brick_background.png", Background),
         
-        ("stone", "statics/ground.png", Ground),
+        ("stone", "statics/stone.png", Ground),
         ("wood", "statics/wood_ground.png", Ground),
+        ("dark bricks", "statics/dark_bricks.png", Ground),
+        ("copper", "statics/copper_full.png", Ground)
     ])
+
 }
