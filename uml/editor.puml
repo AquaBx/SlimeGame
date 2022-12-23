@@ -1,0 +1,193 @@
+@startuml Editor
+
+package pygame {
+
+    package time {}
+
+}
+
+package utils {
+    class Reference {
+        + value: Any
+
+        + __init__(value: Any): None
+    }
+}
+
+class Input {
+    + {static} keys: list[int]
+
+    + {static} is_pressed(key: int): bool
+    + {static} update(): None
+}
+
+abstract WindowComponent {
+    # rect: pygame.Rect
+
+    + __init__(rect: pygame.Rect): None
+    + {abstract} draw(): None
+    + is_clicked(coords: tuple[int, int]): bool
+}
+
+
+class Buttons {
+    els: dict[str, function]
+
+    {static} editor: MapEditor
+    
+    + __init__(editor: MapEditor): None
+    + detected_pressed_button(button: pygame_gui.UIButton): None
+    
+    - close_editor(): None
+}
+
+
+class GameStates {
+    + {static} should_quit: bool
+    + {static} window: pygame.Surface
+    + {static} ui_manager: pygame_gui.UIManager
+    + {static} clock: pygame.time.Clock
+
+    + init(): None
+}
+
+
+class MapEditor {
+    + serializer: Serializer
+
+    - palette: Palette
+    - grid: Grid
+    - buttons: Buttons
+
+    + __init__(): None    
+    + run(): None
+
+    - handle_events(): None
+    - draw(): None
+}
+
+
+class Element {
+    + id: int
+    + image: pygame.Surface
+    + rect: pygame.Rect
+
+    + __init__(id: int, coord: pygame.Vector2, image: pygame.Surface): None
+}
+
+pygame.sprite.DirtySprite <|-- Element
+
+
+class StateElement {
+    + state: int
+
+    + __init__(id: int, state: int, coord: pygame.Vector2, image: pygame.Surface): None
+}
+
+Element <|-- StateElement
+
+class EmptyElement {
+    + {static} global_id: int = -1
+    + {static} id: int = -1
+    + {static} state: int = 0
+    + {static} rect: pygame.Rect = pygame.Rect(0, 0, 0, 0)
+    + {static} image: pygame.Surface = pygame.Surface((0, 0))
+}
+
+StateElement <|-- EmptyElement
+
+class IndexedElement {
+    + index: int
+
+    + __init__(id: int, index: int, coord: pygame.Vector2, image: pygame.Surface): None
+}
+
+StateElement <|-- IndexedElement
+
+class FlagElement {
+    + flag: int
+
+    + __init__(id: int, flag: int, coord: pygame.Vector2, image: pygame.Surface): None
+}
+
+StateElement <|-- FlagElement
+
+class PaletteElement {
+    + spritesheet: list[pygame.Surface]
+    + global_id: int
+    + index: int
+
+    + __init__(id: int, index: int, global_id: int, coord: pygame.Vector2, spritesheet: pygame.Surface): None
+}
+
+StateElement <|-- PaletteElement
+
+
+class Palette {
+    + hitboxes: list[tuple[int, pygame.Rect]]
+    + elements: dict[int, PaletteElement]
+    + table: list[assets.Asset]
+    + selected: PaletteElement
+
+    + __init__(rect: pygame.Rect, table: list[assets.Asset] = config.DEFAULT_PALETTE): None
+    + draw(): None
+    + handle_click(mouse_coord: tuple[int, int]): None
+    + select(id: int): None
+}
+
+WindowComponent <|-- Palette
+
+
+class Grid {
+    + dim: tuple[int, int]
+    + map: numpy.ndarray
+
+    - background: pygame.Surface
+
+    + __init__(rect: Rect, palette: Palette, grid: numpy.ndarray = None): None
+    + draw(): None
+    + compute_ct(palette: Palette): None
+    + handle_click(mouse_coord: tuple[int, int], palette: Palette): None
+}
+
+WindowComponent <|-- Grid
+
+
+class Serializer {
+    + grid_ref: Grid
+    + local_palette_ref: Palette
+
+    + __init__(grid: Grid, local_palette: Palette): None
+    + serialize(file: str = "default_0000.map"): None
+    + deserialize(palette_rect: Rect, window_rect: Rect, file: str = "default_0000.map"): tuple[Palette, Grid]
+}
+
+pygame.Rect --> WindowComponent
+
+MapEditor --> Buttons
+
+pygame.time.clock --> GameStates
+pygame.Surface --> GameStates
+pygame_gui.UIManager --> GameStates
+
+Serializer --> MapEditor
+Palette --> MapEditor
+Grid --> MapEditor
+Buttons --> MapEditor
+
+pygame.Surface --> Element
+pygame.Rect --> Element
+
+pygame.Surface --> PaletteElement
+
+pygame.Rect --> Palette
+PaletteElement --> Palette
+assets.Asset --> Palette
+
+numpy.ndarray --> Grid
+pygame.Surface --> Grid
+
+Grid --> Serializer
+Palette --> Serializer
+
+@enduml
