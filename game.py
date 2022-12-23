@@ -13,7 +13,8 @@ class Game:
         GameConfig.initialise()
         self.clock: Clock = Clock()
         self.should_quit: bool = False
-        self.world: World = World("stage1")
+        # il faudra donner un entier qui correspond au fichier de sauvegarde demandé (1, 2 ou 3 sans doute)
+        self.world: World = World(1)
 
     def __del__(self) -> None:
         pg.quit()
@@ -38,9 +39,7 @@ class Game:
         self.world.update()
 
     def __draw(self) -> None:
-        # GameConfig.WINDOW.blit(World.background, (0, 0))
         self.world.draw()
-        # debug.debug(self.clock.get_fps())
         pg.display.update()
 
 # to avoid global variable instances in main function

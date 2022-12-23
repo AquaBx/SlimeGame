@@ -7,8 +7,13 @@ from pygame.mask import Mask
 
 from camera import Camera
 from config import GameConfig, GameState
+from assets.palette import Palette
 
 class IGameObject(ABC):
+    
+    def create(coord: tuple[int, int], id: int, state: int, uuid: int):
+        print(f"Create Default Game Object at coord {coord} (id: int - {id} ; state: int {state} ; uuid: int {uuid})")
+        return GameObject(state, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1) * GameConfig.BLOCK_SIZE)
 
     @abstractclassmethod
     def draw(self, camera: Camera) -> None: pass
@@ -16,14 +21,13 @@ class IGameObject(ABC):
     @abstractclassmethod
     def update(self) -> None: pass
 
+class Background(IGameObject):
+    pass
+
 class GameObject(IGameObject):
 
-    def __init__(self, state: int, position: v2, taille:v2) -> None:
+    def __init__(self, state: int, position: v2, taille: v2) -> None:
         self.state: int = state
-
-        position.x *= GameConfig.BLOCK_SIZE # convertit les coordonnées matrices vers coordonnées réelles
-        position.y *= GameConfig.BLOCK_SIZE # //
-
         self.position: v2 = position 
 
         self.taille: v2 = taille
@@ -34,23 +38,23 @@ class GameObject(IGameObject):
     def draw(self, camera: Camera) -> None: pass
 
     @property
-    def position_matrix_top_left(self) -> Mask:
+    def position_matrix_top_left(self) -> v2:
         return self.position/GameConfig.BLOCK_SIZE
 
     @property
-    def position_matrix_center(self) -> Mask:
+    def position_matrix_center(self) -> v2:
         return (self.position + self.taille/2)/GameConfig.BLOCK_SIZE
 
     @property
-    def position_matrix_top_right(self) -> Mask:
+    def position_matrix_top_right(self) -> v2:
         return (self.position+v2(self.taille.x,0))/GameConfig.BLOCK_SIZE
 
     @property
-    def position_matrix_bottom_left(self) -> Mask:
+    def position_matrix_bottom_left(self) -> v2:
         return (self.position+v2(0,self.taille.y))/GameConfig.BLOCK_SIZE
     
     @property
-    def position_matrix_bottom_right(self) -> Mask:
+    def position_matrix_bottom_right(self) -> v2:
         return (self.position + self.taille)/GameConfig.BLOCK_SIZE
 
     @property
@@ -67,13 +71,16 @@ class GameObject(IGameObject):
         return Rect(self.position, self.taille)
 
 class Static(GameObject):
-
-    def __init__(self, state: int, position: v2,taille:v2, texture: Surface) -> None:
-        super().__init__(state, position,taille)
-        self.texture: Surface = transform.scale(texture, self.taille)
     
+    def create(coord: tuple[int, int], id: int, state: int, uuid: int):
+        return Static(state, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1)*GameConfig.BLOCK_SIZE, Palette.get_texture(id, state))
+
+    def __init__(self, state: int, position: v2, taille: v2, texture: Surface) -> None:
+        super().__init__(state, position, taille)
+        self.texture: Surface = transform.scale(texture, self.taille)
+
     @property
-    def mask(self):
+    def mask(self) -> Mask:
         return mask.from_surface(self.texture) 
 
     def draw(self, camera: Camera) -> None:
@@ -111,16 +118,21 @@ class Empty(GameObject):
         mask = pg.mask.from_surface(pg.Surface((0,0)))
         return mask.scale((GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE))
 
-class Ground(Static):
+EmptyElement: GameObject = GameObject(0, v2(0, 0), v2(0, 0))
 
-    def __init__(self, index: int, position: v2,taille:v2, texture: Surface) -> None:
-        super().__init__(index, position,taille, texture)
+class Ground(Static):
+    
+    def create(coord: tuple[int, int], id: int, index: int, uuid: int):
+        return Ground(index, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1)*GameConfig.BLOCK_SIZE, Palette.get_texture(id, index))
+
+    def __init__(self, index: int, position: v2, taille: v2, texture: Surface) -> None:
+        super().__init__(index, position, taille, texture)
 
     def update(self) -> None: pass
 
 class Player(Dynamic):
 
-    def __init__(self, position: v2, taille:v2, spritesheet: list[str]) -> None:
+    def __init__(self, position: v2, taille: v2, spritesheet: list[str]) -> None:
         state: int = 0
         animations = [ transform.scale(image.load(src), (taille.x, taille.y)) for src in spritesheet ]
 
