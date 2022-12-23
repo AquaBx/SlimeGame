@@ -4,6 +4,7 @@ from camera import Camera
 import world
 #import debug
 from morgann_textes import Messages
+from menu_screen import Menu
 
 
 World = world.World()
@@ -44,26 +45,28 @@ def game_loop(window):
             ncoord = camera.convert_coord(block.rect)
             window.blit(block.texture, ncoord)
 
-        # créer une condition pour afficher un message (astuce, panneau, dialogue...), ainsi que la possibilté de modifier le contenu du message
-        # Initialisation de quelques messages prédéfinis comme constantes
+    ## Partie des tests de fonction de Morgann
         LONG_TXT = "Ceci est un long long message qui va prendre plusieurs lignes et je ne sais pas quoi écrire pour prolonger ce texte mais je le prolonge quand même."
         FALLING_TXT = "You are falling !"
         IN_AIR_TXT = "Slime believes he can fly ! Slime believes he can touch the sky ! Slime..."
         font_size = 30
 
-        # for i in range(0,len(TEXT_LONG_DIVIDED)) :
-        #     msg.display_message(window,TEXT_LONG_DIVIDED[i],Config.WINDOW_W*0.6,40+i*font_size,font_size,msg.GREY)
-        #     msg_max_rect_width = msg.display_message(window,TEXT_LONG_DIVIDED[i],Config.WINDOW_W*0.6,40+i*font_size,font_size,msg.GREY)
-        msg.display_message(window,IN_AIR_TXT,Config.WINDOW_W*0.6,40,font_size,msg.GREY)        
-        if player.position.y > 888 : # Simples tests pour afficher les messages selon des conditions particulières, ils seront à effacer
-            msg.display_message(window,FALLING_TXT,Config.WINDOW_W*0.6,40,font_size,msg.RED)
+        msg.display_message(window,LONG_TXT,Config.WINDOW_W*0.6,40,font_size,msg.GREY,True)        
+        if player.position.y > 888 : # Simples tests pour afficher des messages, ils seront à effacer avant la fin du projet
+            msg.display_message(window,FALLING_TXT,Config.WINDOW_W*0.6,40,font_size,msg.RED,True)
         if player.position.y < 480 :
-            msg.display_message(window,IN_AIR_TXT,Config.WINDOW_W*0.6,40,font_size,msg.GREEN)
+            msg.display_message(window,IN_AIR_TXT,Config.WINDOW_W*0.6,40,font_size,msg.GREEN,True)
 
+        OPTIONS_MENU = ["Nouvelle partie (N)", "Charger une partie (C)", "Sauvegarder (S)", "Quitter (Q)"] # Attention au Q, qui sert déjà à aller vers la gauche
+        MAIN_BACKGROUND_IMG = "main_background.JPG"
+        IN_GAME_BACKGROUND_IMG = "in_game_background_dirt.png"
+        keys_pressed = pygame.key.get_pressed()
+        if keys_pressed[pygame.K_m] :
+            Menu.display_main_menu(window,OPTIONS_MENU,MAIN_BACKGROUND_IMG)
+        if keys_pressed[pygame.K_i] :
+            Menu.display_ingame_menu(window,OPTIONS_MENU,IN_GAME_BACKGROUND_IMG)
 
-
-
-
+    ## Fin de la partie de tests de fonctions
 
         # debug.debug(player.vitesse)
         pygame.display.update()
