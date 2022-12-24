@@ -9,7 +9,7 @@ import time
 
 def pilImageToSurface(pilImage):
     new_size = (int(GameConfig.WINDOW_SIZE.x) , int(GameConfig.WINDOW_SIZE.y))
-    img = pygame.transform.scale( pygame.image.frombytes(pilImage.tobytes(), pilImage.size, pilImage.mode), new_size ).convert_alpha()
+    img = pygame.transform.scale( pygame.image.fromstring(pilImage.tobytes(), pilImage.size, pilImage.mode), new_size ).convert_alpha()
     img.set_alpha(GameConfig.opacity_world)
     return img
 
