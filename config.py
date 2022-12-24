@@ -5,7 +5,7 @@ from pygame.font import Font
 class GameConfig:
     WINDOW_SIZE: v2 = v2(1280,720)
     BLOCK_SIZE: float = WINDOW_SIZE.y / 12
-    FPS: float = 120.0
+    FPS: float = 144.0
 
     WINDOW: Surface
     FONT: Font
