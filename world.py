@@ -14,6 +14,8 @@ from assets.scripts.gameobject import GameObject, Player, EmptyElement
 
 from camera import Camera
 from debug import debug
+import shader
+
 class World():
 
     def __init__(self, savestate: int) -> None:
@@ -30,7 +32,6 @@ class World():
                 }
             }
             self.deserialize("stage1")
-
         self.player = Player(v2(3*GameConfig.BLOCK_SIZE, 61*GameConfig.BLOCK_SIZE), 0.95*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
         self.camera: Camera = Camera(self.player)
 
@@ -54,12 +55,16 @@ class World():
         for i in range(grid_rows):
             for j in range(grid_columns):
                 (id, state, uuid) = struct.unpack("@bbh", f.read(4))
+
+                shine = True if id == 3 else False
+ 
                 if id == -1: continue
-                self.blocks[i, j] = table[id].script.create((i, j), id, state, uuid)
+                self.blocks[i, j] = table[id].script.create((i, j), id, state, uuid,shine)
                 # StateElement(id, state, uuid, v2(j*Grid.tile_size, i*Grid.tile_size), palette.elements[id].spritesheet[state])
 
         # enfin on lit le background de la map
         background_id: int = struct.unpack("@h", f.read(2))[0]
+        
         self.background: pg.Surface = transform.scale(image.load(ASSETS[background_id].path), GameConfig.WINDOW_SIZE)
         f.close()
 
@@ -69,21 +74,31 @@ class World():
         self.update_pos(self.player)
 
     def draw(self) -> None:
+        shader.reset()
+        
         for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
             for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
                 self.blocks[i, j].draw(self.camera)
+        
                 
         link = self.camera.link
         link.draw(self.camera)
+        shader.draw()
+
+
         link.sante -= 0.0001
 
         scale = 1/7*GameConfig.WINDOW_SIZE.y/20
         mr_left = GameConfig.WINDOW_SIZE.y/20
         mr_bottom = GameConfig.WINDOW_SIZE.y-2*GameConfig.WINDOW_SIZE.y/20
+        
 
         health_percent = link.sante/link.santemax * 29 * scale
         pg.draw.rect(GameConfig.WINDOW,(255,7,3),pg.Rect(GameConfig.WINDOW_SIZE.y/20+10*scale,mr_bottom+2*scale+1,health_percent,3*scale-1))
         GameConfig.WINDOW.blit(transform.scale(image.load("assets/UI/healthbar.png"), (41*scale, GameConfig.WINDOW_SIZE.y/20)),(GameConfig.WINDOW_SIZE.y/20,mr_bottom))
+        
+        debug(int(1/GameState.dt))
+
 
     def gravite(self,obj):
         y_vect = 5 * GameConfig.BLOCK_SIZE
@@ -146,10 +161,15 @@ class World():
 
         obj.update()
 
-        obj.acceleration.x -= obj.vitesse.x / ( GameState.dt * 16 )
+        obj.acceleration.x -= obj.vitesse.x / ( GameState.dt * 8 )
         obj.vitesse.x += obj.acceleration.x * GameState.dt
         obj.position.x += obj.vitesse.x * GameState.dt
  
+        if not ( 0 < obj.position_matrix_center.x < len(self.blocks[0]) -1 ):
+            obj.position.x = pos_avant.x
+            obj.vitesse.x = 0
+            obj.acceleration.x = 0
+
         blocks_collide = self.collide(obj) # on actualise les collisions pour avoir une meilleur gestion de l'axe x
         
         dir = obj.position - pos_avant
@@ -165,6 +185,7 @@ class World():
             obj.position.x = ref.rect.right
             obj.vitesse.x = 0
             obj.acceleration.x = 0
+
         elif dir.x > 0 and ( blocks_collide[2]["collide"] or blocks_collide[5]["collide"] or blocks_collide[8]["collide"] ):
             if blocks_collide[2]["collide"]:
                 ref = blocks_collide[2]["ref"]
@@ -188,7 +209,13 @@ class World():
             obj.vitesse.y = obj.acceleration.y * GameState.dt
             obj.position.y = min(max_y-obj.taille.y, obj.position.y + obj.vitesse.y * GameState.dt )
 
+
         dir = obj.position - pos_avant
+
+        if not ( 0 < obj.position_matrix_center.y < len(self.blocks) - 1 ):
+            obj.position.y = pos_avant.y
+            obj.vitesse.y = 0
+            obj.acceleration.y = 0
 
         blocks_collide = self.collide(obj)
 
