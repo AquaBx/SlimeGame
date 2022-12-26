@@ -1,5 +1,5 @@
-import pygame
-from config import Config
+from pygame import Rect
+from config import GameConfig
 
 class Camera:
 
@@ -10,23 +10,27 @@ class Camera:
         """
         update le rect de la caméra en centrant le link par rapport à celle-ci
         """
-        xcam = (self.link.rect.right + self.link.rect.left)/2
-        ycam = (self.link.rect.top + self.link.rect.bottom)/2
-        self.rect = pygame.Rect (  xcam , ycam , 1 , 1 )
-    
-    def convert_coord(self,rect):
+
+        size = GameConfig.GAME_SURFACE.get_size()
+
+        xcam = (self.link.rect.right + self.link.rect.left  )/2 - size[0]/2
+        ycam = (self.link.rect.top   + self.link.rect.bottom)/2 - size[1]/2
+        
+        self.rect: Rect = Rect(xcam , ycam , size[0] , size[1])
+
+    def transform_coord(self, entity: Rect) -> Rect:
         """
         fonction qui va prendre en paramètre un rect d'un objet (entité ou block)
         et qui va ré-envoyer un nouveau rect de cet objet là ou il doit être dessiné à l'écran
         """
 
-        fixed = False
+        fixed: bool = False
 
-        newx = rect.left
-        newy = rect.top 
+        newx: float = entity.left
+        newy: float = entity.top
 
         if not fixed :  
-            newx += Config.WINDOW_W/2 - self.rect.left
-            newy += Config.WINDOW_H/2 - self.rect.top 
+            newx -= self.rect.left
+            newy -= self.rect.top
 
-        return pygame.Rect( newx , newy, rect.width, rect.height ) 
+        return Rect(newx , newy, entity.width, entity.height)
