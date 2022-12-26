@@ -1,6 +1,6 @@
 import os
 
-from .scripts.gameobject import EmptyElement, Ground, Background
+from .scripts.gameobject import Empty, EmptyElement, Ground, Background
 
 class Asset:
     def __init__(self, global_id: int, path: str, script: type, name: str):
