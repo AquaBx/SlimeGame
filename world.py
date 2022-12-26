@@ -65,7 +65,7 @@ class World():
         # enfin on lit le background de la map
         background_id: int = struct.unpack("@h", f.read(2))[0]
         
-        self.background: pg.Surface = transform.scale(image.load(ASSETS[background_id].path), GameConfig.WINDOW_SIZE)
+        self.background: pg.Surface = transform.scale(image.load(ASSETS[background_id].path), GameConfig.WINDOW.get_size())
         f.close()
 
     def update(self) -> None:
@@ -74,10 +74,12 @@ class World():
         self.update_pos(self.player)
 
     def draw(self) -> None:
+        
+        surface_size = GameConfig.GAME_SURFACE.get_size()
         shader.reset()
         
-        for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
-            for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
+        for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE ) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
+            for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE ) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
                 self.blocks[i, j].draw(self.camera)
         
                 
@@ -87,15 +89,17 @@ class World():
 
 
         link.sante -= 0.0001
-
-        scale = 1/7*GameConfig.WINDOW_SIZE.y/20
-        mr_left = GameConfig.WINDOW_SIZE.y/20
-        mr_bottom = GameConfig.WINDOW_SIZE.y-2*GameConfig.WINDOW_SIZE.y/20
         
-
+        scale = 1/7*surface_size[1]/20
+        mr_bottom = surface_size[1]-2*surface_size[1]/20
+        
         health_percent = link.sante/link.santemax * 29 * scale
-        pg.draw.rect(GameConfig.WINDOW,(255,7,3),pg.Rect(GameConfig.WINDOW_SIZE.y/20+10*scale,mr_bottom+2*scale+1,health_percent,3*scale-1))
-        GameConfig.WINDOW.blit(transform.scale(image.load("assets/UI/healthbar.png"), (41*scale, GameConfig.WINDOW_SIZE.y/20)),(GameConfig.WINDOW_SIZE.y/20,mr_bottom))
+
+        pg.draw.rect( GameConfig.GAME_SURFACE, (255,7,3) , pg.Rect(surface_size[1]/20+10*scale,mr_bottom+2*scale,health_percent,3*scale))
+
+        GameConfig.GAME_SURFACE.blit( image.load("assets/UI/healthbar.png"),(surface_size[1]/20,mr_bottom) )
+        GameConfig.WINDOW.blit(transform.scale(GameConfig.GAME_SURFACE, GameConfig.WINDOW.get_size()),(0,0))
+
         
 
     def gravite(self,obj):

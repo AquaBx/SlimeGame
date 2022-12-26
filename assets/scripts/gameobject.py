@@ -88,9 +88,9 @@ class Static(GameObject):
         rect = camera.transform_coord(self.rect)
 
         if self.shinning:
-            shader.draw_a_ligth(rect.center,(230, 199, 119),int(2*GameConfig.BLOCK_SIZE))
+            shader.draw_a_ligth(rect.center,(230, 199, 119,255),int(2*GameConfig.BLOCK_SIZE))
 
-        GameConfig.WINDOW.blit(self.texture, rect)
+        GameConfig.GAME_SURFACE.blit(self.texture, rect)
 
     @property
     def mask(self) -> Mask:
@@ -114,9 +114,9 @@ class Dynamic(GameObject):
         rect = camera.transform_coord(self.rect)
 
         if self.shinning:
-            shader.draw_a_ligth(rect.center,(178, 230, 119),int(2*GameConfig.BLOCK_SIZE))
+            shader.draw_a_ligth(rect.center,(178, 230, 119,255),int(2*GameConfig.BLOCK_SIZE))
 
-        GameConfig.WINDOW.blit(self.texture, rect)
+        GameConfig.GAME_SURFACE.blit(self.texture, rect)
 
     @property
     def texture(self) -> Surface:
