@@ -1,4 +1,5 @@
 from abc import ABC, abstractclassmethod
+from xmlrpc.client import Boolean, boolean
 
 import pygame as pg
 from pygame import key, image, mask, transform,Color
@@ -10,11 +11,13 @@ from config import GameConfig, GameState
 from input import Input
 from assets.palette import Palette
 
+import shader
+
 class IGameObject(ABC):
     
-    def create(coord: tuple[int, int], id: int, state: int, uuid: int):
+    def create(coord: tuple[int, int], id: int, state: int, uuid: int, shinning):
         print(f"Create Default Game Object at coord {coord} (id: int - {id} ; state: int {state} ; uuid: int {uuid})")
-        return GameObject(state, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1) * GameConfig.BLOCK_SIZE)
+        return GameObject(state, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1) * GameConfig.BLOCK_SIZE, shinning)
 
     @abstractclassmethod
     def draw(self, camera: Camera) -> None: pass
@@ -27,16 +30,17 @@ class Background(IGameObject):
 
 class GameObject(IGameObject):
 
-    def __init__(self, state: int, position: v2, taille: v2) -> None:
+    def __init__(self, state: int, position: v2, taille: v2, shinning:Boolean=False) -> None:
         self.state: int = state
         self.position: v2 = position 
-
+        self.shinning:Boolean = shinning
         self.taille: v2 = taille
         self._mask = mask.Mask(self.taille, True)
 
-    def draw(self, camera: Camera) -> None: pass
     def update(self) -> None: pass
-    def draw(self, camera: Camera) -> None: pass
+    
+    def draw(self, camera: Camera) -> None:
+        pass
 
     @property
     def position_matrix_top_left(self) -> v2:
@@ -76,22 +80,26 @@ class Static(GameObject):
     def create(coord: tuple[int, int], id: int, state: int, uuid: int):
         return Static(state, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1)*GameConfig.BLOCK_SIZE, Palette.get_texture(id, state))
 
-    def __init__(self, state: int, position: v2, taille: v2, texture: Surface) -> None:
-        super().__init__(state, position, taille)
+    def __init__(self, state: int, position: v2, taille: v2, texture: Surface,shinning:Boolean) -> None:
+        super().__init__(state, position, taille,shinning=shinning)
         self.texture: Surface = transform.scale(texture, self.taille)
+
+    def draw(self,camera) -> None:
+        rect = camera.transform_coord(self.rect)
+
+        if self.shinning:
+            shader.draw_a_ligth(rect.center,(230, 199, 119,255),int(2*GameConfig.BLOCK_SIZE))
+
+        GameConfig.GAME_SURFACE.blit(self.texture, rect)
 
     @property
     def mask(self) -> Mask:
         return mask.from_surface(self.texture) 
 
-    def draw(self, camera: Camera) -> None:
-        rect = camera.transform_coord(self.rect)
-        GameConfig.WINDOW.blit(self.texture, rect)
-
 class Dynamic(GameObject):
 
-    def __init__(self, state: int, position: v2, taille:v2, animations: list[Surface]) -> None:
-        super().__init__(state, position,taille)
+    def __init__(self, state: int, position: v2, taille:v2, animations: list[Surface],shinning=False) -> None:
+        super().__init__(state, position,taille,shinning)
 
         self.animations: list[Surface] = animations
         self.animation_frame: int = 0
@@ -102,17 +110,21 @@ class Dynamic(GameObject):
         self.vitesse: v2 = v2(0.0, 0.0)
         self.acceleration: v2 = v2(0.0, 0.0)
 
+    def draw(self,camera) -> None:
+        rect = camera.transform_coord(self.rect)
+
+        if self.shinning:
+            shader.draw_a_ligth(rect.center,(178, 230, 119,255),int(2*GameConfig.BLOCK_SIZE))
+
+        GameConfig.GAME_SURFACE.blit(self.texture, rect)
+
     @property
     def texture(self) -> Surface:
         return self.animations[self.animation_frame]
-    
-    def draw(self, camera: Camera) -> None:
-        rect = camera.transform_coord(self.rect)
-        GameConfig.WINDOW.blit(self.texture, rect)
 
 class Empty(GameObject):
-    def __init__(self, index: int, position: v2,taille:v2) -> None:
-        super().__init__(index, position, taille)
+    def __init__(self, index: int, position: v2, taille:v2, shine=False) -> None:
+        super().__init__(index, position, taille,shine)
     def update(self) -> None: pass
 
     @property
@@ -124,11 +136,11 @@ EmptyElement: GameObject = GameObject(0, v2(0, 0), v2(0, 0))
 
 class Ground(Static):
     
-    def create(coord: tuple[int, int], id: int, index: int, uuid: int):
-        return Ground(index, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1)*GameConfig.BLOCK_SIZE, Palette.get_texture(id, index))
+    def create(coord: tuple[int, int], id: int, index: int, uuid: int,shine:boolean):
+        return Ground(index, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1)*GameConfig.BLOCK_SIZE, Palette.get_texture(id, index),shine)
 
-    def __init__(self, index: int, position: v2, taille: v2, texture: Surface) -> None:
-        super().__init__(index, position, taille, texture)
+    def __init__(self, index: int, position: v2, taille: v2, texture: Surface,shine:Boolean) -> None:
+        super().__init__(index, position, taille, texture,shine)
 
     def update(self) -> None: pass
 
@@ -138,7 +150,7 @@ class Player(Dynamic):
         state: int = 0
         animations = [ transform.scale(image.load(src), (taille.x, taille.y)) for src in spritesheet ]
 
-        super().__init__(state, position, taille, animations)
+        super().__init__(state, position, taille, animations,True)
 
         self._mask = mask.from_surface(animations[0])
 

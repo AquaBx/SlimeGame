@@ -36,7 +36,7 @@ class Game:
                 Menu.display_main_menu(GameConfig.WINDOW,OPTIONS_MENU,MAIN_BACKGROUND_IMG)
             else:
                 GameState.dt = 1 / GameConfig.FPS #  self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.FPS
-                GameConfig.WINDOW.fill('Black')
+                GameConfig.GAME_SURFACE.fill('Black')
                 self.__update()
                 self.__draw()
 
