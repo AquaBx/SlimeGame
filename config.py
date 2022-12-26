@@ -9,6 +9,7 @@ class GameConfig:
 
     WINDOW: Surface
     FONT: Font
+    back = pg.transform.scale(pg.image.load("main_background.jpg"), (WINDOW_SIZE.x, WINDOW_SIZE.y))
 
     def initialise() -> None:
         pg.display.set_caption("Premier Jeu")
