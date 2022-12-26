@@ -33,7 +33,7 @@ class World():
                 }
             }
             self.deserialize("stage1")
-        self.player = Player(v2(3, 2) * GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+        self.player = Player(v2(5, 59) * GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
         self.camera: Camera = Camera(self.player)
 
     def deserialize(self, file: str) -> None:
