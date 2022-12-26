@@ -2,35 +2,26 @@ import pygame
 from PIL import Image, ImageDraw,ImageFilter
 from config import GameConfig, GameState
 
-res_reduc = GameConfig.WINDOW_SIZE.y/96
-
-
-import time
-
 def pilImageToSurface(pilImage):
-    new_size = (int(GameConfig.WINDOW_SIZE.x) , int(GameConfig.WINDOW_SIZE.y))
-    img = pygame.transform.scale( pygame.image.fromstring(pilImage.tobytes(), pilImage.size, pilImage.mode), new_size ).convert_alpha()
-    img.set_alpha(GameConfig.opacity_world)
-    return img
+    return pygame.image.fromstring(pilImage.tobytes(), pilImage.size, pilImage.mode)
 
 def draw_a_ligth(center,color,radius):
-    
-    imBlack = Image.new('RGB', [ int(GameConfig.WINDOW_SIZE.x/res_reduc) , int(GameConfig.WINDOW_SIZE.y/res_reduc) ], color)
-    mask = Image.new("L", imBlack.size, (0))
+    color_layer = Image.new('RGBA', GameConfig.GAME_SURFACE.get_size() , color)
+    mask = Image.new("L", color_layer.size, (0))
     draw = ImageDraw.Draw(mask)
 
-    p1 = (center[0]/res_reduc-radius/res_reduc,center[1]/res_reduc-radius/res_reduc)
-    p2 = (center[0]/res_reduc+radius/res_reduc,center[1]/res_reduc+radius/res_reduc)
+    p1 = (center[0]-radius,center[1]-radius)
+    p2 = (center[0]+radius,center[1]+radius)
     shape = (p1,p2)
 
-    draw.ellipse(shape, fill=radius)
+    draw.ellipse(shape, fill=75)
 
-    mask_blur = mask.filter(ImageFilter.GaussianBlur(radius/2/res_reduc))
-    GameState.shader = Image.composite(imBlack, GameState.shader, mask_blur)
+    mask_blur = mask.filter(ImageFilter.GaussianBlur(radius/2))
+    GameState.shader = Image.composite(color_layer, GameState.shader, mask_blur)
 
 def reset():
-    GameState.shader = Image.new('RGB', [ int(GameConfig.WINDOW_SIZE.x/res_reduc) , int(GameConfig.WINDOW_SIZE.y/res_reduc) ], (0,0,0))
+    GameState.shader = Image.new('RGBA', GameConfig.GAME_SURFACE.get_size() , (0,0,15,GameConfig.opacity_world))
 
 def draw():
     img = pilImageToSurface(GameState.shader)
-    GameConfig.WINDOW.blit(img,(0,0))
+    GameConfig.GAME_SURFACE.blit(img,(0,0))

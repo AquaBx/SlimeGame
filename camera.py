@@ -10,10 +10,13 @@ class Camera:
         """
         update le rect de la caméra en centrant le link par rapport à celle-ci
         """
-        xcam = (self.link.rect.right + self.link.rect.left  )/2 - GameConfig.WINDOW_SIZE.x/2
-        ycam = (self.link.rect.top   + self.link.rect.bottom)/2 - GameConfig.WINDOW_SIZE.y/2
+
+        size = GameConfig.GAME_SURFACE.get_size()
+
+        xcam = (self.link.rect.right + self.link.rect.left  )/2 - size[0]/2
+        ycam = (self.link.rect.top   + self.link.rect.bottom)/2 - size[1]/2
         
-        self.rect: Rect = Rect(xcam , ycam , GameConfig.WINDOW_SIZE.x , GameConfig.WINDOW_SIZE.y)
+        self.rect: Rect = Rect(xcam , ycam , size[0] , size[1])
 
     def transform_coord(self, entity: Rect) -> Rect:
         """
