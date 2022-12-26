@@ -26,12 +26,12 @@ class Messages :
         if divide == True :
             text_tab = Messages.dividing_the_string(self,text,font_size)             # Si la chaîne est trop longue on la découpe en plusieurs lignes
             for i in range (0,len(text_tab)-1) :                                     # On répète l'opération d'affichage de texte autant de fois qu'il y a de lignes
-                img = GameConfig.Font(font,font_size).render(text_tab[i],True,color) # On crée l'image en sélectionnant la fonte associée dans le tableau, puis le texte
+                img = GameConfig.FONT(font,font_size).render(text_tab[i],True,color) # On crée l'image en sélectionnant la fonte associée dans le tableau, puis le texte
                 display_rect = img.get_rect()                                        # On crée le rectangle dans lequel sera affichée l'image
                 display_rect.center = (x, y+i*font_size)                             # On centre le rectangle sur les coordonnées entrées en paramètres
                 window.blit(img,display_rect)                                        # On affiche l'image dans son rectangle
         else :
-            img = GameConfig.Font(font,font_size).render(text,True,color)            # On crée l'image en sélectionnant la fonte associée dans le tableau, puis le texte
+            img = GameConfig.FONT(font,font_size).render(text,True,color)            # On crée l'image en sélectionnant la fonte associée dans le tableau, puis le texte
             display_rect = img.get_rect()                                            # On crée le rectangle dans lequel sera affichée l'image
             display_rect.center = (x, y)                                             # On centre le rectangle sur les coordonnées entrées en paramètres
             window.blit(img,display_rect)                                            # On affiche l'image dans son rectangle
