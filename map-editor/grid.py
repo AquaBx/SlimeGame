@@ -10,7 +10,7 @@ from window_component import WindowComponent
 from gamestates import GameStates
 
 from assets import Asset
-from elements import StateElement, IndexedElement, EmptyElement
+from elements import StateElement, EmptyElement
 
 class Grid(WindowComponent):
 
@@ -80,7 +80,7 @@ class Grid(WindowComponent):
             for j in range(self.columns):
                 (left, right) = (j == 0, j == self.columns-1)
 
-                el: IndexedElement = self.map[i, j]
+                el: StateElement = self.map[i, j]
                 if el is EmptyElement: continue
 
                 # has neighboor
@@ -104,8 +104,8 @@ class Grid(WindowComponent):
                 # score calculation uses base2 to base10 system
                 score = sum([((1<<i)*border) for i, border in enumerate([t, tr, r, rb, b, bl, l, lt])])
 
-                el.index = scoring_table[score]
-                el.image = palette.elements[el.id].spritesheet[el.index]
+                el.state = scoring_table[score]
+                el.image = palette.elements[el.id].spritesheet[el.state]
 
     def put_tile(self, mouse_coord: v2, palette: Palette) -> None:
         """Adds a tile in the current map
