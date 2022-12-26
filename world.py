@@ -1,6 +1,7 @@
 import pygame as pg
 from pygame import transform, image
-from pygame import Vector2 as v2
+from pygame import Rect, Vector2 as v2
+from pygame.mask import Mask
 
 from config import GameConfig, GameState
 
@@ -10,7 +11,7 @@ import struct
 from assets import ASSETS
 import assets.saves
 from assets.palette import Palette
-from assets.scripts.gameobject import GameObject, Player, EmptyElement
+from assets.scripts.gameobject import GameObject, Dynamic, Player, EmptyElement
 
 from camera import Camera
 from debug import debug
@@ -31,7 +32,7 @@ class World():
             }
             self.deserialize("stage1")
 
-        self.player = Player(v2(3*GameConfig.BLOCK_SIZE, 61*GameConfig.BLOCK_SIZE), 0.95*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+        self.player = Player(v2(3, 2) * GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
         self.camera: Camera = Camera(self.player)
 
     def deserialize(self, file: str) -> None:
@@ -92,7 +93,7 @@ class World():
         obj.vitesse.y += self.player.acceleration.y*GameState.dt
         obj.position.y += self.player.vitesse.y*GameState.dt
 
-    def collide(self,obj):
+    def collide(self,obj: Dynamic):
         # we get all 9 blocs based on the centered position of the player (0)
         # | | | | | |
         # | |0|1|2| |
@@ -109,11 +110,18 @@ class World():
         for key in range(len(blocks_arround)):
             if blocks_arround[key]["ref"] == EmptyElement:
                 blocks_arround[key]["collide"] = False
+                blocks_arround[key]["overlap_rect"] = None
             else:
                 obj2 = blocks_arround[key]["ref"]
                 offset: v2 = obj2.position - obj.position
-                collide = obj.mask.overlap(obj2.mask, offset)
-                blocks_arround[key]["collide"] = True if collide else False
+                collide_mask: Mask = obj.mask.overlap_mask(obj2.mask, offset)
+                collide_rect: list[Rect] = collide_mask.connected_component().get_bounding_rects()
+                if collide_rect:
+                    blocks_arround[key]["collide"] = True
+                    blocks_arround[key]["overlap_rect"] = collide_rect[0]
+                else:
+                    blocks_arround[key]["collide"] = False
+                    blocks_arround[key]["overlap_rect"] = None
                 
         return blocks_arround
 
@@ -137,80 +145,102 @@ class World():
             return False,self.blocks[i2,j2].position.y
         return False,self.blocks[i1,j1].position.y
 
-    def update_pos(self,obj:GameObject) -> None:
+    def update_pos(self, obj : Dynamic) -> None:
         
         pos_avant = v2(obj.position.x,obj.position.y)
 
         obj.acceleration.x = 0
         obj.acceleration.y = 0
 
+        # keyboard inputs
         obj.update()
 
-        obj.acceleration.x -= obj.vitesse.x / ( GameState.dt * 16 )
+        obj.acceleration.x -= obj.vitesse.x / ( GameState.dt * 12 )
         obj.vitesse.x += obj.acceleration.x * GameState.dt
         obj.position.x += obj.vitesse.x * GameState.dt
- 
-        blocks_collide = self.collide(obj) # on actualise les collisions pour avoir une meilleur gestion de l'axe x
-        
+
         dir = obj.position - pos_avant
+
+        blocks_collide = self.collide(obj) # on actualise les collisions pour avoir une meilleur gestion de l'axe x
 
         if dir.x < 0 and ( blocks_collide[0]["collide"] or blocks_collide[3]["collide"] or blocks_collide[6]["collide"] ):
+
+            correction = 0
+
             if blocks_collide[0]["collide"]:
-                ref = blocks_collide[0]["ref"]
-            elif blocks_collide[3]["collide"]:
-                ref = blocks_collide[3]["ref"]
-            elif blocks_collide[6]["collide"]:
-                ref = blocks_collide[6]["ref"]
+                correction = max(correction,blocks_collide[0]["overlap_rect"].width)
+            if blocks_collide[3]["collide"]:
+                correction = max(correction,blocks_collide[3]["overlap_rect"].width)
+            if blocks_collide[6]["collide"]:
+                correction = max(correction,blocks_collide[6]["overlap_rect"].width)
 
-            obj.position.x = ref.rect.right
+            obj.position.x += 1 * correction
             obj.vitesse.x = 0
-            obj.acceleration.x = 0
+
         elif dir.x > 0 and ( blocks_collide[2]["collide"] or blocks_collide[5]["collide"] or blocks_collide[8]["collide"] ):
+
+            correction = 0
+
             if blocks_collide[2]["collide"]:
-                ref = blocks_collide[2]["ref"]
-            elif blocks_collide[5]["collide"]:
-                ref = blocks_collide[5]["ref"]
-            elif blocks_collide[8]["collide"]:
-                ref = blocks_collide[8]["ref"]
+                correction = max(correction,blocks_collide[2]["overlap_rect"].width)
+            if blocks_collide[5]["collide"]:
+                correction = max(correction,blocks_collide[5]["overlap_rect"].width)
+            if blocks_collide[8]["collide"]:
+                correction = max(correction,blocks_collide[8]["overlap_rect"].width)
 
-            obj.position.x = ref.rect.left - obj.taille.x
+            obj.position.x += -1 * correction
             obj.vitesse.x = 0
-            obj.acceleration.x = 0
+        
+        obj.acceleration.x = 0
 
-        is_flying,max_y = self.is_flying(obj)
+        # Gravity
+        debug(obj.is_flying,90)
+        obj.acceleration.y += 15 * 9.81 * GameConfig.BLOCK_SIZE
 
-        if is_flying:
-            obj.acceleration.y = max(0, 15 * 9.81 * GameConfig.BLOCK_SIZE)
-            obj.vitesse.y += obj.acceleration.y * GameState.dt
-            obj.position.y += obj.vitesse.y * GameState.dt
-        else:
-            obj.acceleration.y = min(0, 35 * obj.acceleration.y)
-            obj.vitesse.y = obj.acceleration.y * GameState.dt
-            obj.position.y = min(max_y-obj.taille.y, obj.position.y + obj.vitesse.y * GameState.dt )
+        obj.vitesse.y += obj.acceleration.y * GameState.dt
+        obj.position.y += obj.vitesse.y * GameState.dt
+
+        debug(obj.position.y,30)
+        debug(obj.vitesse.y,60)
 
         dir = obj.position - pos_avant
+
+        # /!\ EDGE CASE TO PREVENT CRASHING 
+        if not 0 <= obj.position_matrix_center.y <= 63:
+            obj.position.y = pos_avant.y
+            obj.vitesse.y = 0
 
         blocks_collide = self.collide(obj)
 
-        if dir.y < 0 and ( blocks_collide[0]["collide"] or blocks_collide[1]["collide"] or blocks_collide[2]["collide"] ):
-            if blocks_collide[0]["collide"]:
-                ref = blocks_collide[0]["ref"]
-            elif blocks_collide[1]["collide"]:
-                ref = blocks_collide[1]["ref"]
-            elif blocks_collide[2]["collide"]:
-                ref = blocks_collide[2]["ref"]
-            
-            obj.position.y = ref.rect.bottom
-            obj.vitesse.y = 0
-            obj.acceleration.y = 0
 
-        elif dir.y > 0 and ( blocks_collide[6]["collide"] or blocks_collide[7]["collide"] or blocks_collide[8]["collide"] ):
-            if blocks_collide[6]["collide"]:
-                ref = blocks_collide[6]["ref"]
-            elif blocks_collide[7]["collide"]:
-                ref = blocks_collide[7]["ref"]
-            elif blocks_collide[8]["collide"]:
-                ref = blocks_collide[8]["ref"]
-            obj.position.y = ref.rect.top - obj.taille.y
+        if dir.y < 0 and ( blocks_collide[0]["collide"] or blocks_collide[1]["collide"] or blocks_collide[2]["collide"] ):
+
+            correction = 0
+
+            if blocks_collide[0]["collide"]:
+                correction = max(correction,blocks_collide[0]["overlap_rect"].height)
+            if blocks_collide[1]["collide"]:
+                correction = max(correction,blocks_collide[1]["overlap_rect"].height)
+            if blocks_collide[2]["collide"]:
+                correction = max(correction,blocks_collide[2]["overlap_rect"].height)
+            
+            obj.position.y += 1 * correction
             obj.vitesse.y = 0
-            obj.acceleration.y = 0
+
+        if dir.y > 0 and ( blocks_collide[6]["collide"] or blocks_collide[7]["collide"] or blocks_collide[8]["collide"] ):
+            
+            obj.is_flying = False
+            
+            correction = 0
+
+            if blocks_collide[6]["collide"]:
+                correction = max(correction,blocks_collide[6]["overlap_rect"].height)
+            if blocks_collide[7]["collide"]:
+                correction = max(correction,blocks_collide[7]["overlap_rect"].height)
+            if blocks_collide[8]["collide"]:
+                correction = max(correction,blocks_collide[8]["overlap_rect"].height)
+            
+            obj.position.y += -1 * correction
+            obj.vitesse.y = 0
+
+        obj.acceleration.y = 0
