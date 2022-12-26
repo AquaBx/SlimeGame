@@ -52,13 +52,13 @@ class World():
         # on lit ensuite les dimensions de la grille
         (grid_rows, grid_columns) = struct.unpack("@bb", f.read(2))
         self.blocks = np.full((grid_rows, grid_columns), EmptyElement)
-
         for i in range(grid_rows):
             for j in range(grid_columns):
                 (id, state, uuid) = struct.unpack("@bbh", f.read(4))
 
-                shine = True if id == 3 else False
+                shine = True if id == 5 else False
  
+                print(id)
                 if id == -1: continue
                 self.blocks[i, j] = table[id].script.create((i, j), id, state, uuid,shine)
                 # StateElement(id, state, uuid, v2(j*Grid.tile_size, i*Grid.tile_size), palette.elements[id].spritesheet[state])

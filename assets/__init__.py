@@ -1,6 +1,6 @@
 import os
 
-from .scripts.gameobject import Ground, Background
+from .scripts.gameobject import EmptyElement, Ground, Background
 
 class Asset:
     def __init__(self, global_id: int, path: str, script: type, name: str):
@@ -24,7 +24,8 @@ ASSETS: dict[int, Asset] = {
         ("stone", "statics/stone.png", Ground),
         ("wood", "statics/wood_ground.png", Ground),
         ("dark bricks", "statics/dark_bricks.png", Ground),
-        ("copper", "statics/copper_full.png", Ground)
+        ("copper", "statics/copper_full.png", Ground),
+        ("light", "statics/light.png", Ground)
     ])
 
 }
