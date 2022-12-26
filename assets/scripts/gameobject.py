@@ -147,7 +147,7 @@ class Player(Dynamic):
         self.animation_frame = int(self.animation_frame % len(self.animations))
 
     def update(self) -> None:
-        Input.update()
+
 
         if Input.is_pressed(pg.K_d):
             self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.dt

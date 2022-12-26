@@ -8,6 +8,8 @@ from config import GameConfig, GameState
 from input import Input
 from world import World
 
+from debug import debug
+
 class Game:
     def __init__(self) -> None:
         pg.init();
@@ -24,17 +26,21 @@ class Game:
 
     def loop(self) -> None:
         while not self.should_quit:
-            GameState.dt = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.FPS
-            GameConfig.WINDOW.fill('Black')
+            Input.update()
+            
             self.__process_events()
+            
             if self.paused:
                 OPTIONS_MENU = ["Nouvelle partie (N)", "Charger une partie (C)", "Sauvegarder (S)", "Quitter (Q)"] # Attention au Q, qui sert déjà à aller vers la gauche
                 MAIN_BACKGROUND_IMG = "main_background.JPG"
                 Menu.display_main_menu(GameConfig.WINDOW,OPTIONS_MENU,MAIN_BACKGROUND_IMG)
             else:
+                GameState.dt = 1 / GameConfig.FPS #  self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.FPS
+                GameConfig.WINDOW.fill('Black')
                 self.__update()
                 self.__draw()
-                # self.morgann()
+
+            debug((self.clock.get_fps(),GameState.dt))
 
             pg.display.update()
             self.clock.tick_busy_loop(GameConfig.FPS)
@@ -54,15 +60,12 @@ class Game:
         if self.world.player.position.y < 480 :
             msg.display_message(GameConfig.WINDOW,IN_AIR_TXT,GameConfig.WINDOW_SIZE.x*0.6,40,font_size,msg.GREEN,True)
 
-        
-
     def __process_events(self) -> None:
-        keypressed = pg.key.get_pressed()
-        if keypressed[pg.K_ESCAPE]:
-            self.paused = not ( self.paused )
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 self.should_quit = True
+        if Input.is_pressed_once(pg.K_ESCAPE):
+            self.paused = not ( self.paused )
 
     def __update(self) -> None:
         self.world.update()

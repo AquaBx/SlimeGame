@@ -28,8 +28,8 @@ class Menu :
         longueur_x = int(0.35*GameConfig.WINDOW_SIZE.x)
         cote_gauche = int(0.325*GameConfig.WINDOW_SIZE.x)
 
-        background_scaled = pygame.transform.scale(pygame.image.load(background), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y))
-        window.blit(background_scaled,(0,0))
+        # background_scaled = pygame.transform.scale(pygame.image.load(background), (GameConfig.WINDOW_SIZE.x, GameConfig.WINDOW_SIZE.y))
+        # window.blit(background_scaled,(0,0))
         for i in range (0,n_rect) :
             cote_haut = 10+int(intervalle/2)+i*intervalle*2
             pygame.draw.rect(window, pygame.Color('brown'), (cote_gauche, cote_haut, longueur_x, intervalle))
