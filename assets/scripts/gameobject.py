@@ -7,6 +7,7 @@ from pygame.mask import Mask
 
 from camera import Camera
 from config import GameConfig, GameState
+from input import Input
 from assets.palette import Palette
 
 class IGameObject(ABC):
@@ -96,6 +97,7 @@ class Dynamic(GameObject):
         self.animation_frame: int = 0
         self.sante : int = 20
         self.santemax : int = 20
+        self.is_flying : bool = True
 
         self.vitesse: v2 = v2(0.0, 0.0)
         self.acceleration: v2 = v2(0.0, 0.0)
@@ -138,21 +140,24 @@ class Player(Dynamic):
 
         super().__init__(state, position, taille, animations)
 
+        self._mask = mask.from_surface(animations[0])
+
     def update_frame(self) -> None:
         self.animation_frame += 13*GameState.dt
         self.animation_frame = int(self.animation_frame % len(self.animations))
 
     def update(self) -> None:
-        keys_pressed = key.get_pressed()
+        Input.update()
 
-        if keys_pressed[pg.K_d]:
-            self.acceleration.x = + GameConfig.BLOCK_SIZE / GameState.dt
+        if Input.is_pressed(pg.K_d):
+            self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.dt
 
-        if keys_pressed[pg.K_q]:
-            self.acceleration.x = - GameConfig.BLOCK_SIZE / GameState.dt
+        if Input.is_pressed(pg.K_q):
+            self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.dt
 
-        if keys_pressed[pg.K_z]:
-            self.acceleration.y = - GameConfig.BLOCK_SIZE / GameState.dt 
- 
-        if keys_pressed[pg.K_s]:
-            self.acceleration.y = + GameConfig.BLOCK_SIZE / GameState.dt
+        if Input.is_pressed(pg.K_s) and self.is_flying:
+            self.acceleration.y += 35 * GameConfig.BLOCK_SIZE / GameState.dt
+
+        if Input.is_pressed(pg.K_z) and not self.is_flying:
+            self.acceleration.y -= 35 * GameConfig.BLOCK_SIZE / GameState.dt
+            self.is_flying = True
