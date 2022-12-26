@@ -1,82 +1,81 @@
-import pygame
-from config import Config
-from camera import Camera
-import world
-#import debug
 from morgann_textes import Messages
 from menu_screen import Menu
 
+import pygame as pg
+from pygame.time import Clock
 
-World = world.World()
+from config import GameConfig, GameState
+from input import Input
+from world import World
 
-def game_loop(window):
-    clock = pygame.time.Clock()
-    quitting = False
+from debug import debug
 
-    player = World.player
-    blocks = World.blocks
-    camera = Camera(player)
+class Game:
+    def __init__(self) -> None:
+        pg.init();
+        GameConfig.initialise()
+        Input.init()
+        self.clock: Clock = Clock()
+        self.should_quit: bool = False
+        # il faudra donner un entier qui correspond au fichier de sauvegarde demandé (1, 2 ou 3 sans doute)
+        self.world: World = World(1)
+        self.paused = False
 
-    back = Config.back
-    msg = Messages()
+    def __del__(self) -> None:
+        pg.quit()
 
-    while not quitting:
+    def loop(self) -> None:
+        while not self.should_quit:
+            Input.update()
+            
+            self.__process_events()
+            
+            if self.paused:
+                OPTIONS_MENU = ["Nouvelle partie (N)", "Charger une partie (C)", "Sauvegarder (S)", "Quitter (Q)"] # Attention au Q, qui sert déjà à aller vers la gauche
+                MAIN_BACKGROUND_IMG = "main_background.JPG"
+                Menu.display_main_menu(GameConfig.WINDOW,OPTIONS_MENU,MAIN_BACKGROUND_IMG)
+            else:
+                GameState.dt = 1 / GameConfig.FPS #  self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.FPS
+                GameConfig.GAME_SURFACE.fill('Black')
+                self.__update()
+                self.__draw()
 
-        dt = 1 / clock.get_fps() if clock.get_fps() != 0 else 1 / Config.FPS
-                
-        window.blit(back, (0, 0))
+            debug((self.clock.get_fps(),GameState.dt))
 
-        camera.update()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quitting = True
+            pg.display.update()
+            self.clock.tick_busy_loop(GameConfig.FPS)
 
 
-        player.move(dt)
-        World.gravite(player,dt)
-
-        player.blit_player(window, camera)
-
-        # square_mid = pygame.Rect((Config.WINDOW_W-Config.BLOCK_SIZE)/2,(Config.WINDOW_H-Config.BLOCK_SIZE)/2,Config.BLOCK_SIZE,Config.BLOCK_SIZE)
-        # pygame.draw.rect(window,pygame.Color(255,0,0),square_mid,)
-        
-        for block in blocks:
-            ncoord = camera.convert_coord(block.rect)
-            window.blit(block.texture, ncoord)
-
-    ## Partie des tests de fonction de Morgann
+    def morgann(self):
+        msg = Messages()
+        ## Partie des tests de fonction de Morgann
         LONG_TXT = "Ceci est un long long message qui va prendre plusieurs lignes et je ne sais pas quoi écrire pour prolonger ce texte mais je le prolonge quand même."
         FALLING_TXT = "You are falling !"
         IN_AIR_TXT = "Slime believes he can fly ! Slime believes he can touch the sky ! Slime..."
         font_size = 30
 
-        msg.display_message(window,LONG_TXT,Config.WINDOW_W*0.6,40,font_size,msg.GREY,True)        
-        if player.position.y > 888 : # Simples tests pour afficher des messages, ils seront à effacer avant la fin du projet
-            msg.display_message(window,FALLING_TXT,Config.WINDOW_W*0.6,40,font_size,msg.RED,True)
-        if player.position.y < 480 :
-            msg.display_message(window,IN_AIR_TXT,Config.WINDOW_W*0.6,40,font_size,msg.GREEN,True)
+        msg.display_message(GameConfig.WINDOW,LONG_TXT,GameConfig.WINDOW_SIZE.x*0.6,40,font_size,msg.GREY,True)        
+        if self.world.player.position.y > 888 : # Simples tests pour afficher des messages, ils seront à effacer avant la fin du projet
+            msg.display_message(GameConfig.WINDOW,FALLING_TXT,GameConfig.WINDOW_SIZE.x*0.6,40,font_size,msg.RED,True)
+        if self.world.player.position.y < 480 :
+            msg.display_message(GameConfig.WINDOW,IN_AIR_TXT,GameConfig.WINDOW_SIZE.x*0.6,40,font_size,msg.GREEN,True)
 
-        OPTIONS_MENU = ["Nouvelle partie (N)", "Charger une partie (C)", "Sauvegarder (S)", "Quitter (Q)"] # Attention au Q, qui sert déjà à aller vers la gauche
-        MAIN_BACKGROUND_IMG = "main_background.JPG"
-        IN_GAME_BACKGROUND_IMG = "in_game_background_dirt.png"
-        keys_pressed = pygame.key.get_pressed()
-        if keys_pressed[pygame.K_m] :
-            Menu.display_main_menu(window,OPTIONS_MENU,MAIN_BACKGROUND_IMG)
-        if keys_pressed[pygame.K_i] :
-            Menu.display_ingame_menu(window,OPTIONS_MENU,IN_GAME_BACKGROUND_IMG)
+    def __process_events(self) -> None:
+        for ev in pg.event.get():
+            if ev.type == pg.QUIT:
+                self.should_quit = True
+        if Input.is_pressed_once(pg.K_ESCAPE):
+            self.paused = not ( self.paused )
 
-    ## Fin de la partie de tests de fonctions
+    def __update(self) -> None:
+        self.world.update()
 
-        # debug.debug(player.vitesse)
-        pygame.display.update()
-        clock.tick_busy_loop(Config.FPS)
+    def __draw(self) -> None:
+        self.world.draw()
 
+# to avoid global variable instances in main function
+def main() -> None:
+    Game().loop()
 
-
-if __name__ == '__main__':
-    pygame.init()
-    window = pygame.display.set_mode((Config.WINDOW_W, Config.WINDOW_H))
-    pygame.display.set_caption("Slime Game")
-    game_loop(window)
-    pygame.quit()
+if __name__ == "__main__":
+    main()
