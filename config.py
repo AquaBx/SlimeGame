@@ -3,7 +3,7 @@ from pygame import Vector2 as v2, Surface
 from pygame.font import Font
 
 class GameConfig:
-    WINDOW_SIZE: v2 = v2(1280 ,720)
+    WINDOW_SIZE: v2 = v2(16,9) * 120
     BLOCK_SIZE: float = 16
     FPS: float = 144.0
 
