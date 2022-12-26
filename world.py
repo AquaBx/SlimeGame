@@ -69,9 +69,9 @@ class World():
         f.close()
 
     def update(self) -> None:
-        self.camera.update()
         self.player.update_frame()
         self.update_pos(self.player)
+        self.camera.update()
 
     def draw(self) -> None:
         
