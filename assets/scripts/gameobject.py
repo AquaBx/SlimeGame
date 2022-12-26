@@ -158,5 +158,6 @@ class Player(Dynamic):
         if Input.is_pressed(pg.K_s) and self.is_flying:
             self.acceleration.y += 35 * GameConfig.BLOCK_SIZE / GameState.dt
 
-        if Input.is_pressed(pg.K_s):
-            self.acceleration.y = + GameConfig.BLOCK_SIZE / GameState.dt
+        if Input.is_pressed(pg.K_z) and not self.is_flying:
+            self.acceleration.y -= 35 * GameConfig.BLOCK_SIZE / GameState.dt
+            self.is_flying = True
