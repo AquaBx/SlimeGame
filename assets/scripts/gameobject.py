@@ -15,9 +15,9 @@ import shader
 
 class IGameObject(ABC):
     
-    def create(coord: tuple[int, int], id: int, state: int, uuid: int):
+    def create(coord: tuple[int, int], id: int, state: int, uuid: int, shinning):
         print(f"Create Default Game Object at coord {coord} (id: int - {id} ; state: int {state} ; uuid: int {uuid})")
-        return GameObject(state, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1) * GameConfig.BLOCK_SIZE)
+        return GameObject(state, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1) * GameConfig.BLOCK_SIZE, shinning)
 
     @abstractclassmethod
     def draw(self, camera: Camera) -> None: pass
@@ -30,7 +30,7 @@ class Background(IGameObject):
 
 class GameObject(IGameObject):
 
-    def __init__(self, state: int, position: v2, taille: v2,shinning:Boolean=False) -> None:
+    def __init__(self, state: int, position: v2, taille: v2, shinning:Boolean=False) -> None:
         self.state: int = state
         self.position: v2 = position 
         self.shinning:Boolean = shinning
@@ -123,8 +123,8 @@ class Dynamic(GameObject):
         return self.animations[self.animation_frame]
 
 class Empty(GameObject):
-    def __init__(self, index: int, position: v2,taille:v2) -> None:
-        super().__init__(index, position, taille)
+    def __init__(self, index: int, position: v2, taille:v2, shine=False) -> None:
+        super().__init__(index, position, taille,shine)
     def update(self) -> None: pass
 
     @property
