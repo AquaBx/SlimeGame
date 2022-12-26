@@ -98,8 +98,6 @@ class World():
         pg.draw.rect(GameConfig.WINDOW,(255,7,3),pg.Rect(GameConfig.WINDOW_SIZE.y/20+10*scale,mr_bottom+2*scale+1,health_percent,3*scale-1))
         GameConfig.WINDOW.blit(transform.scale(image.load("assets/UI/healthbar.png"), (41*scale, GameConfig.WINDOW_SIZE.y/20)),(GameConfig.WINDOW_SIZE.y/20,mr_bottom))
         
-        debug(int(1/GameState.dt))
-
 
     def gravite(self,obj):
         y_vect = 5 * GameConfig.BLOCK_SIZE
@@ -209,15 +207,10 @@ class World():
         obj.acceleration.x = 0
 
         # Gravity
-        debug(obj.is_flying,90)
         obj.acceleration.y += 15 * 9.81 * GameConfig.BLOCK_SIZE
 
         obj.vitesse.y += obj.acceleration.y * GameState.dt
         obj.position.y += obj.vitesse.y * GameState.dt
-
-        debug(obj.position.y,30)
-        debug(obj.vitesse.y,60)
-
 
         dir = obj.position - pos_avant
 
