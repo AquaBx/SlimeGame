@@ -5,10 +5,11 @@ from pygame.font import Font
 class GameConfig:
     WINDOW_SIZE: v2 = v2(1280,720)
     BLOCK_SIZE: float = WINDOW_SIZE.y / 12
-    FPS: float = 144.0
+    FPS: float = 60.0
 
     WINDOW: Surface
     FONT: Font
+    back = pg.transform.scale(pg.image.load("main_background.jpg"), (WINDOW_SIZE.x, WINDOW_SIZE.y))
 
     opacity_world = 150
 
