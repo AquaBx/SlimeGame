@@ -34,7 +34,7 @@ class World:
 
         self.deserialize(GameState.save["data"]["last_map"])
         position: tuple[int, int] = GameState.save["data"]["player"]["position"]
-        self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 0.95*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+        self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 0.95*GameConfig.BLOCK_SIZE*v2(1, 1))
         self.camera: Camera = Camera(self.player)
 
     def deserialize(self, file: str) -> None:
@@ -67,7 +67,7 @@ class World:
         f.close()
 
     def update(self) -> None:
-        self.player.update_frame()
+        self.player.update_frame(self.is_flying(self.player)[0])
         self.update_pos(self.player)
         self.camera.update()
 
