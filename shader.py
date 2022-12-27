@@ -5,7 +5,7 @@ from config import GameConfig, GameState
 def pilImageToSurface(pilImage):
     return pygame.image.fromstring(pilImage.tobytes(), pilImage.size, pilImage.mode)
 
-def draw_a_ligth(center,color,radius):
+def draw_a_light(center,color,radius):
     color_layer = Image.new('RGBA', GameConfig.GAME_SURFACE.get_size() , color)
     mask = Image.new("L", color_layer.size, (0))
     draw = ImageDraw.Draw(mask)
