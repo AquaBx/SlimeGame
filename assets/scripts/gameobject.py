@@ -122,18 +122,17 @@ class Ground(Static):
     def __init__(self, index: int, position: v2, taille: v2, texture: Surface) -> None:
         Static.__init__(self, index, position, taille, texture)
 
-class LigthSource(GameObject):
+class LigthSource():
     def create(coord: tuple[int, int], id: int, state: int, uuid: int):
-        return LigthSource(state, v2(coord[1], coord[0])*GameConfig.BLOCK_SIZE)
+        return LigthSource(state, v2(coord[1] + 0.5, coord[0] + 0.5)*GameConfig.BLOCK_SIZE)
 
-    def __init__(self, state: int, position: v2) -> None:
-        GameObject.__init__(self, state, position, v2(0, 0))
+    def __init__(self) -> None:
         self.radius: int = 2*GameConfig.BLOCK_SIZE
         self.glow: tuple[int, int, int, int] = (230, 199, 119, 255)
 
     def draw(self, camera: Camera):
         rect = camera.transform_coord(self.rect)
-        shader.draw_a_ligth(rect.center, self.glow, self.radius)
+        shader.draw_a_light(rect.center, self.glow, self.radius)
 
 class Lamp(Static, LigthSource):
 
@@ -142,7 +141,7 @@ class Lamp(Static, LigthSource):
 
     def __init__(self, id: int, state: int, position: v2, taille: v2) -> None:
         Static.__init__(self, state, position, taille, Palette.get_texture(id, state))
-        LigthSource.__init__(self, state, position)
+        LigthSource.__init__(self)
 
     def draw(self, camera: Camera) -> None:
         LigthSource.draw(self, camera)
@@ -155,7 +154,7 @@ class Player(Dynamic, LigthSource):
         state: int = 0
         animations = [ transform.scale(image.load(src), (taille.x, taille.y)) for src in spritesheet ]
         Dynamic.__init__(self, state, position, taille, animations)
-        LigthSource.__init__(self, state, position)
+        LigthSource.__init__(self)
         self.glow = (178, 230, 119, 255)
         self._mask = mask.from_surface(animations[0])
 
