@@ -39,3 +39,8 @@ class GameConfig:
 
 class GameState:
     dt: float = 1/60
+    
+    save: dict = {
+        "state": 1,
+        "data": {}
+    }
