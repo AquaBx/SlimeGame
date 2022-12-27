@@ -15,6 +15,7 @@ class Input:
         Input.__keys_once: Sequence = [False]*nb_keys
         Input.__click: list[bool] = [False]*nb_mouse_button
         Input.__click_once: list[bool] = [False]*nb_mouse_button
+        Input.__mouse_motion: v2 = v2(0,0)
         Input.__mouse_pos: v2 = v2(0,0)
 
 
@@ -62,6 +63,14 @@ class Input:
         """
         return any(Input.__click_once) if button is None else Input.__click_once[button]
 
+    def get_motion() -> v2:
+        """Returns the motion of the mouse cursor
+
+        Returns:
+            v2: Motion vector
+        """
+        return Input.__mouse_motion
+
     def get_mouse() -> v2:
         """Returns mouse coordinates
 
@@ -75,9 +84,14 @@ class Input:
         """
         key_states : Sequence = key.get_pressed()
         Input.__keys_once = [not Input.__keys[i] and key_states[i] for i in range(len(key_states))]
-        Input.__keys = key.get_pressed()
+        Input.__keys = key_states
 
         click_states: tuple[bool] = mouse.get_pressed()
         Input.__click_once = [not Input.__click[i] and click_states[i] for i in range(len(click_states))]
         Input.__click = click_states
+        
+        mouse_state = v2(mouse.get_pos())
+        Input.__mouse_motion = mouse_state - Input.__mouse_pos
         Input.__mouse_pos = mouse.get_pos()
+        
+    
