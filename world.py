@@ -16,7 +16,7 @@ from assets.scripts.gameobject import GameObject, Dynamic, Player, EmptyElement
 import shader
 from camera import Camera
 
-class World():
+class World:
 
     def __init__(self, savestate: int) -> None:
         self.savestate: int = savestate
@@ -163,7 +163,7 @@ class World():
         # keyboard inputs
         obj.update()
 
-        obj.acceleration.x -= obj.vitesse.x / ( GameState.dt * 12 )
+        obj.acceleration.x -= obj.vitesse.x / (GameState.dt * (10 + 30 * obj.is_flying))
         obj.vitesse.x += obj.acceleration.x * GameState.dt
         obj.position.x += obj.vitesse.x * GameState.dt
 
@@ -199,10 +199,8 @@ class World():
             obj.position.x += -1 * correction
             obj.vitesse.x = 0
         
-        obj.acceleration.x = 0
-
         # Gravity
-        obj.acceleration.y += 15 * 9.81 * GameConfig.BLOCK_SIZE
+        obj.acceleration.y += 5 * 9.81 * GameConfig.BLOCK_SIZE
 
         obj.vitesse.y += obj.acceleration.y * GameState.dt
         obj.position.y += obj.vitesse.y * GameState.dt
@@ -246,5 +244,7 @@ class World():
             
             obj.position.y += -1 * correction
             obj.vitesse.y = 0
+        else: obj.is_flying = True
 
+        obj.acceleration.x = 0
         obj.acceleration.y = 0
