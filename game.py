@@ -9,13 +9,13 @@ from world import World
 
 class Game:
     def __init__(self) -> None:
-        pg.init();
+        pg.init()
         GameConfig.initialise()
         Input.init()
         self.clock: Clock = Clock()
         self.should_quit: bool = False
         # il faudra donner un entier qui correspond au fichier de sauvegarde demandé (1, 2 ou 3 sans doute)
-        self.world: World = World(1)
+        self.world: World = World()
         self.paused = False
 
     def __del__(self) -> None:
