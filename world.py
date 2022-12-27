@@ -26,9 +26,9 @@ class World:
         if not GameState.save["data"]["occupied"]:
             GameState.save["data"] = {
                 "occupied": True,
-                "last_map": "stage1",
+                "last_map": "stage2",
                 "player": {
-                    "position": (3, 61) # ici il faudra mettre la position qui convient dans la map par défaut soit ici stage1
+                    "position": (5, 59) # ici il faudra mettre la position qui convient dans la map par défaut soit ici stage1
                 }
             }
 
