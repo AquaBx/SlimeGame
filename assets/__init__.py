@@ -1,6 +1,6 @@
 import os
 
-from .scripts.gameobject import Empty, EmptyElement, Ground, Background
+from .scripts.gameobject import Ground, Background
 
 class Asset:
     def __init__(self, global_id: int, path: str, script: type, name: str):
@@ -14,6 +14,7 @@ SCRIPT_DIR: str = f"{ASSET_DIR}/scripts"
 SPRITE_DIR: str = f"{ASSET_DIR}/sprites"
 MAP_DIR: str = f"{ASSET_DIR}/maps"
 SAVE_DIR: str = f"{ASSET_DIR}/saves"
+FONT_DIR: str = f"{ASSET_DIR}/fonts"
 
 SPRITE_TILE_SIZE: int = 16
 

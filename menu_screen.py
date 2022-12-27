@@ -34,7 +34,7 @@ class Menu :
         for i in range (0,n_rect) :
             cote_haut = 10+int(intervalle/2)+i*intervalle*2                                                                                                  # On détermine le côté haut des rectagnles un par un
             pygame.draw.rect(window, pygame.Color('brown'), (cote_gauche, cote_haut, longueur_x, intervalle))                                                # On dessine les rectangles
-            messages.display_message(options[i], v2(GameConfig.WINDOW_SIZE.x/2, cote_haut+(intervalle/2)),"PressStart2P", 30, pygame.Color('black'), False)     # On affiche le texte de l'option
+            messages.display_message(options[i], v2(GameConfig.WINDOW_SIZE.x/2, cote_haut+(intervalle/2)), "PressStart2P", pygame.Color('black'), False)     # On affiche le texte de l'option
 
 
     def display_ingame_menu(options) :
@@ -57,4 +57,4 @@ class Menu :
         for i in range (0,n_rect) :   # Affichage des textes des options
             cote_haut = 10+int(intervalle/2)+i*intervalle*2                                                                                              # On détermine le côté haut des rectagnles un par un
             pygame.draw.rect(window, pygame.Color('blue'), (cote_gauche, cote_haut, longueur_x, intervalle))                                             # On dessine les rectangles
-            messages.display_message(options[i], v2(GameConfig.WINDOW_SIZE.x/2, cote_haut+(intervalle/2)), "PressStart2P", 30, pygame.Color("black"), False) # On affiche le texte de l'option
+            messages.display_message(options[i], v2(GameConfig.WINDOW_SIZE.x/2, cote_haut+(intervalle/2)), "PressStart2P", pygame.Color("black"), False) # On affiche le texte de l'option
