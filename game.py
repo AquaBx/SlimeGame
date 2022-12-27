@@ -8,6 +8,8 @@ from config import GameConfig, GameState
 from input import Input
 from world import World
 
+from debug import debug
+
 class Game:
     def __init__(self) -> None:
         pg.init();
@@ -36,6 +38,8 @@ class Game:
                 GameConfig.GAME_SURFACE.fill('Black')
                 self.__update()
                 self.__draw()
+
+            debug(int(self.clock.get_fps()))
 
             pg.display.update()
             self.clock.tick_busy_loop(GameConfig.FPS)
