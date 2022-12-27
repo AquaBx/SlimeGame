@@ -15,9 +15,9 @@ import shader
 
 class IGameObject(ABC):
     
-    def create(coord: tuple[int, int], id: int, state: int, uuid: int, shinning):
+    def create(coord: tuple[int, int], id: int, state: int, uuid: int):
         print(f"Create Default Game Object at coord {coord} (id: int - {id} ; state: int {state} ; uuid: int {uuid})")
-        return GameObject(state, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1) * GameConfig.BLOCK_SIZE, shinning)
+        return GameObject(state, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1) * GameConfig.BLOCK_SIZE)
 
     @abstractclassmethod
     def draw(self, camera: Camera) -> None: pass
@@ -30,17 +30,15 @@ class Background(IGameObject):
 
 class GameObject(IGameObject):
 
-    def __init__(self, state: int, position: v2, taille: v2, shinning:Boolean=False) -> None:
+    def __init__(self, state: int, position: v2, taille: v2) -> None:
         self.state: int = state
         self.position: v2 = position 
-        self.shinning:Boolean = shinning
         self.taille: v2 = taille
         self._mask = mask.Mask(self.taille, True)
 
-    def update(self) -> None: pass
+    def update(self) -> None: ...
     
-    def draw(self, camera: Camera) -> None:
-        pass
+    def draw(self, camera: Camera) -> None: ...
 
     @property
     def position_matrix_top_left(self) -> v2:
@@ -80,16 +78,12 @@ class Static(GameObject):
     def create(coord: tuple[int, int], id: int, state: int, uuid: int):
         return Static(state, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1)*GameConfig.BLOCK_SIZE, Palette.get_texture(id, state))
 
-    def __init__(self, state: int, position: v2, taille: v2, texture: Surface,shinning:Boolean) -> None:
-        super().__init__(state, position, taille,shinning=shinning)
+    def __init__(self, state: int, position: v2, taille: v2, texture: Surface) -> None:
+        GameObject.__init__(self, state, position, taille)
         self.texture: Surface = transform.scale(texture, self.taille)
 
     def draw(self,camera) -> None:
         rect = camera.transform_coord(self.rect)
-
-        if self.shinning:
-            shader.draw_a_ligth(rect.center,(230, 199, 119,255),int(2*GameConfig.BLOCK_SIZE))
-
         GameConfig.GAME_SURFACE.blit(self.texture, rect)
 
     @property
@@ -98,8 +92,8 @@ class Static(GameObject):
 
 class Dynamic(GameObject):
 
-    def __init__(self, state: int, position: v2, taille:v2, animations: list[Surface],shinning=False) -> None:
-        super().__init__(state, position,taille,shinning)
+    def __init__(self, state: int, position: v2, taille:v2, animations: list[Surface]) -> None:
+        GameObject.__init__(self, state, position,taille)
 
         self.animations: list[Surface] = animations
         self.animation_frame: int = 0
@@ -112,46 +106,57 @@ class Dynamic(GameObject):
 
     def draw(self,camera) -> None:
         rect = camera.transform_coord(self.rect)
-
-        if self.shinning:
-            shader.draw_a_ligth(rect.center,(178, 230, 119,255),int(2*GameConfig.BLOCK_SIZE))
-
         GameConfig.GAME_SURFACE.blit(self.texture, rect)
 
     @property
     def texture(self) -> Surface:
         return self.animations[self.animation_frame]
 
-class Empty(GameObject):
-    def __init__(self, index: int, position: v2, taille:v2, shine=False) -> None:
-        super().__init__(index, position, taille,shine)
-    def update(self) -> None: pass
-
-    @property
-    def mask(self) -> Mask:
-        mask = pg.mask.from_surface(pg.Surface((0,0)))
-        return mask.scale((GameConfig.BLOCK_SIZE,GameConfig.BLOCK_SIZE))
-
 EmptyElement: GameObject = GameObject(0, v2(0, 0), v2(0, 0))
 
 class Ground(Static):
     
-    def create(coord: tuple[int, int], id: int, index: int, uuid: int,shine:boolean):
-        return Ground(index, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1)*GameConfig.BLOCK_SIZE, Palette.get_texture(id, index),shine)
+    def create(coord: tuple[int, int], id: int, index: int, uuid: int):
+        return Ground(index, v2(coord[1], coord[0]) * GameConfig.BLOCK_SIZE, v2(1, 1)*GameConfig.BLOCK_SIZE, Palette.get_texture(id, index))
 
-    def __init__(self, index: int, position: v2, taille: v2, texture: Surface,shine:Boolean) -> None:
-        super().__init__(index, position, taille, texture,shine)
+    def __init__(self, index: int, position: v2, taille: v2, texture: Surface) -> None:
+        Static.__init__(self, index, position, taille, texture)
 
-    def update(self) -> None: pass
+class LigthSource(GameObject):
+    def create(coord: tuple[int, int], id: int, state: int, uuid: int):
+        return LigthSource(state, v2(coord[1], coord[0])*GameConfig.BLOCK_SIZE)
 
-class Player(Dynamic):
+    def __init__(self, state: int, position: v2) -> None:
+        GameObject.__init__(self, state, position, v2(0, 0))
+        self.radius: int = 2*GameConfig.BLOCK_SIZE
+        self.glow: tuple[int, int, int, int] = (230, 199, 119, 255)
+
+    def draw(self, camera: Camera):
+        rect = camera.transform_coord(self.rect)
+        shader.draw_a_ligth(rect.center, self.glow, self.radius)
+
+class Lamp(Static, LigthSource):
+
+    def create(coord: tuple[int, int], id: int, state: int, uuid: int):
+        return Lamp(id, state, v2(coord[1], coord[0])*GameConfig.BLOCK_SIZE, v2(1, 1)*GameConfig.BLOCK_SIZE)
+
+    def __init__(self, id: int, state: int, position: v2, taille: v2) -> None:
+        Static.__init__(self, state, position, taille, Palette.get_texture(id, state))
+        LigthSource.__init__(self, state, position)
+
+    def draw(self, camera: Camera) -> None:
+        LigthSource.draw(self, camera)
+        rect = camera.transform_coord(self.rect)
+        GameConfig.GAME_SURFACE.blit(self.texture, rect)
+
+class Player(Dynamic, LigthSource):
 
     def __init__(self, position: v2, taille: v2, spritesheet: list[str]) -> None:
         state: int = 0
         animations = [ transform.scale(image.load(src), (taille.x, taille.y)) for src in spritesheet ]
-
-        super().__init__(state, position, taille, animations,True)
-
+        Dynamic.__init__(self, state, position, taille, animations)
+        LigthSource.__init__(self, state, position)
+        self.glow = (178, 230, 119, 255)
         self._mask = mask.from_surface(animations[0])
 
     def update_frame(self) -> None:
@@ -159,8 +164,6 @@ class Player(Dynamic):
         self.animation_frame = int(self.animation_frame % len(self.animations))
 
     def update(self) -> None:
-
-
         if Input.is_pressed(pg.K_d):
             self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.dt
 
@@ -173,3 +176,8 @@ class Player(Dynamic):
         if Input.is_pressed(pg.K_z) and not self.is_flying:
             self.acceleration.y -= 35 * GameConfig.BLOCK_SIZE / GameState.dt
             self.is_flying = True
+
+    def draw(self, camera: Camera) -> None:
+        rect = camera.transform_coord(self.rect)
+        LigthSource.draw(self, camera)
+        GameConfig.GAME_SURFACE.blit(self.texture, rect)
