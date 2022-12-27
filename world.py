@@ -8,31 +8,33 @@ from config import GameConfig, GameState
 import numpy as np
 import struct
 
-from assets import ASSETS
 import assets.saves
+from assets import ASSETS
 from assets.palette import Palette
 from assets.scripts.gameobject import GameObject, Dynamic, Player, EmptyElement
 
 import shader
 from camera import Camera
 
-class World():
+class World:
 
-    def __init__(self, savestate: int) -> None:
-        self.savestate: int = savestate
-        self.save: dict = assets.saves.load(savestate)
-        if self.save["occupied"]:
-            self.deserialize(self.save["last_map"])
-        else:
-            self.save = {
+    def __init__(self) -> None:
+        # on charge les données dans la savestate selectionnée
+        GameState.save["data"]: dict = assets.saves.load(GameState.save["state"])
+
+        # si jamais la partie n'avait pas débuté on charge les données du début du jeu
+        if not GameState.save["data"]["occupied"]:
+            GameState.save["data"] = {
                 "occupied": True,
                 "last_map": "stage1",
                 "player": {
-                    "position": (5, 59)
+                    "position": (3, 61) # ici il faudra mettre la position qui convient dans la map par défaut soit ici stage1
                 }
             }
-            self.deserialize("stage2")
-        self.player = Player(v2(5, 59) * GameConfig.BLOCK_SIZE, 1*GameConfig.BLOCK_SIZE*v2(1, 1), [f"assets/sprites/Dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)])
+
+        self.deserialize(GameState.save["data"]["last_map"])
+        position: tuple[int, int] = GameState.save["data"]["player"]["position"]
+        self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 0.95*GameConfig.BLOCK_SIZE*v2(1, 1))
         self.camera: Camera = Camera(self.player)
 
     def deserialize(self, file: str) -> None:
@@ -65,7 +67,7 @@ class World():
         f.close()
 
     def update(self) -> None:
-        self.player.update_frame()
+        self.player.update_frame(self.is_flying(self.player)[0])
         self.update_pos(self.player)
         self.camera.update()
 
@@ -163,7 +165,7 @@ class World():
         # keyboard inputs
         obj.update()
 
-        obj.acceleration.x -= obj.vitesse.x / ( GameState.dt * 12 )
+        obj.acceleration.x -= obj.vitesse.x / (GameState.dt * (10 + 30 * obj.is_flying))
         obj.vitesse.x += obj.acceleration.x * GameState.dt
         obj.position.x += obj.vitesse.x * GameState.dt
 
@@ -199,10 +201,8 @@ class World():
             obj.position.x += -1 * correction
             obj.vitesse.x = 0
         
-        obj.acceleration.x = 0
-
         # Gravity
-        obj.acceleration.y += 15 * 9.81 * GameConfig.BLOCK_SIZE
+        obj.acceleration.y += 5 * 9.81 * GameConfig.BLOCK_SIZE
 
         obj.vitesse.y += obj.acceleration.y * GameState.dt
         obj.position.y += obj.vitesse.y * GameState.dt
@@ -246,5 +246,7 @@ class World():
             
             obj.position.y += -1 * correction
             obj.vitesse.y = 0
+        else: obj.is_flying = True
 
+        obj.acceleration.x = 0
         obj.acceleration.y = 0
