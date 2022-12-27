@@ -1,4 +1,3 @@
-from morgann_textes import Messages
 from menu_screen import Menu
 
 import pygame as pg
@@ -24,8 +23,11 @@ class Game:
 
     def loop(self) -> None:
         while not self.should_quit:
+            # Avoid division by 0
+            GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.FPS)
+            GameConfig.WINDOW.fill('Black')
             Input.update()
-            
+
             self.__process_events()
             
             if self.paused:
