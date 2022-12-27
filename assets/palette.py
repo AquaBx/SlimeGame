@@ -15,7 +15,7 @@ class PaletteElement:
         self.local_id = id
 
 class Palette:
-    
+
     def load(table: list) -> None:
         Palette.elements: dict[int, PaletteElement] = {}
         for index, asset in enumerate(table):
