@@ -2,5 +2,6 @@ GameConfig.KeyBindings.left=a
 GameConfig.KeyBindings.right=d
 GameConfig.KeyBindings.up=space
 
-GameConfig.WINDOW_SIZE=v2(16,9)*120
+GameConfig.WINDOW_SIZE.x=1920
+GameConfig.WINDOW_SIZE.y=1080
 GameConfig.FPS=144
