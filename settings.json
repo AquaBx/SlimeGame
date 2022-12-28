@@ -1,0 +1,15 @@
+{
+    "GameConfig": {
+        "KeyBindings": {
+            "left": 113,
+            "right": 100,
+            "up": 122
+        },
+        "Graphics": {
+            "WindowHeight": 1080,
+            "WindowWidth": 1920,
+            "MaxFPS": 700,
+            "EnableLights": true
+        }
+    }
+}

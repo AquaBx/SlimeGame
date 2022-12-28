@@ -1,5 +1,5 @@
 from pygame import Rect
-from config import GameConfig
+from config import GameState
 
 class Camera:
 
@@ -11,7 +11,7 @@ class Camera:
         update le rect de la caméra en centrant le link par rapport à celle-ci
         """
 
-        size = GameConfig.GAME_SURFACE.get_size()
+        size = GameState.GAME_SURFACE.get_size()
 
         xcam = (self.link.rect.right + self.link.rect.left  )/2 - size[0]/2
         ycam = (self.link.rect.top   + self.link.rect.bottom)/2 - size[1]/2
