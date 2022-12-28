@@ -5,16 +5,6 @@ import json
 import inspect
 
 class GameConfig:
-
-    """
-    resolution   | facteur 
-    1080p        | 120
-    720p         | 80
-    540p         | 60
-    360p         | 40
-    144p (natif) | 16
-    """
-
     BLOCK_SIZE      : int = 16
     NB_BLOCK_HEIGHT : int = 9 # nombre de blocks affichés verticalement
     BLOCKS_HEIGHT   : int = NB_BLOCK_HEIGHT * BLOCK_SIZE
