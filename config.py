@@ -9,6 +9,7 @@ class GameConfig:
     NB_BLOCK_HEIGHT : int = 9 # nombre de blocks affichés verticalement
     BLOCKS_HEIGHT   : int = NB_BLOCK_HEIGHT * BLOCK_SIZE
 
+
     WINDOW: Surface
     GAME_SURFACE: Surface
 
@@ -50,6 +51,7 @@ class GameConfig:
 
 
     def initialise() -> None:
+
         def rec(classe, dict):
             for attr in dict.keys():
                 if not(attr in classe.__dict__):
@@ -69,6 +71,8 @@ class GameConfig:
         GameConfig.WINDOW = pg.display.set_mode(GameConfig.Graphics().WindowSize)
         GameConfig.GAME_SURFACE = pg.Surface((GameConfig.Graphics().WindowRatio*GameConfig.BLOCKS_HEIGHT,GameConfig.BLOCKS_HEIGHT))
 
+        GameConfig.HealthBar = pg.image.load("assets/UI/healthbar.png").convert_alpha()
+        
         for name, path in GameConfig.__FONTS_DATA.items():
             GameConfig.FONTS[name] = Font(path, GameConfig.FONT_SIZE)
 

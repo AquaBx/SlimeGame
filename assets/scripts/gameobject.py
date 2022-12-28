@@ -129,7 +129,7 @@ class LigthSource():
 
     def __init__(self) -> None:
         self.radius: int = 2*GameConfig.BLOCK_SIZE
-        self.glow: tuple[int, int, int, int] = (230, 199, 119)
+        self.glow: tuple[int, int, int] = (230, 199, 119)
 
     def draw(self, camera: Camera):
         rect = camera.transform_coord(self.rect)
@@ -143,6 +143,7 @@ class Lamp(Static, LigthSource):
     def __init__(self, id: int, state: int, position: v2, taille: v2) -> None:
         Static.__init__(self, state, position, taille, Palette.get_texture(id, state))
         LigthSource.__init__(self)
+        # self.glow = pg.transform.average_color(self.texture,consider_alpha=True)[:3]
 
     def draw(self, camera: Camera) -> None:
         LigthSource.draw(self, camera)
@@ -177,7 +178,7 @@ class Player(Dynamic, LigthSource):
         super().__init__(state, position, taille, animations)
         Dynamic.__init__(self, state, position, taille, animations)
         LigthSource.__init__(self)
-        self.glow = (178, 230, 119)
+        self.glow = pg.transform.average_color(animations["idle"][0])[:3]
         self._mask = mask.from_surface(animations["idle"][0])
 
     def update_frame(self, is_flying) -> None:

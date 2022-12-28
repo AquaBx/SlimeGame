@@ -92,7 +92,7 @@ class World:
 
         pg.draw.rect( GameConfig.GAME_SURFACE, (255,7,3) , pg.Rect(surface_size[1]/20+10*scale,mr_bottom+2*scale,health_percent,3*scale))
 
-        GameConfig.GAME_SURFACE.blit( image.load("assets/UI/healthbar.png"),(surface_size[1]/20,mr_bottom) )
+        GameConfig.GAME_SURFACE.blit( GameConfig.HealthBar,(surface_size[1]/20,mr_bottom) )
         GameConfig.WINDOW.blit(transform.scale(GameConfig.GAME_SURFACE, GameConfig.WINDOW.get_size()),(0,0))
 
     def gravite(self,obj):
