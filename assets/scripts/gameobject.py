@@ -84,7 +84,7 @@ class Static(GameObject):
 
     def draw(self,camera) -> None:
         rect = camera.transform_coord(self.rect)
-        GameConfig.GAME_SURFACE.blit(self.texture, rect)
+        GameState.GAME_SURFACE.blit(self.texture, rect)
 
     @property
     def mask(self) -> Mask:
@@ -107,7 +107,7 @@ class Dynamic(GameObject):
 
     def draw(self,camera) -> None:
         rect = camera.transform_coord(self.rect)
-        GameConfig.GAME_SURFACE.blit(self.texture, rect)
+        GameState.GAME_SURFACE.blit(self.texture, rect)
 
     @property
     def texture(self) -> Surface:
@@ -129,7 +129,7 @@ class LigthSource():
 
     def __init__(self) -> None:
         self.radius: int = 2*GameConfig.BLOCK_SIZE
-        self.glow: tuple[int, int, int, int] = (230, 199, 119, 255)
+        self.glow: tuple[int, int, int] = (230, 199, 119)
 
     def draw(self, camera: Camera):
         rect = camera.transform_coord(self.rect)
@@ -147,7 +147,7 @@ class Lamp(Static, LigthSource):
     def draw(self, camera: Camera) -> None:
         LigthSource.draw(self, camera)
         rect = camera.transform_coord(self.rect)
-        GameConfig.GAME_SURFACE.blit(self.texture, rect)
+        GameState.GAME_SURFACE.blit(self.texture, rect)
 
 class Player(Dynamic, LigthSource):
     
@@ -164,12 +164,12 @@ class Player(Dynamic, LigthSource):
         state: int = 0
         self.status_frame: float = 0
         animations: dict[str, list[Surface]] = {
-            "idle": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[0]],
-            "jump": [ transform.scale(image.load(src), (taille.x, 3*taille.y)) for src in Player.__animation_sprites[1]],
-            "death": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[2]],
-            "right": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[3]],
-            "left": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[4]],
-            "damage": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[5]]
+            "idle": [ transform.scale(image.load(src).convert_alpha(), (taille.x, taille.y)) for src in Player.__animation_sprites[0]],
+            "jump": [ transform.scale(image.load(src).convert_alpha(), (taille.x, 3*taille.y)) for src in Player.__animation_sprites[1]],
+            "death": [ transform.scale(image.load(src).convert_alpha(), (taille.x, taille.y)) for src in Player.__animation_sprites[2]],
+            "right": [ transform.scale(image.load(src).convert_alpha(), (taille.x, taille.y)) for src in Player.__animation_sprites[3]],
+            "left": [ transform.scale(image.load(src).convert_alpha(), (taille.x, taille.y)) for src in Player.__animation_sprites[4]],
+            "damage": [ transform.scale(image.load(src).convert_alpha(), (taille.x, taille.y)) for src in Player.__animation_sprites[5]]
             # "attack": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[6]]
             # "fall": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[7]]
             # "interaction": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[8]]
@@ -177,7 +177,6 @@ class Player(Dynamic, LigthSource):
         super().__init__(state, position, taille, animations)
         Dynamic.__init__(self, state, position, taille, animations)
         LigthSource.__init__(self)
-        self.glow = (178, 230, 119, 255)
         self._mask = mask.from_surface(animations["idle"][0])
 
     def update_frame(self, is_flying) -> None:
@@ -198,9 +197,9 @@ class Player(Dynamic, LigthSource):
         #     self.current_animation = "interaction"
 
         # propre
-        elif Input.is_pressed(pg.K_d):
+        elif Input.is_pressed(GameConfig.KeyBindings.right):
             self.current_animation = "right"
-        elif Input.is_pressed(pg.K_q):
+        elif Input.is_pressed(GameConfig.KeyBindings.left):
             self.current_animation = "left"
         else:
             self.current_animation = "idle"
@@ -232,20 +231,17 @@ class Player(Dynamic, LigthSource):
         self.animation_frame = int(self.animation_frame % len(self.animations[self.current_animation]))
 
     def update(self) -> None:
-        if Input.is_pressed(pg.K_d):
+        if Input.is_pressed(GameConfig.KeyBindings.right):
             self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.dt * ( 1 - 0.75 * self.is_flying)
 
-        if Input.is_pressed(pg.K_q):
+        if Input.is_pressed(GameConfig.KeyBindings.left):
             self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.dt * ( 1 - 0.75 * self.is_flying)
 
-        if Input.is_pressed(pg.K_s) and self.is_flying:
-            self.acceleration.y += GameConfig.BLOCK_SIZE / GameState.dt
-
-        if Input.is_pressed(pg.K_z) and not self.is_flying:
+        if Input.is_pressed(GameConfig.KeyBindings.up) and not self.is_flying:
             self.acceleration.y -= 20 * GameConfig.BLOCK_SIZE / GameState.dt
             self.is_flying = True
 
     def draw(self, camera: Camera) -> None:
         rect = camera.transform_coord(self.rect)
         LigthSource.draw(self, camera)
-        GameConfig.GAME_SURFACE.blit(self.texture, rect)
+        GameState.GAME_SURFACE.blit(self.texture, rect)

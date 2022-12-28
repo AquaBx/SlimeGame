@@ -1,7 +1,7 @@
 from pygame import Vector2 as v2
 from string import ascii_letters
 
-from config import GameConfig
+from config import GameConfig,GameState
 
 class Messages :    
     def divide_string(self, text: str) -> list[str]:                       # Fonction permettant de diviser une chaîne de caractères en plus petites chaînes 
@@ -30,9 +30,9 @@ class Messages :
                 img = GameConfig.FONTS[font].render(text_tab[i], True, color) # On crée l'image en sélectionnant la fonte associée dans le tableau, puis le texte
                 display_rect = img.get_rect()                                           # On crée le rectangle dans lequel sera affichée l'image
                 display_rect.center = (position.x, position.y+i*GameConfig.FONT_SIZE)              # On centre le rectangle sur les coordonnées entrées en paramètres
-                GameConfig.WINDOW.blit(img, display_rect)                               # On affiche l'image dans son rectangle
+                GameState.WINDOW.blit(img, display_rect)                               # On affiche l'image dans son rectangle
         else:
             img = GameConfig.FONTS[font].render(text, True, color)            # On crée l'image en sélectionnant la fonte associée dans le tableau, puis le texte
             display_rect = img.get_rect()                                               # On crée le rectangle dans lequel sera affichée l'image
             display_rect.center = (position.x, position.y)                              # On centre le rectangle sur les coordonnées entrées en paramètres
-            GameConfig.WINDOW.blit(img, display_rect)                                   # On affiche l'image dans son rectangle
+            GameState.WINDOW.blit(img, display_rect)                                   # On affiche l'image dans son rectangle

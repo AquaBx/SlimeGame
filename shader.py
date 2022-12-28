@@ -1,31 +1,41 @@
-import pygame
+import pygame as pg
 from PIL import Image, ImageDraw,ImageFilter
 from config import GameConfig, GameState
 
 def pilImageToSurface(pilImage):
-    return pygame.image.fromstring(pilImage.tobytes(), pilImage.size, pilImage.mode)
+    return pg.image.fromstring(pilImage.tobytes(), pilImage.size, pilImage.mode).convert_alpha()
+
+def SurfaceTopilImage(surface):
+    surf = pg.transform.rotate(surface,-90)
+    surf = pg.transform.flip(surf,True,False)
+    arr = pg.surfarray.array3d(surf)
+    return Image.fromarray(arr)
+
 
 def draw_a_light(center,color,radius,intensity=75):
-
-    color_layer = Image.new('RGBA', GameConfig.GAME_SURFACE.get_size() , color)
-    mask = Image.new("L", color_layer.size, (0))
+    if not GameConfig.Graphics.EnableLights : return
+    mask = Image.new("RGBA", GameState.GAME_SURFACE.get_size() , (intensity))
     draw = ImageDraw.Draw(mask)
 
     p1 = (center[0]-radius,center[1]-radius)
     p2 = (center[0]+radius,center[1]+radius)
     shape = (p1,p2)
+    
+    draw.ellipse(shape, fill=color)
 
-    draw.ellipse(shape, fill=intensity)
-
-    mask_blur = mask.filter(ImageFilter.GaussianBlur(radius/2))
-
-    GameState.shader = Image.composite(color_layer, GameState.shader, mask_blur)
+    circle = pilImageToSurface( mask )
+    GameState.shader.blit(circle,(0,0))
     
 def reset():
-    GameState.shader = Image.new('RGBA', GameConfig.GAME_SURFACE.get_size() , (0,0,15,GameConfig.opacity_world))
+    if not GameConfig.Graphics.EnableLights : return
+
+    GameState.shader = pg.Surface(GameState.GAME_SURFACE.get_size())
+    GameState.shader.fill(GameConfig.ambient_color_world)
 
 def draw():
-    
-    img = pilImageToSurface(GameState.shader)
-    GameConfig.GAME_SURFACE.blit(img,(0,0))
+    if not GameConfig.Graphics.EnableLights : return
+    img = SurfaceTopilImage(GameState.shader)
+    img = img.filter( ImageFilter.GaussianBlur(10) )
+    img = pilImageToSurface(img)
+    GameState.GAME_SURFACE.blit(img,(0,0),special_flags=pg.BLEND_MULT)
     
