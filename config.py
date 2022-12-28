@@ -19,6 +19,7 @@ class GameConfig:
     WINDOW_SIZE: v2 = v2(16,9) * 16
     FPS: float = 60.0
 
+    EnableLights = True
     WINDOW: Surface
     GAME_SURFACE: Surface
 
