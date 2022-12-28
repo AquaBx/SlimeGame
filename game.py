@@ -26,7 +26,7 @@ class Game:
     def loop(self) -> None:
         while not self.should_quit:
             # Avoid division by 0
-            GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.FPS)
+            GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.Graphics.MaxFPS)
             GameConfig.WINDOW.fill('Black')
             Input.update()
 
@@ -36,7 +36,7 @@ class Game:
                 OPTIONS_MENU = ["Nouvelle partie (N)", "Charger une partie (C)", "Sauvegarder (S)", "Quitter (Q)"] # Attention au Q, qui sert déjà à aller vers la gauche
                 Menu.display_main_menu(OPTIONS_MENU)
             else:
-                GameState.dt = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.FPS
+                GameState.dt = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.Graphics.MaxFPS
                 GameConfig.GAME_SURFACE.fill('Black')
                 self.__update()
                 self.__draw()
@@ -44,7 +44,7 @@ class Game:
             debug(int(self.clock.get_fps()))
 
             pg.display.update()
-            self.clock.tick_busy_loop(GameConfig.FPS)
+            self.clock.tick_busy_loop(GameConfig.Graphics.MaxFPS)
 
     def __process_events(self) -> None:
         for ev in pg.event.get():

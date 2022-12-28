@@ -1,7 +1,8 @@
 import pygame as pg
 from pygame import Vector2 as v2, Surface
 from pygame.font import Font
-
+import json
+import inspect
 
 class GameConfig:
 
@@ -14,19 +15,12 @@ class GameConfig:
     144p (natif) | 16
     """
 
-    BLOCK_SIZE: int = 16
+    BLOCK_SIZE      : int = 16
+    NB_BLOCK_HEIGHT : int = 9 # nombre de blocks affichés verticalement
+    BLOCKS_HEIGHT   : int = NB_BLOCK_HEIGHT * BLOCK_SIZE
 
-    WINDOW_SIZE: v2 = v2(16,9) * 16
-    FPS: float = 60.0
-
-    EnableLights = True
     WINDOW: Surface
     GAME_SURFACE: Surface
-
-    class KeyBindings:
-        left = pg.K_q
-        right = pg.K_d
-        up = pg.K_z
 
     opacity_world = 150
 
@@ -46,24 +40,45 @@ class GameConfig:
         "GREEN": (0, 255, 0)
     }
 
+    class KeyBindings:
+        up   : int = pg.K_SPACE
+        left : int = pg.K_LEFT
+        right: int = pg.K_RIGHT
+
+    class Graphics:
+        EnableLights: bool= True
+        WindowHeight: int = 1080
+        WindowWidth : int = 1920
+        MaxFPS      : int = 144
+
+        @property
+        def WindowSize(self) -> v2:
+            return (self.WindowWidth,self.WindowHeight)
+        @property
+        def WindowRatio(self) -> v2:
+            return self.WindowWidth/self.WindowHeight
+
+
     def initialise() -> None:
+        def rec(classe, dict):
+            for attr in dict.keys():
+                if not(attr in classe.__dict__):
+                    print(f"{attr} not a attribut of {classe.__name__}")
+                elif inspect.isclass( classe.__dict__[attr] ):
+                    rec(classe.__dict__[attr], dict[attr])
+                elif hasattr(classe,attr):
+                    setattr(classe,attr,dict[attr])
 
-        with open("settings.txt") as config:
-            for option in config.read().split("\n"):
-                if option == "":
-                    continue
-
-                attr,val = option.split("=")
-
-                if "KeyBindings" in attr:
-                    exec(f"{attr}=pg.key.key_code('{val}')")
-                else:
-                    exec(f"{attr}={val}")
-
+        with open("settings.json") as file:
+            save: dict = json.load( file )
+            rec(GameConfig,save["GameConfig"])
+            
         pg.display.set_caption("Slime Game")
         pg.font.init()
-        GameConfig.WINDOW = pg.display.set_mode(GameConfig.WINDOW_SIZE.xy)
-        GameConfig.GAME_SURFACE = pg.Surface((GameConfig.WINDOW_SIZE.x*9*GameConfig.BLOCK_SIZE/GameConfig.WINDOW_SIZE.y,9*GameConfig.BLOCK_SIZE))
+
+        GameConfig.WINDOW = pg.display.set_mode(GameConfig.Graphics().WindowSize)
+        GameConfig.GAME_SURFACE = pg.Surface((GameConfig.Graphics().WindowRatio*GameConfig.BLOCKS_HEIGHT,GameConfig.BLOCKS_HEIGHT))
+
         for name, path in GameConfig.__FONTS_DATA.items():
             GameConfig.FONTS[name] = Font(path, GameConfig.FONT_SIZE)
 
