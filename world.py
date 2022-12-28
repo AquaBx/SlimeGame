@@ -62,7 +62,7 @@ class World:
         # enfin on lit le background de la map
         background_id: int = struct.unpack("@h", f.read(2))[0]
 
-        self.background: pg.Surface = transform.scale(image.load(ASSETS[background_id].path), GameConfig.WINDOW.get_size())
+        self.background: pg.Surface = transform.scale(image.load(ASSETS[background_id].path).convert_alpha(), GameConfig.WINDOW.get_size())
         f.close()
 
     def update(self) -> None:

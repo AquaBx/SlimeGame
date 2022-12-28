@@ -164,12 +164,12 @@ class Player(Dynamic, LigthSource):
         state: int = 0
         self.status_frame: float = 0
         animations: dict[str, list[Surface]] = {
-            "idle": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[0]],
-            "jump": [ transform.scale(image.load(src), (taille.x, 3*taille.y)) for src in Player.__animation_sprites[1]],
-            "death": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[2]],
-            "right": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[3]],
-            "left": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[4]],
-            "damage": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[5]]
+            "idle": [ transform.scale(image.load(src).convert_alpha(), (taille.x, taille.y)) for src in Player.__animation_sprites[0]],
+            "jump": [ transform.scale(image.load(src).convert_alpha(), (taille.x, 3*taille.y)) for src in Player.__animation_sprites[1]],
+            "death": [ transform.scale(image.load(src).convert_alpha(), (taille.x, taille.y)) for src in Player.__animation_sprites[2]],
+            "right": [ transform.scale(image.load(src).convert_alpha(), (taille.x, taille.y)) for src in Player.__animation_sprites[3]],
+            "left": [ transform.scale(image.load(src).convert_alpha(), (taille.x, taille.y)) for src in Player.__animation_sprites[4]],
+            "damage": [ transform.scale(image.load(src).convert_alpha(), (taille.x, taille.y)) for src in Player.__animation_sprites[5]]
             # "attack": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[6]]
             # "fall": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[7]]
             # "interaction": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[8]]

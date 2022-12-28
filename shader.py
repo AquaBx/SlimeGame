@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw,ImageFilter
 from config import GameConfig, GameState
 
 def pilImageToSurface(pilImage):
-    return pygame.image.fromstring(pilImage.tobytes(), pilImage.size, pilImage.mode)
+    return pygame.image.fromstring(pilImage.tobytes(), pilImage.size, pilImage.mode).convert_alpha()
 
 def draw_a_light(center,color,radius,intensity=75):
     if not GameConfig.Graphics.EnableLights : return
