@@ -26,7 +26,6 @@ class Game:
     def loop(self) -> None:
         while not self.should_quit:
             # Avoid division by 0
-            GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.Graphics.MaxFPS)
             GameConfig.WINDOW.fill('Black')
             Input.update()
 
