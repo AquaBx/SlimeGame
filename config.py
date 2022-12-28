@@ -9,7 +9,7 @@ class GameConfig:
     NB_BLOCK_HEIGHT : int = 9 # nombre de blocks affichés verticalement
     BLOCKS_HEIGHT   : int = NB_BLOCK_HEIGHT * BLOCK_SIZE
 
-    opacity_world = 150
+    ambient_color_world = (15,15,45)
 
     FONT_SIZE: int = 25
     FONT_DIR: str = "assets/fonts"
