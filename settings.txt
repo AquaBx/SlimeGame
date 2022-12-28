@@ -1,8 +1,0 @@
-GameConfig.KeyBindings.left=left
-GameConfig.KeyBindings.right=right
-GameConfig.KeyBindings.up=up
-
-GameConfig.WINDOW_SIZE.x=1920
-GameConfig.WINDOW_SIZE.y=1080
-GameConfig.FPS=600
-GameConfig.EnableLights=False
