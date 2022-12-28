@@ -198,9 +198,9 @@ class Player(Dynamic, LigthSource):
         #     self.current_animation = "interaction"
 
         # propre
-        elif Input.is_pressed(pg.K_d):
+        elif Input.is_pressed(GameConfig.KeyBindings.right):
             self.current_animation = "right"
-        elif Input.is_pressed(pg.K_q):
+        elif Input.is_pressed(GameConfig.KeyBindings.left):
             self.current_animation = "left"
         else:
             self.current_animation = "idle"
@@ -232,16 +232,16 @@ class Player(Dynamic, LigthSource):
         self.animation_frame = int(self.animation_frame % len(self.animations[self.current_animation]))
 
     def update(self) -> None:
-        if Input.is_pressed(pg.K_d):
+        if Input.is_pressed(GameConfig.KeyBindings.right):
             self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.dt * ( 1 - 0.75 * self.is_flying)
 
-        if Input.is_pressed(pg.K_q):
+        if Input.is_pressed(GameConfig.KeyBindings.left):
             self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.dt * ( 1 - 0.75 * self.is_flying)
 
-        if Input.is_pressed(pg.K_s) and self.is_flying:
-            self.acceleration.y += GameConfig.BLOCK_SIZE / GameState.dt
+        # if Input.is_pressed(pg.K_s) and self.is_flying:
+        #     self.acceleration.y += GameConfig.BLOCK_SIZE / GameState.dt
 
-        if Input.is_pressed(pg.K_z) and not self.is_flying:
+        if Input.is_pressed(GameConfig.KeyBindings.up) and not self.is_flying:
             self.acceleration.y -= 20 * GameConfig.BLOCK_SIZE / GameState.dt
             self.is_flying = True
 
