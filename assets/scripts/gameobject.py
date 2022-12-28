@@ -143,7 +143,6 @@ class Lamp(Static, LigthSource):
     def __init__(self, id: int, state: int, position: v2, taille: v2) -> None:
         Static.__init__(self, state, position, taille, Palette.get_texture(id, state))
         LigthSource.__init__(self)
-        # self.glow = pg.transform.average_color(self.texture,consider_alpha=True)[:3]
 
     def draw(self, camera: Camera) -> None:
         LigthSource.draw(self, camera)
@@ -178,7 +177,6 @@ class Player(Dynamic, LigthSource):
         super().__init__(state, position, taille, animations)
         Dynamic.__init__(self, state, position, taille, animations)
         LigthSource.__init__(self)
-        self.glow = pg.transform.average_color(animations["idle"][0])[:3]
         self._mask = mask.from_surface(animations["idle"][0])
 
     def update_frame(self, is_flying) -> None:
@@ -238,9 +236,6 @@ class Player(Dynamic, LigthSource):
 
         if Input.is_pressed(GameConfig.KeyBindings.left):
             self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.dt * ( 1 - 0.75 * self.is_flying)
-
-        # if Input.is_pressed(pg.K_s) and self.is_flying:
-        #     self.acceleration.y += GameConfig.BLOCK_SIZE / GameState.dt
 
         if Input.is_pressed(GameConfig.KeyBindings.up) and not self.is_flying:
             self.acceleration.y -= 20 * GameConfig.BLOCK_SIZE / GameState.dt
