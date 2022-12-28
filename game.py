@@ -25,8 +25,6 @@ class Game:
 
     def loop(self) -> None:
         while not self.should_quit:
-            # Avoid division by 0
-            GameState.WINDOW.fill('Black')
             Input.update()
 
             self.__process_events()
@@ -35,6 +33,7 @@ class Game:
                 OPTIONS_MENU = ["Nouvelle partie (N)", "Charger une partie (C)", "Sauvegarder (S)", "Quitter (Q)"] # Attention au Q, qui sert déjà à aller vers la gauche
                 Menu.display_main_menu(OPTIONS_MENU)
             else:
+                # Avoid division by 0
                 GameState.dt = GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.Graphics.MaxFPS)
                 GameState.GAME_SURFACE.fill('Black')
                 self.__update()

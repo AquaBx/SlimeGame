@@ -30,7 +30,7 @@ def reset():
     if not GameConfig.Graphics.EnableLights : return
 
     GameState.shader = pg.Surface(GameState.GAME_SURFACE.get_size())
-    GameState.shader.fill((15,15,15,GameConfig.opacity_world))
+    GameState.shader.fill(GameConfig.ambient_color_world)
 
 def draw():
     if not GameConfig.Graphics.EnableLights : return
