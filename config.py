@@ -53,6 +53,9 @@ class GameConfig:
     def initialise() -> None:
 
         def rec(classe, dict):
+            """
+            fonction qui attributs les settings du fichier settings.json à la classe GameConfig
+            """
             for attr in dict.keys():
                 if not(attr in classe.__dict__):
                     print(f"{attr} not a attribut of {classe.__name__}")
