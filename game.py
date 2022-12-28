@@ -35,7 +35,6 @@ class Game:
             else:
                 # Avoid division by 0
                 GameState.dt = GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.Graphics.MaxFPS)
-                GameState.GAME_SURFACE.fill('Black')
                 self.__update()
                 self.__draw()
 
