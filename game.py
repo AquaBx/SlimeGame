@@ -26,7 +26,7 @@ class Game:
     def loop(self) -> None:
         while not self.should_quit:
             # Avoid division by 0
-            GameConfig.WINDOW.fill('Black')
+            GameState.WINDOW.fill('Black')
             Input.update()
 
             self.__process_events()
@@ -36,7 +36,7 @@ class Game:
                 Menu.display_main_menu(OPTIONS_MENU)
             else:
                 GameState.dt = GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.Graphics.MaxFPS)
-                GameConfig.GAME_SURFACE.fill('Black')
+                GameState.GAME_SURFACE.fill('Black')
                 self.__update()
                 self.__draw()
 

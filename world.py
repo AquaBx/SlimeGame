@@ -27,7 +27,7 @@ class World:
                 "occupied": True,
                 "last_map": "stage2",
                 "player": {
-                    "position": (5, 59) # ici il faudra mettre la position qui convient dans la map par défaut soit ici stage1
+                    "position": (5, 59) # ici il faudra mettre la position qui convient dans la map par défaut soit ici stage2
                 }
             }
 
@@ -62,7 +62,7 @@ class World:
         # enfin on lit le background de la map
         background_id: int = struct.unpack("@h", f.read(2))[0]
 
-        self.background: pg.Surface = transform.scale(image.load(ASSETS[background_id].path).convert_alpha(), GameConfig.WINDOW.get_size())
+        self.background: pg.Surface = transform.scale(image.load(ASSETS[background_id].path).convert(), GameState.WINDOW.get_size())
         f.close()
 
     def update(self) -> None:
@@ -72,7 +72,7 @@ class World:
 
     def draw(self) -> None:
 
-        surface_size = GameConfig.GAME_SURFACE.get_size()
+        surface_size = GameState.GAME_SURFACE.get_size()
         shader.reset()
 
         for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE ) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
@@ -90,10 +90,10 @@ class World:
 
         health_percent = link.sante/link.santemax * 29 * scale
 
-        pg.draw.rect( GameConfig.GAME_SURFACE, (255,7,3) , pg.Rect(surface_size[1]/20+10*scale,mr_bottom+2*scale,health_percent,3*scale))
+        pg.draw.rect( GameState.GAME_SURFACE, (255,7,3) , pg.Rect(surface_size[1]/20+10*scale,mr_bottom+2*scale,health_percent,3*scale))
 
-        GameConfig.GAME_SURFACE.blit( GameConfig.HealthBar,(surface_size[1]/20,mr_bottom) )
-        GameConfig.WINDOW.blit(transform.scale(GameConfig.GAME_SURFACE, GameConfig.WINDOW.get_size()),(0,0))
+        GameState.GAME_SURFACE.blit( GameConfig.HealthBar,(surface_size[1]/20,mr_bottom) )
+        GameState.WINDOW.blit(transform.scale(GameState.GAME_SURFACE, GameState.WINDOW.get_size()),(0,0))
 
     def gravite(self,obj):
         y_vect = 5 * GameConfig.BLOCK_SIZE

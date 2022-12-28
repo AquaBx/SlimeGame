@@ -84,7 +84,7 @@ class Static(GameObject):
 
     def draw(self,camera) -> None:
         rect = camera.transform_coord(self.rect)
-        GameConfig.GAME_SURFACE.blit(self.texture, rect)
+        GameState.GAME_SURFACE.blit(self.texture, rect)
 
     @property
     def mask(self) -> Mask:
@@ -107,7 +107,7 @@ class Dynamic(GameObject):
 
     def draw(self,camera) -> None:
         rect = camera.transform_coord(self.rect)
-        GameConfig.GAME_SURFACE.blit(self.texture, rect)
+        GameState.GAME_SURFACE.blit(self.texture, rect)
 
     @property
     def texture(self) -> Surface:
@@ -147,7 +147,7 @@ class Lamp(Static, LigthSource):
     def draw(self, camera: Camera) -> None:
         LigthSource.draw(self, camera)
         rect = camera.transform_coord(self.rect)
-        GameConfig.GAME_SURFACE.blit(self.texture, rect)
+        GameState.GAME_SURFACE.blit(self.texture, rect)
 
 class Player(Dynamic, LigthSource):
     
@@ -244,4 +244,4 @@ class Player(Dynamic, LigthSource):
     def draw(self, camera: Camera) -> None:
         rect = camera.transform_coord(self.rect)
         LigthSource.draw(self, camera)
-        GameConfig.GAME_SURFACE.blit(self.texture, rect)
+        GameState.GAME_SURFACE.blit(self.texture, rect)
