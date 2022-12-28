@@ -7,7 +7,6 @@ from config import GameConfig, GameState
 
 import numpy as np
 import struct
-
 import assets.saves
 from assets import ASSETS
 from assets.palette import Palette
