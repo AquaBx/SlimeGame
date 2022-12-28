@@ -35,7 +35,7 @@ class Game:
                 OPTIONS_MENU = ["Nouvelle partie (N)", "Charger une partie (C)", "Sauvegarder (S)", "Quitter (Q)"] # Attention au Q, qui sert déjà à aller vers la gauche
                 Menu.display_main_menu(OPTIONS_MENU)
             else:
-                GameState.dt = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.Graphics.MaxFPS
+                GameState.dt = GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.Graphics.MaxFPS)
                 GameConfig.GAME_SURFACE.fill('Black')
                 self.__update()
                 self.__draw()
