@@ -14,7 +14,7 @@ def SurfaceTopilImage(surface):
 
 def draw_a_light(center,color,radius,intensity=75):
     if not GameConfig.Graphics.EnableLights : return
-    mask = Image.new("RGBA", GameConfig.GAME_SURFACE.get_size() , (intensity))
+    mask = Image.new("RGBA", GameState.GAME_SURFACE.get_size() , (intensity))
     draw = ImageDraw.Draw(mask)
 
     p1 = (center[0]-radius,center[1]-radius)
@@ -29,7 +29,7 @@ def draw_a_light(center,color,radius,intensity=75):
 def reset():
     if not GameConfig.Graphics.EnableLights : return
 
-    GameState.shader = pg.Surface(GameConfig.GAME_SURFACE.get_size())
+    GameState.shader = pg.Surface(GameState.GAME_SURFACE.get_size())
     GameState.shader.fill((15,15,15,GameConfig.opacity_world))
 
 def draw():
@@ -37,5 +37,5 @@ def draw():
     img = SurfaceTopilImage(GameState.shader)
     img = img.filter( ImageFilter.GaussianBlur(10) )
     img = pilImageToSurface(img)
-    GameConfig.GAME_SURFACE.blit(img,(0,0),special_flags=pg.BLEND_MULT)
+    GameState.GAME_SURFACE.blit(img,(0,0),special_flags=pg.BLEND_MULT)
     

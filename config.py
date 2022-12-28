@@ -9,10 +9,6 @@ class GameConfig:
     NB_BLOCK_HEIGHT : int = 9 # nombre de blocks affichés verticalement
     BLOCKS_HEIGHT   : int = NB_BLOCK_HEIGHT * BLOCK_SIZE
 
-
-    WINDOW: Surface
-    GAME_SURFACE: Surface
-
     opacity_world = 150
 
     FONT_SIZE: int = 25
@@ -49,7 +45,6 @@ class GameConfig:
         def WindowRatio(self) -> v2:
             return self.WindowWidth/self.WindowHeight
 
-
     def initialise() -> None:
 
         def rec(classe, dict):
@@ -71,8 +66,8 @@ class GameConfig:
         pg.display.set_caption("Slime Game")
         pg.font.init()
 
-        GameConfig.WINDOW = pg.display.set_mode(GameConfig.Graphics().WindowSize)
-        GameConfig.GAME_SURFACE = pg.Surface((GameConfig.Graphics().WindowRatio*GameConfig.BLOCKS_HEIGHT,GameConfig.BLOCKS_HEIGHT))
+        GameState.WINDOW = pg.display.set_mode(GameConfig.Graphics().WindowSize)
+        GameState.GAME_SURFACE = pg.Surface((GameConfig.Graphics().WindowRatio*GameConfig.BLOCKS_HEIGHT,GameConfig.BLOCKS_HEIGHT))
 
         GameConfig.HealthBar = pg.image.load("assets/UI/healthbar.png").convert_alpha()
         
@@ -82,6 +77,8 @@ class GameConfig:
 
 class GameState:
     dt: float = 1/60
+    WINDOW: Surface
+    GAME_SURFACE: Surface
     
     save: dict = {
         "state": 1,
