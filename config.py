@@ -23,9 +23,9 @@ class GameConfig:
     GAME_SURFACE: Surface
 
     class KeyBindings:
-        left = -1
-        right = -1
-        up = -1
+        left = pg.K_q
+        right = pg.K_d
+        up = pg.K_z
 
     opacity_world = 150
 
@@ -51,7 +51,7 @@ class GameConfig:
             for option in config.read().split("\n"):
                 if option == "":
                     continue
-                
+
                 attr,val = option.split("=")
 
                 if "KeyBindings" in attr:

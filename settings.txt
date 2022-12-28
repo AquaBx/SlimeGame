@@ -1,5 +1,5 @@
-GameConfig.KeyBindings.left=a
-GameConfig.KeyBindings.right=d
+GameConfig.KeyBindings.left=left
+GameConfig.KeyBindings.right=right
 GameConfig.KeyBindings.up=space
 
 GameConfig.WINDOW_SIZE.x=1920
