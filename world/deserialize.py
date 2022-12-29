@@ -4,7 +4,7 @@ from assets.palette import Palette
 from assets.scripts.gameobject import EmptyElement
 import numpy as np
 
-from pygame import transform, image
+from pygame import transform, image,Surface
 
 from config import GameState
 
@@ -34,5 +34,5 @@ def deserialize(self, file: str) -> None:
     # enfin on lit le background de la map
     background_id: int = struct.unpack("@h", f.read(2))[0]
 
-    self.background: pg.Surface = transform.scale(image.load(ASSETS[background_id].path).convert(), GameState.WINDOW.get_size())
+    self.background: Surface = transform.scale(image.load(ASSETS[background_id].path).convert(), GameState.GAME_SURFACE.get_size())
     f.close()

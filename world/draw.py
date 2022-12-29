@@ -10,6 +10,7 @@ def draw(self) -> None:
     surface_size = GameState.GAME_SURFACE.get_size()
     shader.reset() # initialisation des lights
     GameState.GAME_SURFACE.fill('Black')
+    GameState.GAME_SURFACE.blit(self.background,(0,0))
 
     """ affichage du monde """
     # itération de tout les blocks visibles
