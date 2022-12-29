@@ -1,22 +1,26 @@
 from typing import Any
 from pygame import Rect, Surface, Vector2 as v2
 from pygame import transform
+from pygame import Color
 
 from input import Input
 from button_script import ButtonScript
+from morgann_textes import Text
 
-class Button():
+class Button:
 
     DEFAULT: int  = 0
     HOVER: int    = 1
     DISABLED: int = 2
     
-    def __init__(self, id: str, hitbox: Rect, script: ButtonScript, textures: Surface | list[Surface], alive : bool = False, enabled : bool = True) -> None:
+    def __init__(self, id: str, text: str, hitbox: Rect, script: ButtonScript, textures: Surface | list[Surface], alive : bool = False, enabled : bool = True, font: str = "BradBunR", label_color: Color = Color("white")) -> None:
         self.__id = id
+        self.__text = text
         self.__hitbox = hitbox
         self.__script = script
-        self.__state = 0
-        self.__enabled = enabled
+        self.__state = 2*(not(enabled))
+        self.__font = font
+        self.__label_color = label_color
 
         # Default, Hover, Disabled
         if isinstance(textures, Surface):
@@ -24,13 +28,14 @@ class Button():
         else: self.__textures = textures
 
         ButtonManager.register_buttons(self)
-        if alive: ButtonManager.alive(id)
+        if alive: ButtonManager.set_alive(id)
 
     def __del__(self):
         ButtonManager.unregister_buttons(self.__id)
 
     def draw(self, window: Surface) -> None:
         window.blit(self.__textures[self.__state], self.__hitbox)
+        Text.display_message(window, self.__text, v2(self.__hitbox.center), self.__font, self.__label_color, True)
 
     def run(self):
         self.__script()
@@ -38,6 +43,14 @@ class Button():
     @property
     def id(self) -> str:
         return self.__id
+
+    @property
+    def text(self) -> str:
+        return self.__text
+
+    @text.setter
+    def text(self, value: str) -> None:
+        self.__text = value
 
     @property
     def hitbox(self) -> Rect:
@@ -52,12 +65,20 @@ class Button():
         self.__state = value
 
     @property
-    def enabled(self) -> bool:
-        return self.__enabled
+    def font(self) -> str:
+        return self.__font
+
+    @font.setter
+    def font(self, value: str) -> None:
+        self.__font = value
+
+    @property
+    def label_color(self) -> Color:
+        return self.__label_color
     
-    @enabled.setter
-    def enabled(self, value: bool) -> None:
-        self.__enabled = value
+    @label_color.setter
+    def label_color(self, value: Color) -> None:
+        self.__label_color = value
 
 class ButtonManager():
 
@@ -74,6 +95,7 @@ class ButtonManager():
     def init(window: Surface) -> None:
         if not Input.is_init:
             Input.init()
+
         ButtonManager.__window = window
 
         ButtonManager.is_init = True
@@ -91,7 +113,7 @@ class ButtonManager():
         for id in [_id for _id in ids if ButtonManager.is_alive(_id)]:
             ButtonManager.__alives.remove(id)
 
-    def alive(*ids : list[str]) -> None:
+    def set_alive(*ids : list[str]) -> None:
         for id in [_id for _id in ids if _id in ButtonManager.__buttons.keys()]:
             ButtonManager.__alives.add(id)
 

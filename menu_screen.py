@@ -1,7 +1,7 @@
 import pygame
 from pygame import Vector2 as v2
 
-from morgann_textes import Messages
+from morgann_textes import Text
 from config import GameConfig
 
 class Menu :
@@ -22,7 +22,7 @@ class Menu :
         """
 
         window = GameConfig.WINDOW
-        messages = Messages()
+        messages = Text()
         n_rect = len(options)                                    # Nombre de rectangles dans lesquels on affiche les options du menu
         intervalle = int(GameConfig.WINDOW_SIZE.y/(2*n_rect))    # Intervalle vertical de pixels entre les rectangles
         longueur_x = int(0.35*GameConfig.WINDOW_SIZE.x)          # Longueur horizontale de chaque rectangle
@@ -42,7 +42,7 @@ class Menu :
         Fonction permettant d'afficher le menu en jeu
         """
         window = GameConfig.WINDOW
-        messages = Messages()
+        messages = Text()
         n_rect = len(options)                                        # Nombre de rectangles dans lesquels on affiche les options du menu
         intervalle = int((GameConfig.WINDOW_SIZE.x-20)/(2*n_rect))   # Intervalle vertical de pixels entre les rectangles
         longueur_x = int(0.35*GameConfig.WINDOW_SIZE.x)              # Longueur horizontale de chaque rectangle

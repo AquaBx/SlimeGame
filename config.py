@@ -31,11 +31,10 @@ class GameConfig:
 
     def initialise() -> None:
         pg.display.set_caption("Slime Game")
-        pg.font.init()
         GameConfig.WINDOW = pg.display.set_mode(GameConfig.WINDOW_SIZE.xy)
         GameConfig.GAME_SURFACE = pg.Surface((GameConfig.WINDOW_SIZE.x*9*GameConfig.BLOCK_SIZE/GameConfig.WINDOW_SIZE.y,9*GameConfig.BLOCK_SIZE))
-        for name, path in GameConfig.__FONTS_DATA.items():
-            GameConfig.FONTS[name] = Font(path, GameConfig.FONT_SIZE)
+
+
 
 class GameState:
     dt: float = 1/60
