@@ -1,4 +1,3 @@
-from morgann_textes import Messages
 from menu_screen import Menu
 
 import pygame as pg

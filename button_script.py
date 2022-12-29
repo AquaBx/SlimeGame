@@ -6,7 +6,7 @@ class ButtonScript:
         self.fct = fct
         self.args = args
 
-    def __call__(self, *args: Any, **kwds: Any) -> Any:
+    def __call__(self) -> Any:
         #eventuel override des arguments prédéfinis a cet endroit
         self.fct(*self.args)
 
