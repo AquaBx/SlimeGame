@@ -5,7 +5,8 @@ from pygame import key, mouse
 class Input:
     """Listens to the keyboard and mouse inputs
     """
-    
+    is_init: bool = False
+
     def init() -> None:
         """Initializes the Input class. Has to be runned once before using Input.update()
         """
@@ -17,6 +18,8 @@ class Input:
         Input.__click_once: list[bool] = [False]*nb_mouse_button
         Input.__mouse_motion: v2 = v2(0,0)
         Input.__mouse_pos: v2 = v2(0,0)
+        
+        Input.is_init = True
 
 
     def is_pressed(key: int) -> bool:
