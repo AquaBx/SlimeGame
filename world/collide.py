@@ -1,6 +1,6 @@
-from pygame import Vector2 as v2
+from pygame import Vector2 as v2,Rect
 from pygame.mask import Mask
-from assets.scripts.gameobject import GameObject, Dynamic, Player, EmptyElement
+from assets.scripts.gameobject import Dynamic, EmptyElement
 
 def collide(self,obj: Dynamic):
     # we get all 9 blocs based on the centered position of the player (0)
