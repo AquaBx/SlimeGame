@@ -1,8 +1,7 @@
 import struct
-import assets.saves
 from assets import ASSETS
 from assets.palette import Palette
-from assets.scripts.gameobject import GameObject, Dynamic, Player, EmptyElement
+from assets.scripts.gameobject import EmptyElement
 import numpy as np
 
 from pygame import transform, image

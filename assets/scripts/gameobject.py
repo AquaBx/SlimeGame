@@ -1,7 +1,7 @@
 from abc import ABC, abstractclassmethod
 
 import pygame as pg
-from pygame import key, image, mask, transform
+from pygame import image, mask, transform
 from pygame import Vector2 as v2, Rect, Surface
 from pygame.mask import Mask
 
@@ -149,7 +149,7 @@ class Lamp(Static, LigthSource):
         rect = camera.transform_coord(self.rect)
         GameState.GAME_SURFACE.blit(self.texture, rect)
 
-class Player(Dynamic, LigthSource):
+class Player(Dynamic):
     
     __animation_sprites: list[list[str]] = [
         [f"assets/sprites/dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)],
@@ -174,13 +174,12 @@ class Player(Dynamic, LigthSource):
             # "fall": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[7]]
             # "interaction": [ transform.scale(image.load(src), (taille.x, taille.y)) for src in Player.__animation_sprites[8]]
         }
-        super().__init__(state, position, taille, animations)
         Dynamic.__init__(self, state, position, taille, animations)
-        LigthSource.__init__(self)
         self._mask = mask.from_surface(animations["idle"][0])
 
-    def update_frame(self, is_flying) -> None:
+    def update_frame(self) -> None:
         self.status_frame = (self.status_frame+15*GameState.dt) % 10
+        is_flying = self.is_flying
         # jump_counter = 1
 
         # condition pour self.current_animation = "jump"
@@ -243,5 +242,4 @@ class Player(Dynamic, LigthSource):
 
     def draw(self, camera: Camera) -> None:
         rect = camera.transform_coord(self.rect)
-        LigthSource.draw(self, camera)
         GameState.GAME_SURFACE.blit(self.texture, rect)
