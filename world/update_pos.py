@@ -1,9 +1,6 @@
-import pygame as pg
 from pygame import Vector2 as v2
-from pygame.mask import Mask
 from config import GameConfig, GameState
-import numpy as np
-from assets.scripts.gameobject import GameObject, Dynamic, Player, EmptyElement
+from assets.scripts.gameobject import Dynamic
 
 def update_pos(self, obj : Dynamic) -> None:
     

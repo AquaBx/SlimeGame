@@ -3,7 +3,6 @@ from pygame import transform
 from pygame import Rect
 from config import GameConfig, GameState
 import shader
-from camera import Camera
 
 def draw(self) -> None:
 

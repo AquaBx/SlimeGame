@@ -1,16 +1,14 @@
 from .deserialize import deserialize
 from .draw import draw
 from .update_pos import update_pos
-from .is_flying import is_flying
 from .collide import collide
 from .update import update
 from .update import update
 
-from pygame import Rect, Vector2 as v2
+from pygame import Vector2 as v2
 import assets.saves
 from assets import ASSETS
-from assets.palette import Palette
-from assets.scripts.gameobject import GameObject, Dynamic, Player, EmptyElement
+from assets.scripts.gameobject import Player
 from config import GameConfig, GameState
 from camera import Camera
 
@@ -38,6 +36,5 @@ class World:
     deserialize = deserialize
     draw = draw
     update_pos = update_pos
-    is_flying = is_flying
     collide = collide
     update = update
