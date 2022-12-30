@@ -6,10 +6,10 @@
             "up": 122
         },
         "Graphics": {
-            "WindowHeight": 1080,
-            "WindowWidth": 1920,
-            "MaxFPS": 700,
-            "EnableLights": true
+            "WindowHeight": 720,
+            "WindowWidth": 1280,
+            "MaxFPS": 120,
+            "EnableLights": false
         }
     }
 }

@@ -19,6 +19,7 @@ def draw(self) -> None:
             self.blocks[i, j].draw(self.camera)
 
     """ affichage des joueurs / mobs """
+    self.player.update_frame()
     self.player.draw(self.camera)
 
     """ draw lights """
