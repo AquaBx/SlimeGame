@@ -12,9 +12,9 @@ def update_pos(self, obj : Dynamic) -> None:
     # keyboard inputs
     obj.update()
 
-    obj.acceleration.x -= obj.vitesse.x / (GameState.dt * (10 + 30 * obj.is_flying))
-    obj.vitesse.x += obj.acceleration.x * GameState.dt
-    obj.position.x += obj.vitesse.x * GameState.dt
+    obj.acceleration.x -= obj.vitesse.x / (GameState.PhysicDT * (10 + 30 * obj.is_flying))
+    obj.vitesse.x += obj.acceleration.x * GameState.PhysicDT
+    obj.position.x += obj.vitesse.x * GameState.PhysicDT
 
     dir = obj.position - pos_avant
 
@@ -51,8 +51,8 @@ def update_pos(self, obj : Dynamic) -> None:
     # Gravity
     obj.acceleration.y += 5 * 9.81 * GameConfig.BLOCK_SIZE
 
-    obj.vitesse.y += obj.acceleration.y * GameState.dt
-    obj.position.y += obj.vitesse.y * GameState.dt
+    obj.vitesse.y += obj.acceleration.y * GameState.PhysicDT
+    obj.position.y += obj.vitesse.y * GameState.PhysicDT
 
     dir = obj.position - pos_avant
 

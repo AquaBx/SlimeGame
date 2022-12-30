@@ -13,6 +13,8 @@ class GameConfig:
     # ambient_color_world = (120, 120, 120) # aube
     ambient_color_world = ( 15,  15,  45) # nuit
 
+    PhysicTick = 120
+
     FONT_SIZE: int = 25
     FONT_DIR: str = "assets/fonts"
     FONTS: dict[str, Font] = {}
@@ -81,7 +83,7 @@ class GameState:
     dt: float = 1/60
     WINDOW: Surface
     GAME_SURFACE: Surface
-    
+    PhysicDT = 1/GameConfig.PhysicTick
     save: dict = {
         "state": 1,
         "data": {}

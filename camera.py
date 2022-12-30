@@ -5,6 +5,7 @@ class Camera:
 
     def __init__(self, link):
         self.link = link
+        self.rect = Rect(1,1,1,1)
 
     def update(self):
         """
