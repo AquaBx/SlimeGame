@@ -7,11 +7,14 @@ from config import GameConfig
 
 class Text:
 
+    window: Surface
     fonts: dict[str, Font] = dict()
     font_size: int
 
-    def init(font_data: dict[str,str], font_size: int):
+    def init(window: Surface, font_data: dict[str,str], font_size: int):
         font.init()
+
+        Text.window = window
         for name, path in font_data.items():
             Text.fonts[name] = Font(path, font_size)
         Text.font_size = font_size
@@ -44,7 +47,7 @@ class Text:
                 break                                                                      
         return t
 
-    def display_message(window: Surface, text: str, position: v2, font: str, color: tuple[int, int, int], divide: bool) -> None:
+    def display_message(text: str, position: v2, font: str, color: tuple[int, int, int], divide: bool) -> None:
         # Le paramètre divide est un booléen :
         #   - si True alors on affichera le texte sur plusieurs lignes grâce à la fonction divide_string
         #   - sinon sur une seule ligne
@@ -60,7 +63,7 @@ class Text:
                 # On centre le rectangle sur les coordonnées entrées en paramètres
                 display_rect.center = (position.x, position.y+i*Text.font_size)
                 # On affiche l'image dans son rectangle              
-                window.blit(img, display_rect)                               
+                Text.window.blit(img, display_rect)                               
         else:
             # On crée l'image en sélectionnant la fonte associée dans le tableau, puis le texte
             img = Text.fonts[font].render(text, True, color)            
@@ -69,4 +72,4 @@ class Text:
             # On centre le rectangle sur les coordonnées entrées en paramètres
             display_rect.center = (position.x, position.y)                   
             # On affiche l'image dans son rectangle           
-            window.blit(img, display_rect)
+            Text.window.blit(img, display_rect)

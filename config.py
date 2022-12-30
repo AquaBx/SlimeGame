@@ -15,8 +15,7 @@ class GameConfig:
 
     FONT_SIZE: int = 25
     FONT_DIR: str = "assets/fonts"
-    FONTS: dict[str, Font] = {}
-    __FONTS_DATA: dict[str, str] = {
+    FONT_DATA: dict[str, str] = {
         "BradBunR": f"{FONT_DIR}/BradBunR.ttf",
         "BLOBBYCHUG": f"{FONT_DIR}/BLOBBYCHUG.ttf",
         "PressStart2P": f"{FONT_DIR}/PressStart2P-Regular.ttf"
@@ -33,7 +32,6 @@ class GameConfig:
         pg.display.set_caption("Slime Game")
         GameConfig.WINDOW = pg.display.set_mode(GameConfig.WINDOW_SIZE.xy)
         GameConfig.GAME_SURFACE = pg.Surface((GameConfig.WINDOW_SIZE.x*9*GameConfig.BLOCK_SIZE/GameConfig.WINDOW_SIZE.y,9*GameConfig.BLOCK_SIZE))
-
 
 
 class GameState:
