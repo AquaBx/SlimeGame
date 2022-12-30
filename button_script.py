@@ -12,3 +12,6 @@ class ButtonScript:
 
     def print_mouse_pos(mouse):
         print(f"mouse position : {mouse.get_pos()}")
+
+    def set_quit(game):
+        game.should_quit = True
