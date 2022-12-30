@@ -84,6 +84,8 @@ class Static(GameObject):
 
     def draw(self,camera) -> None:
         rect = camera.transform_coord(self.rect)
+
+        self.texture.unlock()
         GameState.GAME_SURFACE.blit(self.texture, rect)
 
     @property
@@ -107,6 +109,8 @@ class Dynamic(GameObject):
 
     def draw(self,camera) -> None:
         rect = camera.transform_coord(self.rect)
+
+        self.texture.unlock()
         GameState.GAME_SURFACE.blit(self.texture, rect)
 
     @property
@@ -147,6 +151,8 @@ class Lamp(Static, LigthSource):
     def draw(self, camera: Camera) -> None:
         LigthSource.draw(self, camera)
         rect = camera.transform_coord(self.rect)
+
+        self.texture.unlock()
         GameState.GAME_SURFACE.blit(self.texture, rect)
 
 class Player(Dynamic):
@@ -231,13 +237,13 @@ class Player(Dynamic):
 
     def update(self) -> None:
         if Input.is_pressed(GameConfig.KeyBindings.right):
-            self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.dt * ( 1 - 0.75 * self.is_flying)
+            self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.PhysicDT * ( 1 - 0.75 * self.is_flying)
 
         if Input.is_pressed(GameConfig.KeyBindings.left):
-            self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.dt * ( 1 - 0.75 * self.is_flying)
+            self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.PhysicDT * ( 1 - 0.75 * self.is_flying)
 
         if Input.is_pressed(GameConfig.KeyBindings.up) and not self.is_flying:
-            self.acceleration.y -= 20 * GameConfig.BLOCK_SIZE / GameState.dt
+            self.acceleration.y -= 20 * GameConfig.BLOCK_SIZE / GameState.PhysicDT
             self.is_flying = True
 
     def draw(self, camera: Camera) -> None:

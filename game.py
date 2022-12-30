@@ -6,7 +6,7 @@ from pygame.time import Clock
 from config import GameConfig, GameState
 from input import Input
 from world import World
-
+import threading
 from debug import debug
 
 class Game:
@@ -16,14 +16,19 @@ class Game:
         Input.init()
         self.clock: Clock = Clock()
         self.should_quit: bool = False
+
         # il faudra donner un entier qui correspond au fichier de sauvegarde demandé (1, 2 ou 3 sans doute)
         self.world: World = World()
         self.paused = False
+        
+        
 
     def __del__(self) -> None:
         pg.quit()
 
     def loop(self) -> None:
+        physique = threading.Thread ( target = self.__update )
+        physique.start()
         while not self.should_quit:
             Input.update()
 
@@ -34,12 +39,10 @@ class Game:
                 Menu.display_main_menu(OPTIONS_MENU)
             else:
                 # Avoid division by 0
-                GameState.dt = GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.Graphics.MaxFPS)
-                self.__update()
+                GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.Graphics.MaxFPS)
+                GameState.GAME_SURFACE.fill('Black')
                 self.__draw()
-
-            debug(int(self.clock.get_fps()))
-
+            debug({"FPS":int(self.clock.get_fps()),"PhysicTick":int(1/GameState.PhysicDT)})
             pg.display.update()
             self.clock.tick_busy_loop(GameConfig.Graphics.MaxFPS)
 
@@ -51,14 +54,23 @@ class Game:
             self.paused = not ( self.paused )
 
     def __update(self) -> None:
-        self.world.update()
+        clock = Clock()
+        while not self.should_quit:
+            self.world.update()
+            GameState.PhysicDT = 1. / (clock.get_fps() + (clock.get_fps() == 0.) * GameConfig.PhysicTick)
+            clock.tick_busy_loop(GameConfig.PhysicTick)
+        
 
     def __draw(self) -> None:
         self.world.draw()
 
 # to avoid global variable instances in main function
 def main() -> None:
-    Game().loop()
+    game = Game()
+    game.loop()
+    pg.quit()
+    # del game
+
 
 if __name__ == "__main__":
     main()
