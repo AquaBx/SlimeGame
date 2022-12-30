@@ -153,7 +153,7 @@ class Player(Dynamic):
     
     __animation_sprites: list[list[str]] = [
         [f"assets/sprites/dynamics/GreenSlime/Grn_Idle{i}.png" for i in range(1,11)],
-        [f"assets/sprites/dynamics/GreenSlime/Grn_HighJump{i}.png" for i in range(1,11)],
+        [f"assets/sprites/dynamics/GreenSlime/Grn_Jump{i}.png" for i in range(1,11)],
         [f"assets/sprites/dynamics/GreenSlime/Grn_Death{i}.png" for i in range(1,6)],
         [f"assets/sprites/dynamics/GreenSlime/Grn_Right{i}.png" for i in range(1,6)],
         [f"assets/sprites/dynamics/GreenSlime/Grn_Left{i}.png" for i in range(1,6)],
