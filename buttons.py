@@ -13,9 +13,10 @@ class Button:
     HOVER: int    = 1
     DISABLED: int = 2
     
-    def __init__(self, id: str, text: str, hitbox: Rect, script: ButtonScript, textures: Surface | list[Surface], alive : bool = False, enabled : bool = True, font: str = "BradBunR", label_color: Color = Color("white")) -> None:
+    # ne plus init les boutons comme ca, creer un ButtonManager.create qui retourne la ref du bouton
+    def __init__(self, id: str, label: str, hitbox: Rect, script: ButtonScript, textures: Surface | list[Surface], alive : bool = False, enabled : bool = True, font: str = "BradBunR", label_color: Color = Color("white")) -> None:
         self.__id = id
-        self.__text = text
+        self.__label = label
         self.__hitbox = hitbox
         self.__script = script
         self.__state = 2*(not(enabled))
@@ -35,7 +36,7 @@ class Button:
 
     def draw(self, window: Surface) -> None:
         window.blit(self.__textures[self.__state], self.__hitbox)
-        Text.display_message(window, self.__text, v2(self.__hitbox.center), self.__font, self.__label_color, True)
+        Text.display_message(self.__label, v2(self.__hitbox.center), self.__font, self.__label_color, True)
 
     def run(self):
         self.__script()
@@ -45,12 +46,12 @@ class Button:
         return self.__id
 
     @property
-    def text(self) -> str:
-        return self.__text
+    def label(self) -> str:
+        return self.__label
 
-    @text.setter
+    @label.setter
     def text(self, value: str) -> None:
-        self.__text = value
+        self.__label = value
 
     @property
     def hitbox(self) -> Rect:
