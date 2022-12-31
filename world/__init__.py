@@ -8,7 +8,7 @@ from .update import update
 from pygame import Vector2 as v2
 import assets.saves
 from assets import ASSETS
-from assets.scripts.gameobject import Player
+from assets.scripts.player import Player
 from config import GameConfig, GameState
 from camera import Camera
 
