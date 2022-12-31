@@ -5,15 +5,22 @@ from pygame.time import Clock
 
 from config import GameConfig, GameState
 from input import Input
+from morgann_textes import Text
 from world import World
 import threading
 from debug import debug
+
+from buttons import ButtonManager
+from menu_screen import Menu
 
 class Game:
     def __init__(self) -> None:
         pg.init()
         GameConfig.initialise()
         Input.init()
+        Text.init(GameState.WINDOW, GameConfig.FONT_DATA, GameConfig.FONT_SIZE)
+        ButtonManager.init(GameState.WINDOW)
+        Menu.init(self)
         self.clock: Clock = Clock()
         self.should_quit: bool = False
 
@@ -33,16 +40,13 @@ class Game:
             Input.update()
 
             self.__process_events()
-            
-            if self.paused:
-                OPTIONS_MENU = ["Nouvelle partie (N)", "Charger une partie (C)", "Sauvegarder (S)", "Quitter (Q)"] # Attention au Q, qui sert déjà à aller vers la gauche
-                Menu.display_main_menu(OPTIONS_MENU)
-            else:
-                # Avoid division by 0
-                GameState.dt = 1. / (self.clock.get_fps() + (self.clock.get_fps() == 0.) * GameConfig.Graphics.MaxFPS)
+
+            if not self.paused:
+                GameState.dt = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.Graphics.MaxFPS
                 GameState.GAME_SURFACE.fill('Black')
                 self.__draw()
-            debug({"FPS":int(self.clock.get_fps()),"PhysicTick":int(1/GameState.PhysicDT)})
+
+            ButtonManager.update()
             pg.display.update()
             self.clock.tick(GameConfig.Graphics.MaxFPS)
 
@@ -51,7 +55,13 @@ class Game:
             if ev.type == pg.QUIT:
                 self.should_quit = True
         if Input.is_pressed_once(pg.K_ESCAPE):
-            self.paused = not ( self.paused )
+            if self.paused:
+                self.paused = False
+                Menu.close_menu("ingame_pause")
+            else:
+                self.paused = True
+                Menu.open_menu("ingame_pause")
+
 
     def __update(self) -> None:
         clock = Clock()
