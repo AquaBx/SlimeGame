@@ -1,12 +1,12 @@
 import os
 
-from .scripts.gameobject import Ground, Background, Lamp
+from .scripts.environment import MapElement, Platform, Background, Lamp
 
 class Asset:
-    def __init__(self, global_id: int, path: str, script: type, name: str):
+    def __init__(self, global_id: int, path: str, script: type[MapElement], name: str):
         self.id: int = global_id
         self.path: str = path
-        self.script: type = script
+        self.script: type[MapElement] = script
         self.name: str = name
 
 ASSET_DIR: str = os.path.dirname(__file__)
@@ -22,10 +22,10 @@ ASSETS: dict[int, Asset] = {
     id: Asset(id, f"{SPRITE_DIR}/{path}", script, name) for id,(name,path,script) in enumerate([
         ("brick_background", "background/brick_background.png", Background),
         
-        ("stone", "statics/stone.png", Ground),
-        ("wood", "statics/wood_ground.png", Ground),
-        ("dark bricks", "statics/dark_bricks.png", Ground),
-        ("copper", "statics/copper_full.png", Ground),
+        ("stone", "statics/stone.png", Platform),
+        ("wood", "statics/wood_ground.png", Platform),
+        ("dark bricks", "statics/dark_bricks.png", Platform),
+        ("copper", "statics/copper_full.png", Platform),
         ("light", "statics/light.png", Lamp)
     ])
 }

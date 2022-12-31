@@ -1,8 +1,8 @@
 from pygame import Vector2 as v2
 from config import GameConfig, GameState
-from assets.scripts.gameobject import Dynamic
 
-def update_pos(self, obj : Dynamic) -> None:
+
+def update_pos(self, obj) -> None:
     
     pos_avant = v2(obj.position.x,obj.position.y)
 
