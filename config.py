@@ -1,19 +1,22 @@
 import pygame as pg
 from pygame import Vector2 as v2, Surface
 from pygame.font import Font
+import json
+import inspect
 
 class GameConfig:
-    WINDOW_SIZE: v2 = v2(16,9) * 60
-    BLOCK_SIZE: float = 16
-    FPS: float = 144.0
+    BLOCK_SIZE      : int = 16
+    NB_BLOCK_HEIGHT : int = 9 # nombre de blocks affichés verticalement
+    BLOCKS_HEIGHT   : int = NB_BLOCK_HEIGHT * BLOCK_SIZE
 
-    WINDOW: Surface
-    GAME_SURFACE: Surface
+    # ambient_color_world = (170, 170, 170) # jour
+    # ambient_color_world = (120, 120, 120) # aube
+    ambient_color_world = ( 15,  15,  45) # nuit
 
-
-    opacity_world = 150
+    PhysicTick = 120
 
     FONT_SIZE: int = 25
+    FONTS: dict = {}
     FONT_DIR: str = "assets/fonts"
     FONT_DATA: dict[str, str] = {
         "BradBunR": f"{FONT_DIR}/BradBunR.ttf",
@@ -28,11 +31,60 @@ class GameConfig:
         "GREEN": (0, 255, 0)
     }
 
+    class KeyBindings:
+        up   : int = pg.K_SPACE
+        left : int = pg.K_LEFT
+        right: int = pg.K_RIGHT
+
+    class Graphics:
+        EnableLights: bool= True
+        WindowHeight: int = 1080
+        WindowWidth : int = 1920
+        MaxFPS      : int = 144
+
+        @property
+        def WindowSize(self) -> v2:
+            return (self.WindowWidth,self.WindowHeight)
+        @property
+        def WindowRatio(self) -> v2:
+            return self.WindowWidth/self.WindowHeight
+
     def initialise() -> None:
+
+        def rec(classe, dict):
+            """
+            fonction qui attributs les settings du fichier settings.json à la classe GameConfig
+            """
+            for attr in dict.keys():
+                if not(attr in classe.__dict__):
+                    print(f"{attr} not a attribut of {classe.__name__}")
+                elif inspect.isclass( classe.__dict__[attr] ):
+                    rec(classe.__dict__[attr], dict[attr])
+                elif hasattr(classe,attr):
+                    setattr(classe,attr,dict[attr])
+
+        with open("settings.json") as file:
+            save: dict = json.load( file )
+            rec(GameConfig,save["GameConfig"])
+            
         pg.display.set_caption("Slime Game")
-        GameConfig.WINDOW = pg.display.set_mode(GameConfig.WINDOW_SIZE.xy)
-        GameConfig.GAME_SURFACE = pg.Surface((GameConfig.WINDOW_SIZE.x*9*GameConfig.BLOCK_SIZE/GameConfig.WINDOW_SIZE.y,9*GameConfig.BLOCK_SIZE))
+        pg.font.init()
+
+        GameState.WINDOW = pg.display.set_mode(GameConfig.Graphics().WindowSize)
+        GameState.GAME_SURFACE = pg.Surface((GameConfig.Graphics().WindowRatio*GameConfig.BLOCKS_HEIGHT,GameConfig.BLOCKS_HEIGHT))
+
+        GameConfig.HealthBar = pg.image.load("assets/UI/healthbar.png").convert_alpha()
+        
+        for name, path in GameConfig.FONT_DATA.items():
+            GameConfig.FONTS[name] = Font(path, GameConfig.FONT_SIZE)
 
 
 class GameState:
     dt: float = 1/60
+    WINDOW: Surface
+    GAME_SURFACE: Surface
+    PhysicDT = 1/GameConfig.PhysicTick
+    save: dict = {
+        "state": 1,
+        "data": {}
+    }

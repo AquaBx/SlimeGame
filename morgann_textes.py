@@ -3,7 +3,7 @@ from pygame import font
 from pygame.font import Font
 from string import ascii_letters
 
-from config import GameConfig
+from config import GameConfig,GameState
 
 class Text:
 
