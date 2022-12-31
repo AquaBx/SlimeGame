@@ -44,7 +44,7 @@ class Game:
                 self.__draw()
             debug({"FPS":int(self.clock.get_fps()),"PhysicTick":int(1/GameState.PhysicDT)})
             pg.display.update()
-            self.clock.tick_busy_loop(GameConfig.Graphics.MaxFPS)
+            self.clock.tick(GameConfig.Graphics.MaxFPS)
 
     def __process_events(self) -> None:
         for ev in pg.event.get():
@@ -58,7 +58,7 @@ class Game:
         while not self.should_quit:
             self.world.update()
             GameState.PhysicDT = 1. / (clock.get_fps() + (clock.get_fps() == 0.) * GameConfig.PhysicTick)
-            clock.tick_busy_loop(GameConfig.PhysicTick)
+            clock.tick(GameConfig.PhysicTick)
         
 
     def __draw(self) -> None:

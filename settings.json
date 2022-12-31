@@ -8,8 +8,8 @@
         "Graphics": {
             "WindowHeight": 720,
             "WindowWidth": 1280,
-            "MaxFPS": 120,
-            "EnableLights": false
+            "MaxFPS": 300,
+            "EnableLights": true
         }
     }
 }
