@@ -2,9 +2,9 @@ import struct
 from assets import ASSETS
 from assets.palette import Palette
 import numpy as np
-from pygame import Vector2 as v2
+
 import pygame as pg
-from pygame import transform, image,Surface
+from pygame import transform, image,Vector2 as v2
 
 from config import GameConfig
 

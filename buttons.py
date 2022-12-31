@@ -1,4 +1,3 @@
-from typing import Any
 from pygame import Rect, Surface, Vector2 as v2
 from pygame import transform
 from pygame import Color

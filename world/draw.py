@@ -1,9 +1,8 @@
 import pygame as pg
-from pygame import transform
-from pygame import Rect
+from pygame import transform,Rect,Vector2 as v2
+
 from config import GameConfig, GameState
 from assets.scripts.lightsource import LightSource
-from pygame import Vector2 as v2
 
 def draw(self) -> None:
 
