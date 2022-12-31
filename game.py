@@ -8,7 +8,6 @@ from input import Input
 from morgann_textes import Text
 from world import World
 import threading
-from debug import debug
 
 from buttons import ButtonManager
 from menu_screen import Menu
@@ -45,8 +44,6 @@ class Game:
                 GameState.dt = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.Graphics.MaxFPS
                 GameState.GAME_SURFACE.fill('Black')
                 self.__draw()
-
-            debug((int(1/GameState.dt),int(1/GameState.PhysicDT)))
 
             ButtonManager.update()
             pg.display.update()

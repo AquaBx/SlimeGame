@@ -1,6 +1,6 @@
 from pygame import Vector2 as v2
 from config import GameConfig, GameState
-
+from debug import debug
 def update_pos(self, obj) -> None:
     
     pos_avant = v2(obj.position.x,obj.position.y)
@@ -89,10 +89,11 @@ def update_pos(self, obj) -> None:
             correction = max(correction,blocks_collide[7]["overlap_rect"].height)
         if blocks_collide[8]["collide"]:
             correction = max(correction,blocks_collide[8]["overlap_rect"].height)
-        
-        obj.position.y += -1 * correction
+        obj.position.y = int(obj.position.y) + 1 - correction
         obj.vitesse.y = 0
-    else: obj.is_flying = True
+
+    else:
+        obj.is_flying = True
 
     obj.acceleration.x = 0
     obj.acceleration.y = 0
