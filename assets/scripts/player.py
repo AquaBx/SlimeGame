@@ -31,6 +31,7 @@ class Player(Animable, LightSource):
         self.sante: int = 300
         self.santemax: int = 300
         self.is_flying: bool = True
+        self.taille: pg.Vector2 = size
         self.vitesse: pg.Vector2 = pg.Vector2(0.0)
         self.acceleration: pg.Vector2 = pg.Vector2(0.0)
         self.status_frame = 0
@@ -72,16 +73,18 @@ class Player(Animable, LightSource):
         # condition pour self.current_animation = "fall"
 
         # touches provisoires pour tester les frames
-        if Input.is_pressed(pg.K_p):
-            self.current_animation = "death"
-        elif Input.is_pressed(pg.K_o):
-            self.current_animation = "damage"
+        # if Input.is_pressed(pg.K_p):
+            # self.current_animation = "death"
+        # elif Input.is_pressed(pg.K_o):
+            # self.current_animation = "damage"
         # elif pressed[pg.K_i]:
         #     self.current_animation = "attack"
         # elif pressed[pg.K_u]:
         #     self.current_animation = "interaction"
 
         # propre
+        if self.is_flying:
+            self.current_animation = "jump"
         elif Input.is_pressed(GameConfig.KeyBindings.right):
             self.current_animation = "right"
         elif Input.is_pressed(GameConfig.KeyBindings.left):

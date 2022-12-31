@@ -3,7 +3,7 @@ from pygame import transform,Rect,Vector2 as v2
 
 from config import GameConfig, GameState
 from assets.scripts.lightsource import LightSource
-
+from debug import debug
 def draw(self) -> None:
 
     """ initialisation du draw """
@@ -39,3 +39,5 @@ def draw(self) -> None:
     """ blit fenetre """
     # upscale sur la taille de la fenetre
     GameState.WINDOW.blit(transform.scale(GameState.GAME_SURFACE, GameState.WINDOW.get_size()),(0,0))
+
+    debug((int(1/GameState.dt),int(1/GameState.PhysicDT)))
