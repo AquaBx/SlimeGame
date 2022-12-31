@@ -46,6 +46,8 @@ class Game:
                 GameState.GAME_SURFACE.fill('Black')
                 self.__draw()
 
+            debug((int(1/GameState.dt),int(1/GameState.PhysicDT)))
+
             ButtonManager.update()
             pg.display.update()
             self.clock.tick(GameConfig.Graphics.MaxFPS)

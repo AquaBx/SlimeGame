@@ -2,28 +2,29 @@ import pygame as pg
 from pygame import transform
 from pygame import Rect
 from config import GameConfig, GameState
-import shader
+from assets.scripts.lightsource import LightSource
+from pygame import Vector2 as v2
 
 def draw(self) -> None:
 
     """ initialisation du draw """
-    surface_size = GameState.GAME_SURFACE.get_size()
-    shader.reset() # initialisation des lights
-    GameState.GAME_SURFACE.fill('Black')
-    GameState.GAME_SURFACE.blit(self.background,(0,0))
+    surface_size: v2 = v2(GameState.GAME_SURFACE.get_size())
+    LightSource.reset() # initialisation des lights
+    background_rect: pg.Rect = self.background.get_rect()
 
     """ affichage du monde """
     # itération de tout les blocks visibles
-    for j in range( max(0, int(self.camera.rect.left / GameConfig.BLOCK_SIZE ) ) , min( len(self.blocks[0]) , int(self.camera.rect.right / GameConfig.BLOCK_SIZE ) + 1 ) ):
-        for i in range( max(0, int(self.camera.rect.top / GameConfig.BLOCK_SIZE ) ) , min( len(self.blocks) ,  int(self.camera.rect.bottom / GameConfig.BLOCK_SIZE) + 1 ) ):
-            self.blocks[i, j].draw(self.camera)
+    
+    croped_rect: pg.Rect = self.camera.rect.clip(background_rect)
+    offset: v2 = v2((surface_size.x-croped_rect.size[0]) * (not bool(croped_rect.x)), (surface_size.y-croped_rect.size[1]) * (not bool(croped_rect.y)))
+    GameState.GAME_SURFACE.blit(self.background.subsurface(croped_rect), offset)
 
     """ affichage des joueurs / mobs """
     self.player.update_frame()
     self.player.draw(self.camera)
 
     """ draw lights """
-    shader.draw()
+    LightSource.draw(self.camera)
 
     """ affichage UI """
     # recuperation de l'entité lié à la caméra
