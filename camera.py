@@ -1,37 +1,29 @@
-from pygame import Rect
+from pygame import Vector2, Rect
 from config import GameState
 
 class Camera:
 
     def __init__(self, link):
         self.link = link
-        self.rect = Rect(1,1,1,1)
+        self.rect: Rect = Rect((1,1),(1,1))
 
     def update(self):
         """
         update le rect de la caméra en centrant le link par rapport à celle-ci
         """
 
-        size = GameState.GAME_SURFACE.get_size()
+        size: Vector2 = Vector2(GameState.GAME_SURFACE.get_size())
 
-        xcam = (self.link.rect.right + self.link.rect.left  )/2 - size[0]/2
-        ycam = (self.link.rect.top   + self.link.rect.bottom)/2 - size[1]/2
+        xcam = (self.link.rect.right + self.link.rect.left  )/2 - size.x/2
+        ycam = (self.link.rect.top   + self.link.rect.bottom)/2 - size.y/2
         
-        self.rect: Rect = Rect(xcam , ycam , size[0] , size[1])
+        self.rect: Rect = Rect(xcam , ycam , size.x , size.y)
 
-    def transform_coord(self, entity: Rect) -> Rect:
+    def transform_coord(self, position: Vector2) -> Vector2:
         """
-        fonction qui va prendre en paramètre un rect d'un objet (entité ou block)
-        et qui va ré-envoyer un nouveau rect de cet objet là ou il doit être dessiné à l'écran
+        fonction qui va prendre en paramètre un Vector2 d'un objet (entité ou block)
+        et qui va ré-envoyer un nouveau Vector2 de cet objet là ou il doit être dessiné à l'écran
         """
-
         fixed: bool = False
-
-        newx: float = entity.left
-        newy: float = entity.top
-
-        if not fixed :  
-            newx -= self.rect.left
-            newy -= self.rect.top
-
-        return Rect(newx , newy, entity.width, entity.height)
+        # retire la position de la caméra si la position n'est pas fixe
+        return position - Vector2(self.rect.topleft) * (not fixed)
