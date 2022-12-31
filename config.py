@@ -16,9 +16,9 @@ class GameConfig:
     PhysicTick = 120
 
     FONT_SIZE: int = 25
+    FONTS: dict = {}
     FONT_DIR: str = "assets/fonts"
-    FONTS: dict[str, Font] = {}
-    __FONTS_DATA: dict[str, str] = {
+    FONT_DATA: dict[str, str] = {
         "BradBunR": f"{FONT_DIR}/BradBunR.ttf",
         "BLOBBYCHUG": f"{FONT_DIR}/BLOBBYCHUG.ttf",
         "PressStart2P": f"{FONT_DIR}/PressStart2P-Regular.ttf"
@@ -75,7 +75,7 @@ class GameConfig:
 
         GameConfig.HealthBar = pg.image.load("assets/UI/healthbar.png").convert_alpha()
         
-        for name, path in GameConfig.__FONTS_DATA.items():
+        for name, path in GameConfig.FONT_DATA.items():
             GameConfig.FONTS[name] = Font(path, GameConfig.FONT_SIZE)
 
 
