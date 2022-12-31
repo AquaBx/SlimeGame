@@ -14,7 +14,7 @@ class Button:
     DISABLED: int = 2
     
     # ne plus init les boutons comme ca, creer un ButtonManager.create qui retourne la ref du bouton
-    def __init__(self, id: str, label: str, hitbox: Rect, script: ButtonScript, textures: Surface | list[Surface], alive : bool = False, enabled : bool = True, font: str = "BradBunR", label_color: Color = Color("white")) -> None:
+    def __init__(self, id: str, label: str, hitbox: Rect, script: ButtonScript, textures: Surface | list[Surface], alive : bool = False, enabled : bool = True, font: str = "PressStart2P", label_color: Color = Color("white")) -> None:
         self.__id = id
         self.__label = label
         self.__hitbox = hitbox
