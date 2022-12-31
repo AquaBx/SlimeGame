@@ -68,7 +68,8 @@ class Game:
     def __update(self) -> None:
         clock = Clock()
         while not self.should_quit:
-            self.world.update()
+            if not self.paused:
+                self.world.update()
             GameState.PhysicDT = 1. / (clock.get_fps() + (clock.get_fps() == 0.) * GameConfig.PhysicTick)
             clock.tick(GameConfig.PhysicTick)
         
