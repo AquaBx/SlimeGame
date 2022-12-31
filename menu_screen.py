@@ -54,10 +54,10 @@ class Menu :
     def __create_ingame_menu(game) -> list[str]:
         texture = image.load(f"{ASSET_DIR}/UI/button1.png")
 
-        left: int = int(0.325*GameConfig.WINDOW_SIZE.x)
-        width: int = int(0.35*GameConfig.WINDOW_SIZE.x)
-        top: int = int(0.1 * GameConfig.WINDOW_SIZE.y)
-        height: int = int(0.8 * GameConfig.WINDOW_SIZE.y)
+        left: int = int(0.325*GameConfig.Graphics.WindowWidth)
+        width: int = int(0.35*GameConfig.Graphics.WindowWidth)
+        top: int = int(0.1 * GameConfig.Graphics.WindowHeight)
+        height: int = int(0.8 * GameConfig.Graphics.WindowHeight)
         return Menu.__create_menu(Rect(left,top,width,height), 2, 
         [
             {"id":"menu.ingame.resume",
