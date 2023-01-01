@@ -114,5 +114,11 @@ class Player(Animable, LightSource):
         #             self.status_frame = jump_counter # je test
         #     jump_counter += 1
 
-        self.status_frame -= GameState.dt
-        self.current_frame = int(self.status_frame % len(self.animations[self.current_animation]))
+        if self.current_animation == "jump":
+            frame = int(self.vitesse.y/300*5)
+            frame = max(min(3,frame),-4)+5
+            self.status_frame = frame
+            self.current_frame = frame
+        else:
+            self.status_frame -= GameState.dt
+            self.current_frame = int(self.status_frame % len(self.animations[self.current_animation]))
