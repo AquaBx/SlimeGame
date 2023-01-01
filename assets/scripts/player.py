@@ -17,10 +17,10 @@ def load_frame(name: str, size: pg.Vector2) -> pg.Surface:
 class Player(Animable, LightSource):
 
     __default_animations: dict[str, tuple[str, int]] = {
-        "idle":  ("assets/sprites/dynamics/slime/idle%d.png",      11),
-        "right": ("assets/sprites/dynamics/slime/right%d.png",     6 ),
-        "left":  ("assets/sprites/dynamics/slime/left%d.png",      6 ),
-        "jump":  ("assets/sprites/dynamics/slime/high_jump%d.png", 11)
+        "idle":  ("assets/sprites/dynamics/slime/Grn_idle%d.png",      11),
+        "right": ("assets/sprites/dynamics/slime/Grn_right%d.png",     6 ),
+        "left":  ("assets/sprites/dynamics/slime/Grn_left%d.png",      6 ),
+        "jump":  ("assets/sprites/dynamics/slime/Grn_jump%d.png", 11)
     }
 
     def __init__(self, position: pg.Vector2, size: pg.Vector2) -> None:
