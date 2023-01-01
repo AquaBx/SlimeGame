@@ -16,8 +16,8 @@ class Animable(GameObject):
     def __init__(self, position: pg.Vector2, animations: dict[str, list[pg.Surface]], size: pg.Vector2 = pg.Vector2(GameConfig.BLOCK_SIZE)) -> None:
         GameObject.__init__(self, position)
         self.size: pg.Vector2 = size
-
-        self.current_animation: str = "idle"
+        self.direction:str = "right"
+        self.current_animation: str = f"idle-{self.direction}"
         self.current_frame: int = 0
         self.animations: dict[str, list[pg.Surface]] = animations
 

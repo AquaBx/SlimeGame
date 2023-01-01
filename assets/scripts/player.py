@@ -11,22 +11,22 @@ from input import Input
 from assets.scripts.animable import Animable
 from assets.scripts.lightsource import LightSource
 
-def load_frame(name: str, size: pg.Vector2) -> pg.Surface:
-    return pg.transform.scale(pg.image.load(name).convert_alpha(), size)
+def load_frame(name: str, size: pg.Vector2, flip:bool) -> pg.Surface:
+
+    return pg.transform.flip( pg.transform.scale(pg.image.load(name).convert_alpha(), size), flip , False )
 
 class Player(Animable, LightSource):
 
     __default_animations: dict[str, tuple[str, int]] = {
         "idle":  ("assets/sprites/dynamics/slime/Grn_idle%d.png",      11),
-        "right": ("assets/sprites/dynamics/slime/Grn_right%d.png",     6 ),
-        "left":  ("assets/sprites/dynamics/slime/Grn_left%d.png",      6 ),
+        "walk": ("assets/sprites/dynamics/slime/Grn_right%d.png",     6 ),
         "jump":  ("assets/sprites/dynamics/slime/Grn_jump%d.png", 11)
     }
 
     def __init__(self, position: pg.Vector2, size: pg.Vector2, masse:int) -> None:
-        Animable.__init__(self, position, { name: [ load_frame(fmt % i, size) for i in range(1, count) ] for name, (fmt, count) in Player.__default_animations.items() }, size)
+        Animable.__init__(self, position, { f"{name}-{direction}": [ load_frame(fmt % i, size, direction == "left") for i in range(1, count) ] for name, (fmt, count) in Player.__default_animations.items() for direction in ["right","left"] }, size)
         LightSource.__init__(self)
-        self.mask: pg.Mask = pg.mask.from_surface(self.animations["idle"][0])
+        self.mask: pg.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
 
         self.masse = masse
         self.sante: int = 300
@@ -65,18 +65,20 @@ class Player(Animable, LightSource):
 
     def update_animation(self) -> None:
         if self.is_flying:
-            self.current_animation = "jump"
+            self.current_animation = f"jump-{self.direction}"
         elif Input.is_pressed(GameConfig.KeyBindings.right):
-            self.current_animation = "right"
+            self.direction = "right"
+            self.current_animation = f"walk-{self.direction}"
         elif Input.is_pressed(GameConfig.KeyBindings.left):
-            self.current_animation = "left"
+            self.direction = "left"
+            self.current_animation = f"walk-{self.direction}"
         else:
-            self.current_animation = "idle"
+            self.current_animation = f"idle-{self.direction}"
 
     def update_frame(self) -> None:
         self.status_frame = (self.status_frame+10*GameState.dt) % 10
 
-        if self.current_animation == "jump":
+        if self.current_animation == f"jump-{self.direction}":
             h = 4
             signe = int( self.vitesse.y >=0 ) * 2 - 1
             ecc = self.vitesse.y**2 / 2 * self.masse
