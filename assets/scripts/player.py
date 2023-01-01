@@ -18,9 +18,9 @@ def load_frame(name: str, size: pg.Vector2, flip:bool) -> pg.Surface:
 class Player(Animable, LightSource):
 
     __default_animations: dict[str, tuple[str, int]] = {
-        "idle":  ("assets/sprites/dynamics/slime/Grn_idle%d.png", 11),
-        "walk": ("assets/sprites/dynamics/slime/Grn_right%d.png", 6 ),
-        "jump":  ("assets/sprites/dynamics/slime/Grn_jump%d.png", 11)
+        "idle":  ("assets/sprites/dynamics/slime/Grn_Idle%d.png", 11),
+        "walk": ("assets/sprites/dynamics/slime/Grn_Walk%d.png", 6 ),
+        "jump":  ("assets/sprites/dynamics/slime/Grn_Jump%d.png", 11)
     }
 
     def __init__(self, position: pg.Vector2, size: pg.Vector2, masse:int) -> None:
