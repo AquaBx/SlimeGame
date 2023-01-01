@@ -78,7 +78,7 @@ class Player(Animable, LightSource):
 
         if self.current_animation == "jump":
             h = 4
-            signe = int( self.vitesse.y/((self.vitesse.y**2)**0.5-1) )
+            signe = int( self.vitesse.y >=0 ) * 2 - 1
             ecc = self.vitesse.y**2 / 2 * self.masse
             epp = GameConfig.Gravity * h * GameConfig.BLOCK_SIZE**2 * self.masse
 

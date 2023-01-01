@@ -41,3 +41,4 @@ def draw(self) -> None:
     GameState.WINDOW.blit(transform.scale(GameState.GAME_SURFACE, GameState.WINDOW.get_size()),(0,0))
 
     debug((int(1/GameState.dt),int(1/GameState.PhysicDT)))
+    debug("fly:"+str(self.player.is_flying),60)
