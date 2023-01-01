@@ -5,9 +5,6 @@ def update_pos(self, obj) -> None:
     
     pos_avant = v2(obj.position.x,obj.position.y)
 
-    obj.acceleration.x = 0
-    obj.acceleration.y = 0
-
     # keyboard inputs
     obj.update()
 
@@ -48,7 +45,7 @@ def update_pos(self, obj) -> None:
         obj.vitesse.x = 0
     
     # Gravity
-    obj.acceleration.y += 5 * 9.81 * GameConfig.BLOCK_SIZE
+    obj.acceleration.y += obj.masse * GameConfig.Gravity * GameConfig.BLOCK_SIZE
 
     obj.vitesse.y += obj.acceleration.y * GameState.PhysicDT
     obj.position.y += obj.vitesse.y * GameState.PhysicDT

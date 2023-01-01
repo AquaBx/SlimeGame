@@ -6,6 +6,7 @@ import inspect
 
 class GameConfig:
     BLOCK_SIZE      : int = 16
+    Gravity         : int = 9.81
     NB_BLOCK_HEIGHT : int = 9 # nombre de blocks affichés verticalement
     BLOCKS_HEIGHT   : int = NB_BLOCK_HEIGHT * BLOCK_SIZE
 

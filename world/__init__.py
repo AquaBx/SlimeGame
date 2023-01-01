@@ -28,7 +28,7 @@ class World:
 
         self.deserialize(GameState.save["data"]["last_map"])
         position: tuple[int, int] = GameState.save["data"]["player"]["position"]
-        self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 0.95*GameConfig.BLOCK_SIZE*v2(1, 1))
+        self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 0.95*GameConfig.BLOCK_SIZE*v2(1, 1),5)
         self.camera: Camera = Camera(self.player)
 
     deserialize = deserialize
