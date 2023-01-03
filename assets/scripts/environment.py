@@ -1,5 +1,7 @@
 # libraries
 import pygame as pg
+from pygame import Surface, Vector2 as v2
+from pygame.mask import Mask
 
 # utils
 from config import GameConfig
@@ -17,7 +19,7 @@ class MapElement(Renderable):
     def create(coords: tuple[int, int], id: int, state: int, uuid: int):
         return MapElement(coords, Palette.get_texture(id, state))
 
-    def __init__(self, coords: tuple[int, int], texture: pg.Surface, collidable: bool = True) -> None:
+    def __init__(self, coords: tuple[int, int], texture: Surface, collidable: bool = True) -> None:
         """MapElement(constructeur)
 
         Paramètres:
@@ -25,8 +27,8 @@ class MapElement(Renderable):
             texture (pg.Surface): une référence vers la texture à afficher.
             collidable (bool, optional): Si Vrai alors le `mask` correspond à la texture, sinon le `mask` est vide. Défaut à True.
         """
-        Renderable.__init__(self, pg.Vector2(coords[1], coords[0]) * GameConfig.BLOCK_SIZE, texture)
-        self.mask: pg.Mask = pg.mask.from_surface(self.texture) if collidable else pg.Mask((0, 0))
+        Renderable.__init__(self, v2(coords[1], coords[0]) * GameConfig.BLOCK_SIZE, texture)
+        self.mask: Mask = pg.mask.from_surface(self.texture) if collidable else Mask((0, 0))
 
 class Platform(MapElement):
     """Élément représentant une platforme dans le niveau 
@@ -48,10 +50,10 @@ class Lamp(MapElement, LightSource):
     def create(coords: tuple[int, int], id: int, state: int, uuid: int):
         return Lamp(coords, Palette.get_texture(id, state))
 
-    def __init__(self, coords: tuple[int, int], texture: pg.Surface) -> None:
+    def __init__(self, coords: tuple[int, int], texture: Surface) -> None:
         MapElement.__init__(self, coords, texture, False)
         LightSource.__init__(self)
 
     @property
-    def emit_position(self) -> pg.Vector2:
+    def emit_position(self) -> v2:
         return self.rect.center

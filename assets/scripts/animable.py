@@ -1,5 +1,6 @@
 # libraries
-import pygame as pg
+from pygame import Surface, Vector2 as v2
+from abc import ABC, abstractclassmethod
 
 # utils
 from config import GameConfig
@@ -7,28 +8,18 @@ from config import GameConfig
 # entity
 from assets.scripts.gameobject import GameObject
 
-class Animable(GameObject):
+class Animable(GameObject, ABC):
 
     # pour init je vois plutôt passer la spritesheet en paramètre
     # donner une liste de nom d'animations
     # une animation par ligne
 
-    def __init__(self, position: pg.Vector2, animations: dict[str, list[pg.Surface]], size: pg.Vector2 = pg.Vector2(GameConfig.BLOCK_SIZE)) -> None:
-        GameObject.__init__(self, position)
-        self.size: pg.Vector2 = size
+    def __init__(self, position: v2, animations: dict[str, list[Surface]], size: v2 = v2(GameConfig.BLOCK_SIZE)) -> None:
+        GameObject.__init__(self, position, size)
         self.direction:str = "right"
         self.current_animation: str = f"idle-{self.direction}"
         self.current_frame: int = 0
-        self.animations: dict[str, list[pg.Surface]] = animations
-
-    @property
-    def rect(self) -> pg.Rect:
-        return pg.Rect(self.position, self.size)
-
-    @rect.setter
-    def rect(self, value: pg.Rect) -> None:
-        self.position = pg.Vector2(value.topleft)
-        self.size = pg.Vector2(value.size)
+        self.animations: dict[str, list[Surface]] = animations
 
     @property
     def texture(self):
@@ -38,7 +29,10 @@ class Animable(GameObject):
         self.update_animation()
         self.update_frame()
 
+    @abstractclassmethod
     def update_animation(self) -> None: ...
+    
+    @abstractclassmethod
     def update_frame(self) -> None: ...
 
     

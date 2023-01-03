@@ -1,6 +1,6 @@
 # libraries
 import pygame as pg
-from pygame import Surface, Vector2 as v2
+from pygame import Surface, Color, Vector2 as v2
 from math import sqrt
 
 # utils
@@ -32,7 +32,7 @@ class Player(Animable, LightSource):
 
     def __init__(self, position: v2, size: v2, mass: int) -> None:
         Animable.__init__(self, position, Player.__create_animations(size), size)
-        LightSource.__init__(self)
+        LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(119,230,119))
         self.mask: pg.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
 
         self.mass: int = mass
