@@ -15,7 +15,7 @@ from menu_screen import Menu
 class Game:
     def __init__(self) -> None:
         pg.init()
-        GameConfig.initialise()
+        GameState.initialize()
         Input.init()
         Text.init(GameState.WINDOW, GameConfig.FONT_DATA, GameConfig.FONT_SIZE)
         ButtonManager.init(GameState.WINDOW)
