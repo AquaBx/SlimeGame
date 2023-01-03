@@ -1,8 +1,4 @@
-from .deserialize import deserialize
-from .draw import draw
-from .update_pos import update_pos
-from .collide import collide
-from .update import update
+import serializer, graphics, physics
 
 from pygame import Vector2 as v2
 import assets.saves
@@ -31,8 +27,15 @@ class World:
         self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 0.95*GameConfig.BLOCK_SIZE*v2(1, 1),5)
         self.camera: Camera = Camera(self.player)
 
-    deserialize = deserialize
-    draw = draw
-    update_pos = update_pos
-    collide = collide
-    update = update
+    def update(self) -> None:
+        self.update_pos(self.player)
+        self.camera.update()
+
+    def deserialize(self, file: str) -> None:
+        serializer.deserialize(self, file)
+
+    def draw(self) -> None:
+        graphics.draw(self)
+    
+    def update_pos(self, obj) -> None:
+        physics.update_pos(self, obj)
