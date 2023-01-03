@@ -23,7 +23,8 @@ def draw(self) -> None:
     self.player.draw(self.camera)
 
     """ draw lights """
-    LightSource.draw(self.camera)
+    if GameConfig.Graphics.EnableLights:
+        LightSource.draw(self.camera)
 
     """ affichage UI """
     # recuperation de l'entité lié à la caméra
@@ -32,10 +33,10 @@ def draw(self) -> None:
     # draw healthbar
     mr_bottom = surface_size[1]-2*surface_size[1]/20
     scale = 1/7*surface_size[1]/20
-    health_percent = link.sante/link.santemax * 29 * scale
+    health_percent = link.health/link.max_health * 29 * scale
     pg.draw.rect( GameState.GAME_SURFACE, (255,7,3) , Rect(surface_size[1]/20+10*scale,mr_bottom+2*scale,health_percent,3*scale))
     GameState.GAME_SURFACE.blit( GameConfig.HealthBar,(surface_size[1]/20,mr_bottom) )
-    
+
     """ blit fenetre """
     # upscale sur la taille de la fenetre
     GameState.WINDOW.blit(transform.scale(GameState.GAME_SURFACE, GameState.WINDOW.get_size()),(0,0))
