@@ -1,18 +1,20 @@
 import pygame as pg
+from pygame import Surface, Color, Vector2 as v2
 from PIL import Image as Img, ImageFilter, ImageDraw
 from PIL.Image import Image
+from abc import ABC, abstractclassmethod
 
 from camera import Camera
 from config import GameConfig, GameState
 
-def surface_to_pil(surf: pg.Surface) -> Image:
+def surface_to_pil(surf: Surface) -> Image:
     arr = pg.surfarray.array3d(surf)
     return Img.fromarray(arr)
 
-def pil_to_surface(pilImage) -> pg.Surface:
+def pil_to_surface(pilImage) -> Surface:
     return pg.image.fromstring(pilImage.tobytes(), pilImage.size, pilImage.mode).convert_alpha()
 
-class LightSource:
+class LightSource(ABC):
     """Permet à un élément du jeu d'émettre une aura de lumière autour de lui\n
     
     Attributs:
@@ -26,11 +28,11 @@ class LightSource:
 
     # list[LightSource]
     sources: list = list()
-    filter: pg.Surface = None
+    filter: Surface = None
 
-    def __init__(self, radius: int = 3*GameConfig.BLOCK_SIZE, glow: pg.Color = pg.Color(230, 199, 119), centered: bool = True) -> None:
+    def __init__(self, radius: int = 3*GameConfig.BLOCK_SIZE, glow: Color = Color(230, 199, 119), centered: bool = True) -> None:
         self.radius: int = radius
-        self.glow: pg.Color = glow
+        self.glow: Color = glow
         self.centered: bool = centered
 
         surface = Img.new("RGBA", (3*self.radius, 3*self.radius), (0, 0, 0, 0))
@@ -46,12 +48,13 @@ class LightSource:
 
         surface_blured = surface .filter(ImageFilter.GaussianBlur(self.radius/5))
 
-        self.light_mask: pg.Surface = pg.transform.scale(pil_to_surface(surface_blured), (2*self.radius, 2*self.radius))
+        self.light_mask: Surface = pg.transform.scale(pil_to_surface(surface_blured), (2*self.radius, 2*self.radius))
         LightSource.sources.append(self)
 
     # il faut la redéfinir pour chaque enfant
     @property
-    def emit_position(self) -> pg.Vector2:
+    @abstractclassmethod
+    def emit_position(self) -> v2:
         """Cette fonction doit être redéfinie par chaque enfant.\n
         Elle donne la position (top, left) de la lumière.
 
@@ -61,12 +64,12 @@ class LightSource:
         ...
 
     def reset() -> None:
-        LightSource.filter = pg.Surface(GameState.GAME_SURFACE.get_size())
+        LightSource.filter = Surface(GameState.GAME_SURFACE.get_size())
         LightSource.filter.fill(GameConfig.ambient_color_world)
 
     def draw(camera: Camera) -> None:
         for light in LightSource.sources:
             # on récupère la position dans l'espace de la caméra et on centre si indiqué
-            dist: pg.Vector2 = camera.transform_coord(light.emit_position-(pg.Vector2(light.radius)*light.centered))
+            dist: v2 = camera.transform_coord(light.emit_position-(v2(light.radius)*light.centered))
             LightSource.filter.blit(light.light_mask, dist)
         GameState.GAME_SURFACE.blit(LightSource.filter, (0, 0), special_flags=pg.BLEND_MULT)

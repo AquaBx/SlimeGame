@@ -16,7 +16,7 @@ def update_pos(world, obj) -> None:
 
     dir = obj.position - pos_avant
 
-    blocks_collide = world.collide(obj) # on actualise les collisions pour avoir une meilleur gestion de l'axe x
+    blocks_collide = collide(world, obj) # on actualise les collisions pour avoir une meilleur gestion de l'axe x
 
     if dir.x < 0.0 and (blocks_collide[0]["collide"] or blocks_collide[3]["collide"] or blocks_collide[6]["collide"]):
 
@@ -59,7 +59,7 @@ def update_pos(world, obj) -> None:
         obj.position.y = pos_avant.y
         obj.velocity.y = 0.0
 
-    blocks_collide = world.collide(obj)
+    blocks_collide = collide(world, obj)
 
 
     if dir.y < 0.0 and ( blocks_collide[0]["collide"] or blocks_collide[1]["collide"] or blocks_collide[2]["collide"] ):
@@ -88,7 +88,7 @@ def update_pos(world, obj) -> None:
             correction = max(correction, blocks_collide[7]["overlap_rect"].height)
         if blocks_collide[8]["collide"]:
             correction = max(correction, blocks_collide[8]["overlap_rect"].height)
-        obj.position.y = int(obj.position.y) - correction
+        obj.position.y = int(obj.position.y) + 1 - correction
         obj.velocity.y = 0.0
 
     else:
@@ -96,7 +96,7 @@ def update_pos(world, obj) -> None:
 
     obj.acceleration = v2(0.0)
 
-def collide(self, obj):
+def collide(world, obj):
     # we get all 9 blocs based on the centered position of the player (0)
     # | | | | | |
     # | |0|1|2| |
@@ -107,7 +107,7 @@ def collide(self, obj):
     jc = int( obj.position_matrix_center.x )
     ic = int( obj.position_matrix_center.y )
     blocks_arround = [
-        {"ref":self.blocks[i,j] } for i in range(ic-1,ic+2) for j in range(jc-1,jc+2)
+        {"ref":world.blocks[i,j] } for i in range(ic-1,ic+2) for j in range(jc-1,jc+2)
     ]
 
     for key in range(len(blocks_arround)):
