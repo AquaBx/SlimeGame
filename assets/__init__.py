@@ -15,6 +15,7 @@ SPRITE_DIR: str = f"{ASSET_DIR}/sprites"
 MAP_DIR: str = f"{ASSET_DIR}/maps"
 SAVE_DIR: str = f"{ASSET_DIR}/saves"
 FONT_DIR: str = f"{ASSET_DIR}/fonts"
+UI_DIR: str = f"{ASSET_DIR}/UI"
 
 SPRITE_TILE_SIZE: int = 16
 
