@@ -10,8 +10,8 @@ class GameConfig:
     NB_BLOCK_HEIGHT : int   = 12 # nombre de blocks affichés verticalement
     BLOCKS_HEIGHT   : int   = NB_BLOCK_HEIGHT * BLOCK_SIZE
 
-    ambient_color_world = (170, 170, 170) # jour
-    # ambient_color_world = (120, 120, 120) # aube
+    # ambient_color_world = (170, 170, 170) # jour
+    ambient_color_world = (120, 120, 120) # aube
     # ambient_color_world = ( 15,  15,  45) # nuit
 
     PhysicTick = 120
@@ -78,9 +78,11 @@ class GameState:
         GameState.GAME_SURFACE = pg.Surface(GameConfig.Graphics().WindowRatio*GameConfig.BLOCKS_HEIGHT)
 
         # il faudra mettre cette health bar dans le joueur ou une de ses classes parents
+
         GameConfig.HealthBar = pg.image.load("assets/UI/healthbar.png").convert_alpha()
         
         pg.display.set_caption("Slime Game")
+        pg.display.set_icon(pg.image.load("assets/UI/icon.png"))
         pg.font.init()
 
     DEFAULT_FONT: Font = None

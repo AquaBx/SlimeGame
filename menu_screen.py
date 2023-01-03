@@ -3,7 +3,7 @@ from pygame import image
 
 from buttons import ButtonManager, Button
 from button_script import ButtonScript
-from assets import ASSET_DIR
+from assets import UI_DIR
 from config import GameConfig
 
 class Menu :
@@ -52,7 +52,7 @@ class Menu :
         return [Button(**props).id for props in props_buttons]
             
     def __create_ingame_menu(game) -> list[str]:
-        texture = image.load(f"{ASSET_DIR}/UI/button1.png")
+        texture = image.load(f"{UI_DIR}/button1.png")
 
         left: int = int(0.325*GameConfig.Graphics.WindowWidth)
         width: int = int(0.35*GameConfig.Graphics.WindowWidth)
