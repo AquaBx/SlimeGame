@@ -1,6 +1,7 @@
 # libraries
 import pygame as pg
-from pygame import Vector2 as v2
+from pygame import Surface, Vector2 as v2
+from math import sqrt
 
 # utils
 from camera import Camera
@@ -11,9 +12,8 @@ from input import Input
 from assets.scripts.animable import Animable
 from assets.scripts.lightsource import LightSource
 
-def load_frame(name: str, size: pg.Vector2, flip:bool) -> pg.Surface:
-
-    return pg.transform.flip( pg.transform.scale(pg.image.load(name).convert_alpha(), size), flip , False )
+def load_frame(name: str, size: v2, flip: bool) -> Surface:
+    return pg.transform.flip(pg.transform.scale(pg.image.load(name).convert_alpha(), size), flip, False)
 
 class Player(Animable, LightSource):
 
@@ -23,27 +23,34 @@ class Player(Animable, LightSource):
         "jump":  ("assets/sprites/dynamics/slime/Grn_Jump%d.png", 11)
     }
 
-    def __init__(self, position: pg.Vector2, size: pg.Vector2, masse:int) -> None:
-        Animable.__init__(self, position, { f"{name}-{direction}": [ load_frame(fmt % i, size, direction == "left") for i in range(1, count) ] for name, (fmt, count) in Player.__default_animations.items() for direction in ["right","left"] }, size)
+    def __create_animations(size: v2) -> dict[str, list[Surface]]:
+        return {
+            f"{name}-{direction}": [ load_frame(fmt % i, size, direction == "left") for i in range(1, count) ]
+                                   for name, (fmt, count) in Player.__default_animations.items()
+                                   for direction in ["right","left"]
+        }
+
+    def __init__(self, position: v2, size: v2, mass: int) -> None:
+        Animable.__init__(self, position, Player.__create_animations(size), size)
         LightSource.__init__(self)
         self.mask: pg.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
 
-        self.masse = masse
-        self.sante: int = 300
-        self.santemax: int = 300
+        self.mass: int = mass
+        self.health: int = 300
+        self.max_health: int = 300
         self.is_flying: bool = True
-        self.taille: pg.Vector2 = size
-        self.vitesse: pg.Vector2 = pg.Vector2(0.0)
-        self.acceleration: pg.Vector2 = pg.Vector2(0.0)
-        self.status_frame = 0
+        self.size: v2 = size
+        self.velocity: v2 = v2(0.0)
+        self.acceleration: v2 = v2(0.0)
+        self.status_frame: float = 0.0
 
     @property
-    def emit_position(self) -> pg.Vector2:
-        return self.rect.center
+    def emit_position(self) -> v2:
+        return v2(self.rect.center)
 
     def draw(self, camera: Camera) -> None:
         Animable.update(self)
-        dest: pg.Vector2 = camera.transform_coord(self.position)
+        dest: v2 = camera.transform_coord(self.position)
         GameState.GAME_SURFACE.blit(self.texture, dest)
 
     def update(self) -> None:
@@ -59,8 +66,8 @@ class Player(Animable, LightSource):
             # v² = 2*g*m*h 
             # sans la masse ça fait pas le bon saut
             # testé avec 2 valeurs de masse, de hauteur et de gravité, on saute bien à la hauteur souhaitée
-            self.acceleration.y -= ( 2 * GameConfig.Gravity * hauteur * self.masse ) ** 0.5 / GameState.PhysicDT * GameConfig.BLOCK_SIZE 
-            self.acceleration.y -= GameConfig.Gravity * self.masse * GameConfig.BLOCK_SIZE
+            self.acceleration.y -= sqrt(2 * GameConfig.Gravity * hauteur * self.mass) / GameState.PhysicDT * GameConfig.BLOCK_SIZE 
+            self.acceleration.y -= GameConfig.Gravity * self.mass * GameConfig.BLOCK_SIZE
             self.is_flying = True
 
     def update_animation(self) -> None:
@@ -80,13 +87,15 @@ class Player(Animable, LightSource):
 
         if self.current_animation == f"jump-{self.direction}":
             h = 4
-            signe = int( self.vitesse.y >=0 ) * 2 - 1
-            ecc = self.vitesse.y**2 / 2 * self.masse
-            epp = GameConfig.Gravity * h * GameConfig.BLOCK_SIZE**2 * self.masse
+            # on est négatif si le joueur descend
+            
+            signe: int = (-1)**(self.velocity.y <= 0)
+            ecc: float = self.velocity.y**2 / 2 * self.mass
+            epp: float = GameConfig.Gravity * h * GameConfig.BLOCK_SIZE**2 * self.mass
 
             # frame = signe * (rapport ecc sur epp) et un peu de hard code
-            frame = int( (signe * int( ecc/epp ) + 5) /10*6 )
-            frame = max(min(7,frame),1)
+            frame = int((signe * int( ecc/epp ) + 5) /10*6)
+            frame = max(min(7, frame), 1)
             self.current_frame = frame
         else:
             self.status_frame -= GameState.dt
