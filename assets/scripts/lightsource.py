@@ -34,7 +34,7 @@ class LightSource:
         self.centered: bool = centered
 
         surface = Img.new("RGBA", (3*self.radius, 3*self.radius), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(surface )
+        draw = ImageDraw.Draw(surface)
 
 
         w, h = surface.size
