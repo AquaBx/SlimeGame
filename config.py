@@ -38,9 +38,11 @@ class GameConfig:
 
     class Graphics:
         EnableLights: bool = True
-        WindowHeight: int  = 1080
-        WindowWidth:  int  = 1920
+        WindowAutoSize: bool  = True
+        WindowHeight: int  = 360
+        WindowWidth:  int  = 640
         MaxFPS:       int  = 144
+        Fullscreen:  bool  = False
 
         @property
         def WindowSize(self) -> v2:
@@ -71,10 +73,15 @@ class GameState:
             GameState.save["data"] = dict()
 
         GameState.__initialize_game_configuration(GameConfig, GameState.save["GameConfig"])
+
+        flags = pg.FULLSCREEN if GameConfig.Graphics().Fullscreen else 0
+
+        if GameConfig.Graphics().WindowAutoSize:
+            setattr( GameConfig.Graphics, "WindowWidth", pg.display.Info().current_w )
+            setattr( GameConfig.Graphics, "WindowHeight", pg.display.Info().current_h )
         
         GameState.DEFAULT_FONT = Font(GameConfig.FONT_DATA["PressStart2P"], GameConfig.FONT_SIZE)
-        
-        GameState.WINDOW = pg.display.set_mode(GameConfig.Graphics().WindowSize, flags=pg.DOUBLEBUF)
+        GameState.WINDOW = pg.display.set_mode(GameConfig.Graphics().WindowSize, flags=flags )
         GameState.GAME_SURFACE = pg.Surface(GameConfig.Graphics().WindowRatio*GameConfig.BLOCKS_HEIGHT)
 
         # il faudra mettre cette health bar dans le joueur ou une de ses classes parents
