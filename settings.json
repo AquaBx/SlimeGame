@@ -6,10 +6,12 @@
             "up": 122
         },
         "Graphics": {
-            "WindowHeight": 1080,
-            "WindowWidth": 1920,
+            "WindowAutoSize": true,
+            "WindowHeight": 360,
+            "WindowWidth": 640,
             "MaxFPS": 144,
-            "EnableLights": true
+            "EnableLights": true,
+            "Fullscreen":false
         }
     }
 }
