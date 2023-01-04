@@ -2,22 +2,29 @@ from typing import Sequence
 from pygame import Vector2 as v2
 from pygame import key, mouse
 
+import pygame as pg
+
 class Input:
     """Listens to the keyboard and mouse inputs
     """
+    __keys: Sequence[bool]
+    __keys_once: Sequence[bool]
+    __click: tuple[bool]
+    __click_once: tuple[bool]
+    __mouse_motion: v2
+    __mouse_pos: v2
+
     is_init: bool = False
 
     def init() -> None:
         """Initializes the Input class. Has to be runned once before using Input.update()
         """
-        nb_keys = len(key.get_pressed())
-        nb_mouse_button = len(mouse.get_pressed())
-        Input.__keys: Sequence = [False]*nb_keys
-        Input.__keys_once: Sequence = [False]*nb_keys
-        Input.__click: list[bool] = [False]*nb_mouse_button
-        Input.__click_once: list[bool] = [False]*nb_mouse_button
-        Input.__mouse_motion: v2 = v2(0,0)
-        Input.__mouse_pos: v2 = v2(0,0)
+        Input.__keys = key.get_pressed()
+        Input.__keys_once = Input.__keys
+        Input.__click = mouse.get_pressed()
+        Input.__click_once = Input.__click
+        Input.__mouse_motion = v2(0,0)
+        Input.__mouse_pos = v2(0,0)
         
         Input.is_init = True
 
@@ -85,9 +92,17 @@ class Input:
     def update() -> None:
         """Update to current keyboard and mouse state
         """
-        key_states : Sequence = key.get_pressed()
-        Input.__keys_once = [not Input.__keys[i] and key_states[i] for i in range(len(key_states))]
+        key_states: Sequence[bool] = key.get_pressed()
+
+        # We gotta do that do bypass some strange sequence mapping between scancode and keycode
+        l_keys = list(Input.__keys)
+        l_states = list(key_states)
+
+        Input.__keys_once = key.ScancodeWrapper(tuple(not l_keys[i] and l_states[i] for i in range(len(key_states))))
+
+
         Input.__keys = key_states
+
 
         click_states: tuple[bool] = mouse.get_pressed()
         Input.__click_once = [not Input.__click[i] and click_states[i] for i in range(len(click_states))]
@@ -96,5 +111,3 @@ class Input:
         mouse_state = v2(mouse.get_pos())
         Input.__mouse_motion = mouse_state - Input.__mouse_pos
         Input.__mouse_pos = mouse.get_pos()
-        
-    
