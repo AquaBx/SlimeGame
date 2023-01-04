@@ -10,12 +10,10 @@ Ce projet comprend:
 
 ## Contributeurs
 
-Ce projet à été réalisé par:
-
-- Tom Chauvel
-- Malo Thiebaud
-- Célia Josso
-- Vianney Hervé
-
-
-![uml](http://www.plantuml.com/plantuml/proxy?src=https://gitlab.istic.univ-rennes1.fr/cejosso/slime_game/-/raw/main/uml/example.puml)
+|Nom      |Prénom |
+|---------|-------|
+|Bourniche|Morgann|
+|Chauvel  |Tom    |
+|Hervé    |Vianney|
+|Josso    |Célia  |
+|Thiebaud |Malo   |
