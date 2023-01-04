@@ -1,0 +1,17 @@
+{
+    "GameConfig": {
+        "KeyBindings": {
+            "left": 113,
+            "right": 100,
+            "up": 122
+        },
+        "Graphics": {
+            "WindowAutoSize": true,
+            "WindowHeight": 360,
+            "WindowWidth": 640,
+            "MaxFPS": 144,
+            "EnableLights": true,
+            "Fullscreen":false
+        }
+    }
+}
