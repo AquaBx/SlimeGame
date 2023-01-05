@@ -23,6 +23,10 @@ def draw(world) -> None:
     world.player.update_frame()
     world.player.draw(GameState.camera)
 
+    for ennemy in world.ennemies:
+        ennemy.update_frame()
+        ennemy.draw(GameState.camera)
+
     """ draw lights """
     if GameConfig.Graphics.EnableLights:
         LightSource.draw(GameState.camera)

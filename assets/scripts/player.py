@@ -19,7 +19,7 @@ class Player(Animable, LightSource):
 
     __default_animations: dict[str, tuple[str, int]] = {
         "idle":  ("assets/sprites/dynamics/slime/Grn_Idle%d.png", 11),
-        "walk": ("assets/sprites/dynamics/slime/Grn_Walk%d.png", 6 ),
+        "walk": ("assets/sprites/dynamics/slime/Grn_Idle%d.png", 11 ),
         "jump":  ("assets/sprites/dynamics/slime/Grn_Jump%d.png", 11)
     }
 
@@ -99,4 +99,5 @@ class Player(Animable, LightSource):
             self.current_frame = frame
         else:
             self.status_frame -= GameState.dt
-            self.current_frame = int(self.status_frame % len(self.animations[self.current_animation]))
+            mult = (1+(self.velocity.x**2)**0.5*int(not self.is_flying)/200)
+            self.current_frame = int(mult * self.status_frame % len(self.animations[self.current_animation]))
