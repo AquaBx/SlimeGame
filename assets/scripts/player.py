@@ -7,6 +7,8 @@ from math import sqrt
 from camera import Camera
 from config import GameState, GameConfig
 from input import Input
+from eventlistener import EventManager
+from customevents import PlayerActionEvent
 
 # entity
 from assets.scripts.animable import Animable
@@ -44,16 +46,20 @@ class Player(Animable, LightSource):
         self.acceleration: v2 = v2(0.0)
         self.status_frame: float = 0.0
 
-    @property
-    def emit_position(self) -> v2:
-        return v2(self.rect.center)
-
     def draw(self, camera: Camera) -> None:
         Animable.update(self)
         dest: v2 = camera.transform_coord(self.position)
         GameState.GAME_SURFACE.blit(self.texture, dest)
 
+    # LigthSource
+    @property
+    def emit_position(self) -> v2:
+        return v2(self.rect.center)
+
     def update(self) -> None:
+        if Input.is_pressed(pg.K_SPACE):
+            EventManager.push_event(PlayerActionEvent(self))
+        
         if Input.is_pressed(GameConfig.KeyBindings.right):
             self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.PhysicDT * ( 1 - 0.75 * self.is_flying)
 
@@ -70,6 +76,7 @@ class Player(Animable, LightSource):
             self.acceleration.y -= GameConfig.Gravity * self.mass * GameConfig.BLOCK_SIZE
             self.is_flying = True
 
+    # Animables
     def update_animation(self) -> None:
         if self.is_flying:
             self.current_animation = f"jump-{self.direction}"
