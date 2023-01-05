@@ -9,6 +9,7 @@ from morgann_textes import Text
 from world import World
 import threading
 
+from eventlistener import EventManager
 from buttons import ButtonManager
 from menu_screen import Menu
 
@@ -19,6 +20,7 @@ class Game:
         Input.init()
         Text.init(GameState.WINDOW, GameConfig.FONT_DATA, GameConfig.FONT_SIZE)
         ButtonManager.init(GameState.WINDOW)
+        EventManager.initialize(["player_action"])
         Menu.init(self)
         self.clock: Clock = Clock()
         self.should_quit: bool = False
@@ -26,8 +28,6 @@ class Game:
         # il faudra donner un entier qui correspond au fichier de sauvegarde demandé (1, 2 ou 3 sans doute)
         self.world: World = World()
         self.paused = False
-        
-        
 
     def __del__(self) -> None:
         pg.quit()
@@ -45,6 +45,7 @@ class Game:
                 GameState.GAME_SURFACE.fill('Black')
                 self.__draw()
 
+            EventManager.flush()
             ButtonManager.update()
             pg.display.update()
             self.clock.tick(GameConfig.Graphics.MaxFPS)
