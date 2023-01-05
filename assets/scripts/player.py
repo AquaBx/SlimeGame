@@ -1,6 +1,5 @@
 # libraries
 import pygame as pg
-from PIL import Image
 from pygame import Surface, Color, Rect, Vector2 as v2
 from math import sqrt
 
