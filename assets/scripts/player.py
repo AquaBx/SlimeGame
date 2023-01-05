@@ -9,6 +9,7 @@ from config import GameState, GameConfig
 from input import Input
 from eventlistener import EventManager
 from customevents import PlayerActionEvent
+from Gui import Gui, HealthBar
 
 # entity
 from assets.scripts.animable import Animable
@@ -45,6 +46,8 @@ class Player(Animable, LightSource):
         self.velocity: v2 = v2(0.0)
         self.acceleration: v2 = v2(0.0)
         self.status_frame: float = 0.0
+        
+        Gui.add_component(HealthBar(self))
 
     def draw(self, camera: Camera) -> None:
         Animable.update(self)

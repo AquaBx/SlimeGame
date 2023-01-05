@@ -12,6 +12,7 @@ import threading
 from eventlistener import EventManager
 from buttons import ButtonManager
 from menu_screen import Menu
+from Gui import Gui
 
 class Game:
     def __init__(self) -> None:
@@ -74,6 +75,12 @@ class Game:
 
     def __draw(self) -> None:
         self.world.draw()
+        Gui.draw(GameState().GAME_SURFACE)
+        
+        """ blit fenetre """
+        # upscale sur la taille de la fenetre
+        GameState.WINDOW.blit(pg.transform.scale(GameState.GAME_SURFACE, GameState.WINDOW.get_size()),(0,0))
+
 
 # to avoid global variable instances in main function
 def main() -> None:

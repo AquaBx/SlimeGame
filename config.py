@@ -84,10 +84,6 @@ class GameState:
         GameState.WINDOW = pg.display.set_mode(GameConfig.Graphics().WindowSize, flags=flags )
         GameState.GAME_SURFACE = pg.Surface(GameConfig.Graphics().WindowRatio*GameConfig.BLOCKS_HEIGHT)
 
-        # il faudra mettre cette health bar dans le joueur ou une de ses classes parents
-
-        GameConfig.HealthBar = pg.image.load("assets/UI/healthbar.png").convert_alpha()
-        
         pg.display.set_caption("Slime Game")
         pg.display.set_icon(pg.image.load("assets/UI/icon.png"))
         pg.font.init()

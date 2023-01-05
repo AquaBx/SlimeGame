@@ -11,7 +11,7 @@
             "WindowWidth": 640,
             "MaxFPS": 144,
             "EnableLights": true,
-            "Fullscreen":false
+            "Fullscreen":true
         }
     }
 }
