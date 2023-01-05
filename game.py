@@ -12,7 +12,7 @@ import threading
 from buttons import ButtonManager
 from menu_screen import Menu
 from Gui import Gui, HealthBar
-
+from debug import debug
 class Game:
     def __init__(self) -> None:
         pg.init()
@@ -79,6 +79,8 @@ class Game:
         """ blit fenetre """
         # upscale sur la taille de la fenetre
         GameState.WINDOW.blit(pg.transform.scale(GameState.GAME_SURFACE, GameState.WINDOW.get_size()),(0,0))
+
+        debug((int(1/GameState.PhysicDT),int(1/GameState.dt)))
 
 
 # to avoid global variable instances in main function
