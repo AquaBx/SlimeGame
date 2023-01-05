@@ -1,6 +1,6 @@
 # libraries
 import pygame as pg
-from pygame import Surface, Color, Vector2 as v2
+from pygame import Surface, Color, Rect, Vector2 as v2
 from math import sqrt
 
 # utils
@@ -12,30 +12,36 @@ from input import Input
 from assets.scripts.animable import Animable
 from assets.scripts.lightsource import LightSource
 
-def load_frame(name: str, size: v2, flip: bool) -> Surface:
-    return pg.transform.flip(pg.transform.scale(pg.image.load(name).convert_alpha(), size), flip, False)
+def load_frame(spritesheet: Surface, current_frame: int, animation_index: int, size: v2, flip: bool) -> Surface:
+    TILE_SIZE = 18
+    return pg.transform.flip(pg.transform.scale(spritesheet.subsurface(Rect(current_frame*TILE_SIZE,animation_index*TILE_SIZE,TILE_SIZE,TILE_SIZE)), size), flip, False)
 
 class Ennemy(Animable, LightSource):
 
-    __default_animations: dict[str, tuple[str, int]] = {
-        "idle":  ("assets/sprites/dynamics/ennemy/Red_Idle%d.png", 11),
-        "walk": ("assets/sprites/dynamics/ennemy/Red_Idle%d.png", 11 ),
-        "jump":  ("assets/sprites/dynamics/ennemy/Red_Jump%d.png", 11)
-    }
+    __default_animations: list[tuple[str, int]] = [
+        ("idle", 10),
+        ("jump", 10),
+        ("walk", 5),
+    ]
 
-    def __create_animations(size: v2) -> dict[str, list[Surface]]:
-        return {
-            f"{name}-{direction}": [ load_frame(fmt % i, size, direction == "left") for i in range(1, count) ]
-                                   for name, (fmt, count) in Ennemy.__default_animations.items()
-                                   for direction in ["right","left"]
-        }
+    def __init__(self, position: v2, size: v2, mass: int, path) -> None:
+        spritesheet: Surface = pg.image.load("assets/Sprites/Dynamics/ennemy_spritesheet.png").convert_alpha()
+        animations: dict[str, list[Surface]] = {}
+        for animation_index, (name, frame_count) in enumerate(Ennemy.__default_animations):
+            for direction in ["right", "left"]:
+                animation: list[Surface] = []
+                for frame_index in range(frame_count):
+                    animation.append(load_frame(spritesheet, frame_index, animation_index, size, direction=="left"))
+                animations[f"{name}-{direction}"] = animation
+        
+        # animations: dict[str, list[Surface]] = {
+        #     name: [load_frame(spritesheet, frame_index, animation_index, size, direction=="left") for frame_index in range(0, frame_count-1) ] for animation_index, (name, frame_count) in enumerate(Player.__default_animations) for direction in ["right", "left"]
+        # }
 
-    def __init__(self, position: v2, size: v2, mass: int, path: tuple[int]) -> None:
-        Animable.__init__(self, position, Ennemy.__create_animations(size), size)
-        LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(230,119,119))
+        Animable.__init__(self, position, animations, size)
+        LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(200,200,200))
         self.mask: pg.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
-
-        self.way = 1
+        self.path: tuple[int] = path
         self.mass: int = mass
         self.health: int = 300
         self.max_health: int = 300
@@ -44,7 +50,6 @@ class Ennemy(Animable, LightSource):
         self.velocity: v2 = v2(0.0)
         self.acceleration: v2 = v2(0.0)
         self.status_frame: float = 0.0
-        self.path = path
 
     @property
     def emit_position(self) -> v2:
@@ -80,7 +85,6 @@ class Ennemy(Animable, LightSource):
         else:
             self.current_animation = f"walk-{self.direction}"
             self.current_animation = f"idle-{self.direction}"
-        
 
     def update_frame(self) -> None:
         self.status_frame = (self.status_frame+10*GameState.dt) % 10
@@ -99,5 +103,4 @@ class Ennemy(Animable, LightSource):
             self.current_frame = frame
         else:
             self.status_frame -= GameState.dt
-            mult = (1+(self.velocity.x**2)**0.5*int(not self.is_flying)/200)
-            self.current_frame = int(mult * self.status_frame % len(self.animations[self.current_animation]))
+            self.current_frame = int(self.status_frame % len(self.animations[self.current_animation]))
