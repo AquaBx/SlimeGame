@@ -1,9 +1,29 @@
-@startuml Jeu
+@startuml game
 
 package pygame{}
-package json{}
-package threading{}
-class ABC{}
+
+package assets.scripts {
+    abstract GameObject{
+        + position
+        + size
+        + position_in_matrix
+        + rect
+        + texture
+    }
+    abstract MapElement{}
+
+    class LightSource{}
+
+    class Platform{}
+    class Lamp{}
+
+
+    class Player{
+        + Health
+    }
+    class Ennemy{}
+
+}
 
 class Camera {
     + link
@@ -12,52 +32,8 @@ class Camera {
     + transform_coord(position)
 }
 
-class GameState {
-    + DEFAULT_FONT
-    + WINDOW 
-    + GAME_SURFACE
-    + PhysicDT
-    + dt
-    + save
-    # camera
-
-    + initialize()   
-    - __initialize_game_configuration(GameConfig,attributes)
-}
-
-class GameConfig {
-    # BLOCK_SIZE
-    # Gravity 
-    # NB_BLOCK_HEIGHT
-    # BLOCKS_HEIGHT
-    # ambient_color_world
-    # PhysicTick
-
-    + FONT_SIZE
-    # FONT_DIR
-    # FONT_DATA
-
-    # COLORS
-
-    + KeyBindings.up
-    + KeyBindings.left
-    + KeyBindings.right
-    
-    +Graphics.EnableLights
-    +Graphics.WindowAutoSize
-    +Graphics.WindowHeight
-    +Graphics.WindowWidth
-    +Graphics.MaxFPS
-    +Graphics.Fullscreen
-
-    # WindowSize
-    # WindowRatio
-
-    + initialize()
-    - __initialize_game_configuration(GameConfig,attributes)
-}
-
 class Game {
+    + world
     + loop()
     - __process_events()
     - __update()
@@ -65,20 +41,17 @@ class Game {
 }
 
 class Gui {
-    + components
-    + add_component(Component)
-    + draw(Surface)
+    {static} + components
+    {static} + add_component(GuiComponent)
+    {static} + draw(Surface)
 }
 
 class HealthBar{
-    + position
-    + size
     + texture
     + link
-    + surface()
 }
 
-class Component{
+abstract GuiComponent{
     + position
     + size
     + surface()
@@ -91,9 +64,6 @@ class ButtonScript{
 }
 
 class Button{
-    + DEFAULT
-    + HOVER
-    + DISABLED
     + id
     + label
     + hitbox
@@ -106,97 +76,112 @@ class Button{
 }
 
 class ButtonManager{
-    + {static} update()
-    + {static} is_alive(id)
-    + {static} set_alive(id[])
-    + {static} kill(id[])
-    + {static} unregister_buttons(id[])
-    + {static} register_buttons(Button[])
+    {static} + update()
+    {static} + is_alive(id)
+    {static} + set_alive(id)
+    {static} + kill(id)
+    {static} + unregister_buttons(id)
+    {static} + register_buttons(Button)
 }
 
 class World{
-    + ennemies
+    + enemies
     + player
     + background
     + blocks
-    + update()
     + deserialize(file)
-    + draw()
+    + update()
     + update_pos(obj)
+    + draw()
 }
 
 class Menu {
-    + is_open()
-    + close_menu()
-    + open_menu()
-    + is_open()
+    {static} + is_open(id)
+    {static} + close_menu(id)
+    {static} + open_menu(id)
+    {static} + is_open(id)
 }
 
 class Text {
-    + {static} divide_string(text)
-    + {static} display_message(text, position, font, color, divide)
+    {static} + fonts
+    {static} + divide_string(text)
+    {static} + display_message(text, position, font, color, divide)
 }
 
 class Input{
-    + {static} is_pressed(key)
-    + {static} is_pressed_once(key)
-    + {static} is_clicked(button)
-    + {static} is_clicked_once(button)
-    + {static} get_motion()
-    + {static} get_mouse()
-    + {static} update()
-}
-
-class Listener{
-    + events_that_i_need_to_listen_to
-    + notify(CustomEvent)
+    {static} + is_pressed(key)
+    {static} + is_pressed_once(key)
+    {static} + is_clicked(button)
+    {static} + is_clicked_once(button)
+    {static} + get_motion()
+    {static} + get_mouse()
+    {static} + update()
 }
 
 class EventManager{
-    + listeners
-    + event_queue
+    {static} + listeners
+    {static} + event_queue
 
-    + {static} initialize(custom_events)
-    + {static} flush()
-    + {static} register_listener(listener)
-    + {static} push_event(custom_events)
+    {static} + initialize(custom_events)
+    {static} + flush()
+    {static} + register_listener(listener)
+    {static} + push_event(custom_events)
 }
 
-class Animable{}
-class Ennemy{}
+class GameState {
+    {static} + DEFAULT_FONT
+    {static} + WINDOW 
+    {static} + GAME_SURFACE
+    {static} + PhysicDT
+    {static} + GraphicDT
+    {static} + save
+    {static} + camera
 
-class MapElement{}
-class Platform{}
-class Background{}
-class Lamp{}
+    {static} + initialize()   
+    {static} - __initialize_game_configuration(GameConfig,attributes)
+}
 
-class GameObject{}
-class LightSource{}
-class Player{}
-class Renderable{}
+class GameConfig {
+    {static} + BLOCK_SIZE
+    {static} + Gravity 
+    {static} + NB_BLOCK_HEIGHT
+    {static} + BLOCKS_HEIGHT
+    {static} + ambient_color_world
+    {static} + PhysicTick
 
-Renderable    --|> GameObject
+    {static} + FONT_SIZE
+    {static} + FONT_DIR
+    {static} + FONT_DATA
 
-Animable        --|> GameObject
-Animable        --|> ABC
+    {static} + COLORS
 
-Ennemy        --|> Animable
+    {static} + KeyBindings.up
+    {static} + KeyBindings.left
+    {static} + KeyBindings.right
+    
+    {static} + Graphics.EnableLights
+    {static} + Graphics.WindowAutoSize
+    {static} + Graphics.WindowHeight
+    {static} + Graphics.WindowWidth
+    {static} + Graphics.MaxFPS
+    {static} + Graphics.Fullscreen
+
+    {static} + Graphics.WindowSize
+    {static} + Graphics.WindowRatio
+}
+
 Ennemy        --|> LightSource
+Ennemy        --|> GameObject
 
-Player        --|> Animable
 Player        --|> LightSource
+Player        --|> GameObject
 
-LightSource    --|> ABC
-
-MapElement    --|> Renderable
+MapElement    --|> GameObject
 Platform      --|> MapElement
 Lamp          --|> MapElement
 Lamp          --|> LightSource
 
 Game          ---> pygame
-
-Listener     --|> ABC
-EventManager ---> Queue
 
 Button        ---> ButtonScript
 Button        ---> Text
@@ -204,24 +189,23 @@ Button        ---> Text
 ButtonManager <--> Button
 ButtonManager ---> Input
 
-ABC           <|-- Component
-Component     <|-- HealthBar
+GuiComponent     <|-- HealthBar
 
-Camera        <--- GameState
-json          <--- GameState
+Gui ---> GuiComponent
 
-Game          ---> GameState
 Game          ---> Menu
-Game          ---> GameConfig
 Game          ---> Input
-Game          ---> Text
 Game          ---> World
-Game          ---> threading
 Game          ---> EventManager
 Game          ---> ButtonManager
 Game          ---> Gui
 
+Menu --> ButtonManager
+Menu ---> Text
+
 World         ---> Camera
-World         ---> assets
+World         ---> MapElement
+World         ---> Player
+World         ---> Ennemy
 
 @enduml
