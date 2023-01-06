@@ -5,13 +5,12 @@ from pygame.time import Clock
 
 from config import GameConfig, GameState
 from input import Input
-from morgann_textes import Text
+from text import Text
 from world import World
 import threading
 
 from eventlistener import EventManager
 from buttons import ButtonManager
-from menu_screen import Menu
 from Gui import Gui
 
 class Game:

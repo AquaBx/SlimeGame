@@ -1,8 +1,5 @@
 from typing import Sequence
-from pygame import Vector2 as v2
-from pygame import key, mouse
-
-import pygame as pg
+from pygame import key, mouse, Vector2 as v2
 
 class Input:
     """Listens to the keyboard and mouse inputs
@@ -27,7 +24,6 @@ class Input:
         Input.__mouse_pos = v2(0,0)
         
         Input.is_init = True
-
 
     def is_pressed(key: int) -> bool:
         """Checks if a key is currently pressed
