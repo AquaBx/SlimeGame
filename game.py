@@ -9,10 +9,11 @@ from morgann_textes import Text
 from world import World
 import threading
 
+from eventlistener import EventManager
 from buttons import ButtonManager
 from menu_screen import Menu
-from Gui import Gui, HealthBar
-from debug import debug
+from Gui import Gui
+
 class Game:
     def __init__(self) -> None:
         pg.init()
@@ -20,6 +21,7 @@ class Game:
         Input.init()
         Text.init(GameState.WINDOW, GameConfig.FONT_DATA, GameConfig.FONT_SIZE)
         ButtonManager.init(GameState.WINDOW)
+        EventManager.initialize(["player_action"])
         Menu.init(self)
         self.clock: Clock = Clock()
         self.should_quit: bool = False
@@ -27,8 +29,6 @@ class Game:
         # il faudra donner un entier qui correspond au fichier de sauvegarde demandé (1, 2 ou 3 sans doute)
         self.world: World = World()
         self.paused = False
-        
-        Gui.add_component(HealthBar(GameState.camera.link))
 
     def __del__(self) -> None:
         pg.quit()
@@ -46,6 +46,7 @@ class Game:
                 GameState.GAME_SURFACE.fill('Black')
                 self.__draw()
 
+            EventManager.flush()
             ButtonManager.update()
             pg.display.update()
             self.clock.tick(GameConfig.Graphics.MaxFPS)
@@ -79,9 +80,6 @@ class Game:
         """ blit fenetre """
         # upscale sur la taille de la fenetre
         GameState.WINDOW.blit(pg.transform.scale(GameState.GAME_SURFACE, GameState.WINDOW.get_size()),(0,0))
-
-        debug((int(1/GameState.PhysicDT),int(1/GameState.dt)))
-
 
 # to avoid global variable instances in main function
 def main() -> None:
