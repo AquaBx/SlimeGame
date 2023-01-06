@@ -162,6 +162,37 @@ class EventManager{
     + {static} push_event(custom_events)
 }
 
+class Animable{}
+class Ennemy{}
+
+class MapElement{}
+class Platform{}
+class Background{}
+class Lamp{}
+
+class GameObject{}
+class LightSource{}
+class Player{}
+class Renderable{}
+
+Renderable    --|> GameObject
+
+Animable        --|> GameObject
+Animable        --|> ABC
+
+Ennemy        --|> Animable
+Ennemy        --|> LightSource
+
+Player        --|> Animable
+Player        --|> LightSource
+
+LightSource    --|> ABC
+
+MapElement    --|> Renderable
+Platform      --|> MapElement
+Lamp          --|> MapElement
+Lamp          --|> LightSource
+
 Game          ---> pygame
 
 Listener     --|> ABC
