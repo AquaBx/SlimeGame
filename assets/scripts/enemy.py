@@ -1,7 +1,6 @@
 # libraries
 import pygame as pg
 from pygame import Surface, Color, Rect, Vector2 as v2
-from math import sqrt
 
 # utils
 from camera import Camera
@@ -16,7 +15,7 @@ def load_frame(spritesheet: Surface, current_frame: int, animation_index: int, s
     TILE_SIZE = 18
     return pg.transform.flip(pg.transform.scale(spritesheet.subsurface(Rect(current_frame*TILE_SIZE,animation_index*TILE_SIZE,TILE_SIZE,TILE_SIZE)), size), flip, False)
 
-class Ennemy(Animable, LightSource):
+class Enemy(Animable, LightSource):
 
     __default_animations: list[tuple[str, int]] = [
         ("idle", 10),
@@ -27,7 +26,7 @@ class Ennemy(Animable, LightSource):
     def __init__(self, position: v2, size: v2, mass: int, path) -> None:
         spritesheet: Surface = pg.image.load("assets/Sprites/Dynamics/ennemy_spritesheet.png").convert_alpha()
         animations: dict[str, list[Surface]] = {}
-        for animation_index, (name, frame_count) in enumerate(Ennemy.__default_animations):
+        for animation_index, (name, frame_count) in enumerate(Enemy.__default_animations):
             for direction in ["right", "left"]:
                 animation: list[Surface] = []
                 for frame_index in range(frame_count):
@@ -40,7 +39,7 @@ class Ennemy(Animable, LightSource):
 
         Animable.__init__(self, position, animations, size)
         LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(200,200,200))
-        self.mask: pg.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
+        self.mask: pg.mask.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
         self.path: tuple[int] = path
         self.mass: int = mass
         self.health: int = 300

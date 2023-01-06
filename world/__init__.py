@@ -1,9 +1,10 @@
 from . import serializer, graphics, physics
 
-from pygame import Mask, Rect, Vector2 as v2
+from pygame import Rect, Vector2 as v2
+from pygame.mask import Mask
 import assets.saves
 from assets.scripts.player import Player
-from assets.scripts.ennemy import Ennemy
+from assets.scripts.enemy import Enemy
 from config import GameConfig, GameState
 from camera import Camera
 
@@ -28,8 +29,8 @@ class World:
         self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 1.06875*GameConfig.BLOCK_SIZE*v2(1, 1),5)
         self.ennemies = []
 
-        self.ennemies.append(Ennemy(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 1.06875*GameConfig.BLOCK_SIZE*v2(1, 1),5,(4*GameConfig.BLOCK_SIZE,13*GameConfig.BLOCK_SIZE)))
-        self.ennemies.append(Ennemy(v2(23, position[1])*GameConfig.BLOCK_SIZE, 1.06875*GameConfig.BLOCK_SIZE*v2(1, 1),5,(23*GameConfig.BLOCK_SIZE,39*GameConfig.BLOCK_SIZE)))
+        self.ennemies.append(Enemy(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 1.06875*GameConfig.BLOCK_SIZE*v2(1, 1),5,(4*GameConfig.BLOCK_SIZE,13*GameConfig.BLOCK_SIZE)))
+        self.ennemies.append(Enemy(v2(23, position[1])*GameConfig.BLOCK_SIZE, 1.06875*GameConfig.BLOCK_SIZE*v2(1, 1),5,(23*GameConfig.BLOCK_SIZE,39*GameConfig.BLOCK_SIZE)))
 
         GameState.camera: Camera = Camera(self.player)
 
