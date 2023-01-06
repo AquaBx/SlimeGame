@@ -23,7 +23,7 @@ def deserialize(world, file: str) -> None:
 
         # on lit ensuite les dimensions de la grille
         (grid_rows, grid_columns) = struct.unpack("@bb", f.read(2))
-        environment: pg.Surface = pg.Surface(v2(grid_columns, grid_rows)*GameConfig.BLOCK_SIZE)
+        environment: pg.Surface = pg.Surface(v2(grid_columns, grid_rows)*GameConfig.BLOCK_SIZE, flags=pg.SRCALPHA).convert_alpha()
         world.blocks = np.full((grid_rows, grid_columns), None)
         for i in range(grid_rows):
             for j in range(grid_columns):

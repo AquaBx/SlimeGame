@@ -43,7 +43,7 @@ class Player(Animable, LightSource):
 
         Animable.__init__(self, position, animations, size)
         LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(119,230,119))
-        self.mask: pg.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
+        self.mask: pg.mask.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
 
         self.mass: int = mass
         self.health: int = 300
