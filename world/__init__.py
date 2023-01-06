@@ -1,6 +1,6 @@
 from . import serializer, graphics, physics
 
-from pygame import Vector2 as v2
+from pygame import Mask, Rect, Vector2 as v2
 import assets.saves
 from assets.scripts.player import Player
 from assets.scripts.ennemy import Ennemy
