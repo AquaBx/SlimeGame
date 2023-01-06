@@ -4,7 +4,7 @@ from pygame import Color
 
 from input import Input
 from button_script import ButtonScript
-from morgann_textes import Text
+from text import Text
 
 class Button:
 

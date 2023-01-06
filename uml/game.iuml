@@ -1,48 +1,227 @@
-@startuml test
+@startuml Jeu
 
-class Parent {
-    + public_member: type
-    # protected_member: type
-    - private_member: type
+package pygame{}
+package json{}
+package threading{}
+class ABC{}
 
-    {static} static_member: type
-
-    + public_method(param: type): return_type
-    # public_method(param: type): return_type
-    - public_method(param: type): return_type
-
-    {static} static_method(param: type): return_type
+class Camera {
+    + link
+    + rect
+    + update()
+    + transform_coord(position)
 }
 
-class Entity {
-    + position : Pygame.Vector2D
-    + vitesse : Pygame.Vector2D
-    + acceleration : Pygame.Vector2D
-    + rect : Pygame.Rect
+class GameState {
+    + DEFAULT_FONT
+    + WINDOW 
+    + GAME_SURFACE
+    + PhysicDT
+    + dt
+    + save
+    # camera
 
-    + textures_idle : Pygame.Texture[]
-    + masks_idle: Pygame.Mask[]
-    + text_count: int
+    + initialize()   
+    - __initialize_game_configuration(GameConfig,attributes)
+}
 
-    blit() : void
+class GameConfig {
+    # BLOCK_SIZE
+    # Gravity 
+    # NB_BLOCK_HEIGHT
+    # BLOCKS_HEIGHT
+    # ambient_color_world
+    # PhysicTick
+
+    + FONT_SIZE
+    # FONT_DIR
+    # FONT_DATA
+
+    # COLORS
+
+    + KeyBindings.up
+    + KeyBindings.left
+    + KeyBindings.right
     
-    update_mask() : void
+    +Graphics.EnableLights
+    +Graphics.WindowAutoSize
+    +Graphics.WindowHeight
+    +Graphics.WindowWidth
+    +Graphics.MaxFPS
+    +Graphics.Fullscreen
 
-    get_text() : Pygame.Texture
-}
+    # WindowSize
+    # WindowRatio
 
-class Block {
-
+    + initialize()
+    - __initialize_game_configuration(GameConfig,attributes)
 }
 
 class Game {
-
+    + loop()
+    - __process_events()
+    - __update()
+    - __draw()
 }
 
-class World {
-
+class Gui {
+    + components
+    + add_component(Component)
+    + draw(Surface)
 }
 
-Parent <|-- Child
+class HealthBar{
+    + position
+    + size
+    + texture
+    + link
+    + surface()
+}
+
+class Component{
+    + position
+    + size
+    + surface()
+}
+
+class ButtonScript{
+    + fct
+    + args
+    + set_quit(game)
+}
+
+class Button{
+    + DEFAULT
+    + HOVER
+    + DISABLED
+    + id
+    + label
+    + hitbox
+    + state
+    + font
+    + label_color
+
+    + draw()
+    + run()
+}
+
+class ButtonManager{
+    + {static} update()
+    + {static} is_alive(id)
+    + {static} set_alive(id[])
+    + {static} kill(id[])
+    + {static} unregister_buttons(id[])
+    + {static} register_buttons(Button[])
+}
+
+class World{
+    + ennemies
+    + player
+    + background
+    + blocks
+    + update()
+    + deserialize(file)
+    + draw()
+    + update_pos(obj)
+}
+
+class Menu {
+    + is_open()
+    + close_menu()
+    + open_menu()
+    + is_open()
+}
+
+class Text {
+    + {static} divide_string(text)
+    + {static} display_message(text, position, font, color, divide)
+}
+
+class Input{
+    + {static} is_pressed(key)
+    + {static} is_pressed_once(key)
+    + {static} is_clicked(button)
+    + {static} is_clicked_once(button)
+    + {static} get_motion()
+    + {static} get_mouse()
+    + {static} update()
+}
+
+class Listener{
+    + events_that_i_need_to_listen_to
+    + notify(CustomEvent)
+}
+
+class EventManager{
+    + listeners
+    + event_queue
+
+    + {static} initialize(custom_events)
+    + {static} flush()
+    + {static} register_listener(listener)
+    + {static} push_event(custom_events)
+}
+
+class Animable{}
+class Ennemy{}
+
+class MapElement{}
+class Platform{}
+class Background{}
+class Lamp{}
+
+class GameObject{}
+class LightSource{}
+class Player{}
+class Renderable{}
+
+Renderable    --|> GameObject
+
+Animable        --|> GameObject
+Animable        --|> ABC
+
+Ennemy        --|> Animable
+Ennemy        --|> LightSource
+
+Player        --|> Animable
+Player        --|> LightSource
+
+LightSource    --|> ABC
+
+MapElement    --|> Renderable
+Platform      --|> MapElement
+Lamp          --|> MapElement
+Lamp          --|> LightSource
+
+Game          ---> pygame
+
+Listener     --|> ABC
+EventManager ---> Queue
+
+Button        ---> ButtonScript
+Button        ---> Text
+
+ButtonManager <--> Button
+ButtonManager ---> Input
+
+ABC           <|-- Component
+Component     <|-- HealthBar
+
+Camera        <--- GameState
+json          <--- GameState
+
+Game          ---> GameState
+Game          ---> Menu
+Game          ---> GameConfig
+Game          ---> Input
+Game          ---> Text
+Game          ---> World
+Game          ---> threading
+Game          ---> EventManager
+Game          ---> ButtonManager
+Game          ---> Gui
+
+World         ---> Camera
+World         ---> assets
 
 @enduml
