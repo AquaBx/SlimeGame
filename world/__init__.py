@@ -25,11 +25,11 @@ class World:
 
         self.deserialize(GameState.save["data"]["last_map"])
         position: tuple[int, int] = GameState.save["data"]["player"]["position"]
-        self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 1.06875*GameConfig.BLOCK_SIZE*v2(1, 1),5)
+        self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 18*v2(1, 1),5)
         self.ennemies = []
 
-        self.ennemies.append(Ennemy(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 1.06875*GameConfig.BLOCK_SIZE*v2(1, 1),5,(4*GameConfig.BLOCK_SIZE,13*GameConfig.BLOCK_SIZE)))
-        self.ennemies.append(Ennemy(v2(23, position[1])*GameConfig.BLOCK_SIZE, 1.06875*GameConfig.BLOCK_SIZE*v2(1, 1),5,(23*GameConfig.BLOCK_SIZE,39*GameConfig.BLOCK_SIZE)))
+        self.ennemies.append(Ennemy(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 18*v2(1, 1),5,(4*GameConfig.BLOCK_SIZE,13*GameConfig.BLOCK_SIZE)))
+        self.ennemies.append(Ennemy(v2(23, position[1])*GameConfig.BLOCK_SIZE, 18*v2(1, 1),5,(23*GameConfig.BLOCK_SIZE,39*GameConfig.BLOCK_SIZE)))
 
         GameState.camera: Camera = Camera(self.player)
 
