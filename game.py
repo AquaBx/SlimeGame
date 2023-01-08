@@ -41,7 +41,7 @@ class Game:
             self.__process_events()
 
             if not self.paused:
-                GameState.dt = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.Graphics.MaxFPS
+                GameState.graphicDT = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.Graphics.MaxFPS
                 GameState.GAME_SURFACE.fill('Black')
                 self.__draw()
 
@@ -68,7 +68,7 @@ class Game:
         while not self.should_quit:
             if not self.paused:
                 self.world.update()
-            GameState.PhysicDT = 1. / (clock.get_fps() + (clock.get_fps() == 0.) * GameConfig.PhysicTick)
+            GameState.physicDT = 1. / (clock.get_fps() + (clock.get_fps() == 0.) * GameConfig.PhysicTick)
             clock.tick(GameConfig.PhysicTick)
         
 

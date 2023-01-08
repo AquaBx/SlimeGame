@@ -2,7 +2,7 @@ import pygame as pg
 from pygame import transform,Rect,Vector2 as v2
 
 from config import GameConfig, GameState
-from assets.scripts.lightsource import LightSource
+from assets.scripts.gameobject_attributes import LightSource
 from debug import debug
 
 def draw(world) -> None:
@@ -30,6 +30,3 @@ def draw(world) -> None:
     """ draw lights """
     if GameConfig.Graphics.EnableLights:
         LightSource.draw(GameState.camera)
-
-    # debug((int(1/GameState.dt),int(1/GameState.PhysicDT)))
-    # debug("fly:"+str(world.player.is_flying),60)

@@ -13,6 +13,10 @@ class Input:
 
     is_init: bool = False
 
+    MOUSE_LEFT  : int = 0
+    MOUSE_MIDDLE: int = 1
+    MOUSE_RIGHT : int = 2
+
     def init() -> None:
         """Initializes the Input class. Has to be runned once before using Input.update()
         """
@@ -106,4 +110,4 @@ class Input:
         
         mouse_state = v2(mouse.get_pos())
         Input.__mouse_motion = mouse_state - Input.__mouse_pos
-        Input.__mouse_pos = mouse.get_pos()
+        Input.__mouse_pos = mouse_state

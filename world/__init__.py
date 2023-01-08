@@ -18,9 +18,9 @@ class World:
         if not GameState.save["data"]["occupied"]:
             GameState.save["data"] = {
                 "occupied": True,
-                "last_map": "stage2",
+                "last_map": "test_damages",
                 "player": {
-                    "position": (5, 59) # ici il faudra mettre la position qui convient dans la map par défaut soit ici stage2
+                    "position": (20, 40) # ici il faudra mettre la position qui convient dans la map par défaut soit ici stage2
                 }
             }
 
@@ -28,14 +28,12 @@ class World:
         position: tuple[int, int] = GameState.save["data"]["player"]["position"]
         self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 18*v2(1, 1),5)
         self.ennemies = []
+        GameState.camera = Camera(self.player)
 
-        self.ennemies.append(Enemy(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 18*v2(1, 1),5,(4*GameConfig.BLOCK_SIZE,13*GameConfig.BLOCK_SIZE)))
-        self.ennemies.append(Enemy(v2(23, position[1])*GameConfig.BLOCK_SIZE, 18*v2(1, 1),5,(23*GameConfig.BLOCK_SIZE,39*GameConfig.BLOCK_SIZE)))
 
-        GameState.camera: Camera = Camera(self.player)
 
     def update(self) -> None:        
-        self.update_pos(self.player)
+        self.update_entity(self.player)
         for ennemy in self.ennemies:
             offset: v2 = ennemy.position - self.player.position
             collide_mask: Mask = self.player.mask.overlap_mask(ennemy.mask, offset)
@@ -43,7 +41,7 @@ class World:
 
             if collide_rect:
                 self.player.health -= 1
-            self.update_pos(ennemy)
+            self.update_entity(ennemy)
         GameState.camera.update()
 
     def deserialize(self, file: str) -> None:
@@ -52,5 +50,5 @@ class World:
     def draw(self) -> None:
         graphics.draw(self)
     
-    def update_pos(self, obj) -> None:
-        physics.update_pos(self, obj)
+    def update_entity(self, obj) -> None:
+        physics.update_entity(self, obj)

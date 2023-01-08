@@ -3,7 +3,7 @@ from pygame import Rect, Vector2 as v2
 from pygame import display, event
 import pygame_gui
 
-from config import *
+from mapeditor.config import *
 from grid import Grid
 from input import Input
 from palette import Palette
