@@ -13,6 +13,8 @@ class GameConfig:
     # ambient_color_world = (170, 170, 170) # jour
     # ambient_color_world = (120, 120, 120) # aube
     ambient_color_world = ( 50,  50,  150) # nuit
+    # ambient_color_world = ( 10,  10,  30) # obscurity
+
 
     PhysicTick = 120
 
