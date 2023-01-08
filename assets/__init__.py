@@ -1,6 +1,6 @@
 import os
 
-from .scripts.environment import MapElement, Platform, Background, Lamp
+from .scripts.environment import MapElement, Platform, Background, Lamp, Spike
 
 class Asset:
     def __init__(self, global_id: int, path: str, script: type[MapElement], name: str):
@@ -27,6 +27,7 @@ ASSETS: dict[int, Asset] = {
         ("wood", "statics/wood_ground.png", Platform),
         ("dark bricks", "statics/dark_bricks.png", Platform),
         ("copper", "statics/copper_full.png", Platform),
-        ("light", "statics/light.png", Lamp)
+        ("light", "statics/light.png", Lamp),
+        ("spikes", "statics/spike.png", Spike)
     ])
 }

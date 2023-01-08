@@ -1,10 +1,11 @@
 from pygame import Rect, Vector2 as v2
 from pygame import image, transform, draw
 
-from config import *
+from mapeditor.config import * 
 from window_component import WindowComponent
 from elements import PaletteElement
 from gamestates import GameStates
+from assets import Asset
 
 class Palette(WindowComponent):
     
@@ -34,8 +35,7 @@ class Palette(WindowComponent):
             )
 
             self.hitboxes.append((local_id, rect))
-            # change 21 to asset.script.default_state
-            self.elements[local_id] = PaletteElement(local_id, 21, rect.topleft, image.load(asset.path))
+            self.elements[local_id] = PaletteElement(local_id, asset.script.default_state(), asset.script, rect.topleft, image.load(asset.path))
 
     def draw(self) -> None:
         for el in self.elements.values():

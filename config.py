@@ -12,7 +12,7 @@ class GameConfig:
 
     # ambient_color_world = (170, 170, 170) # jour
     # ambient_color_world = (120, 120, 120) # aube
-    ambient_color_world = ( 15,  15,  45) # nuit
+    ambient_color_world = ( 50,  50,  150) # nuit
 
     PhysicTick = 120
 
@@ -93,7 +93,7 @@ class GameState:
     WINDOW: Surface = None
     GAME_SURFACE: Surface = None
     
-    PhysicDT = 1/GameConfig.PhysicTick
-    dt: float = 1/60
+    physicDT = 1/GameConfig.PhysicTick
+    graphicDT: float = 1/60
 
     save: dict = {}

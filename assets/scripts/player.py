@@ -13,18 +13,21 @@ from Gui import Gui, HealthBar
 
 # entity
 from assets.scripts.animable import Animable
-from assets.scripts.lightsource import LightSource
+from assets.scripts.gameobject_attributes import LightSource, Damaged
 
 def load_frame(spritesheet: Surface, current_frame: int, animation_index: int, size: v2, flip: bool) -> Surface:
     TILE_SIZE = 18
     return pg.transform.flip(pg.transform.scale(spritesheet.subsurface(Rect(current_frame*TILE_SIZE,animation_index*TILE_SIZE,TILE_SIZE,TILE_SIZE)), size), flip, False)
 
-class Player(Animable, LightSource):
+class Player(Animable, LightSource, Damaged):
+
+    JUMP_HEIGHT: int = 4
 
     __default_animations: list[tuple[str, int]] = [
         ("idle", 10),
         ("jump", 10),
         ("walk", 5),
+        ("hurt", 4),
     ]
 
     def __init__(self, position: v2, size: v2, mass: int) -> None:
@@ -46,16 +49,29 @@ class Player(Animable, LightSource):
         self.mask: pg.mask.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
 
         self.mass: int = mass
-        self.health: int = 300
+        self.__health: int = 300
         self.max_health: int = 300
         self.is_flying: bool = True
         self.size: v2 = size
         self.velocity: v2 = v2(0.0)
         self.acceleration: v2 = v2(0.0)
         self.status_frame: float = 0.0
-        
-        Gui.add_component(HealthBar(self))
+        self.hurt_time: int = 0
 
+        Gui.add_component(HealthBar(self))
+    @property
+    def emit_position(self) -> v2:
+        return v2(self.rect.center)
+        
+
+    @property
+    def health(self) -> int:
+        return self.__health
+
+    @health.setter
+    def health(self, v) -> None:
+        self.__health = max(0, v)
+        
     def draw(self, camera: Camera) -> None:
         Animable.update(self)
         dest: v2 = camera.transform_coord(self.position)
@@ -67,28 +83,32 @@ class Player(Animable, LightSource):
         return v2(self.rect.center)
 
     def update(self) -> None:
+
+        self.hurt_time = max(0, self.hurt_time - GameState.physicDT)
+
         if Input.is_pressed(pg.K_SPACE):
             EventManager.push_event(PlayerActionEvent(self))
         
         if Input.is_pressed(GameConfig.KeyBindings.right):
-            self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.PhysicDT * ( 1 - 0.75 * self.is_flying)
+            self.acceleration.x += GameConfig.BLOCK_SIZE / GameState.physicDT * ( 1 - 0.75 * self.is_flying)
 
         if Input.is_pressed(GameConfig.KeyBindings.left):
-            self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.PhysicDT * ( 1 - 0.75 * self.is_flying)
+            self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.physicDT * ( 1 - 0.75 * self.is_flying)
 
         if Input.is_pressed(GameConfig.KeyBindings.up) and not self.is_flying:
-            hauteur = 4 # hauteur en blocks
-
             # v² = 2*g*m*h 
             # sans la masse ça fait pas le bon saut
             # testé avec 2 valeurs de masse, de hauteur et de gravité, on saute bien à la hauteur souhaitée
-            self.acceleration.y -= sqrt(2 * GameConfig.Gravity * hauteur * self.mass) / GameState.PhysicDT * GameConfig.BLOCK_SIZE 
+            self.acceleration.y -= sqrt(2 * GameConfig.Gravity * Player.JUMP_HEIGHT * self.mass) / GameState.physicDT * GameConfig.BLOCK_SIZE 
+            # on annule la gravité
             self.acceleration.y -= GameConfig.Gravity * self.mass * GameConfig.BLOCK_SIZE
             self.is_flying = True
 
     # Animables
     def update_animation(self) -> None:
-        if self.is_flying:
+        if self.hurt_time != 0:
+            self.current_animation = f"hurt-{self.direction}"
+        elif self.is_flying:
             self.current_animation = f"jump-{self.direction}"
         elif Input.is_pressed(GameConfig.KeyBindings.right):
             self.direction = "right"
@@ -100,20 +120,19 @@ class Player(Animable, LightSource):
             self.current_animation = f"idle-{self.direction}"
 
     def update_frame(self) -> None:
-        self.status_frame = (self.status_frame+10*GameState.dt) % 10
+        self.status_frame = (self.status_frame+10*GameState.graphicDT) % 10
 
         if self.current_animation == f"jump-{self.direction}":
-            h = 4
             # on est négatif si le joueur descend
             
             signe: int = (-1)**(self.velocity.y <= 0)
             ecc: float = self.velocity.y**2 / 2 * self.mass
-            epp: float = GameConfig.Gravity * h * GameConfig.BLOCK_SIZE**2 * self.mass
+            epp: float = GameConfig.Gravity * Player.JUMP_HEIGHT * GameConfig.BLOCK_SIZE**2 * self.mass
 
             # frame = signe * (rapport ecc sur epp) et un peu de hard code
             frame = int((signe * int( ecc/epp ) + 5) /10*6)
             frame = max(min(7, frame), 1)
             self.current_frame = frame
         else:
-            self.status_frame -= GameState.dt
+            self.status_frame -= GameState.graphicDT
             self.current_frame = int(self.status_frame % len(self.animations[self.current_animation]))
