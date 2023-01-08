@@ -24,7 +24,9 @@ class Player(Animable, LightSource, Damaged):
 
         Animable.__init__(self, position, SpritesheetManager.SlimeAnimations["green"], size)
         LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(119,230,119))
+        # self.mask: pg.mask.Mask = pg.mask.Mask(self.animations["idle-right"][0].get_size(), fill=True)
         self.mask: pg.mask.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
+        self.mask: pg.mask.Mask = pg.mask.from_surface(pg.image.load("assets/sprites/dynamics/slime_hitbox.png"))
 
         self.mass: int = mass
         self.__health: int = 300
