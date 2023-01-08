@@ -4,12 +4,12 @@ from numpy import ndarray
 from pygame import Rect, Surface, Vector2 as v2
 from pygame import transform, image
 
-from config import *
+from mapeditor.config import *
 from palette import Palette
 from window_component import WindowComponent
 from gamestates import GameStates
 
-from assets import Asset
+from assets import Asset, ASSETS
 from elements import StateElement, EmptyElement
 
 class Grid(WindowComponent):
@@ -65,16 +65,7 @@ class Grid(WindowComponent):
         # 128 1   2
         # 64  X   4
         # 32  16  8
-        scoring_table = { # This table is only correct for Ground types
-            28 : 0 , 124: 1 , 112: 2 , 16 : 3 , 247: 4 , 223: 5 ,
-            31 : 6 , 255: 7 , 241: 8 , 17 : 9 , 253: 10, 127: 11,
-            7  : 12, 199: 13, 193: 14, 1  : 15, 23 : 16, 209: 17,
-            4  : 18, 68 : 19, 64 : 20, 0  : 21, 29 : 22, 113: 23,
-            125: 24, 245: 25, 93 : 26, 117: 27, 20 : 28, 80 : 29,
-            95 : 30, 215: 31, 87 : 32, 213: 33, 5  : 34, 65 : 35,
-            116: 36, 92 : 37, 21 : 38, 84 : 39, 119: 40, 221: 41,
-            197: 42, 71 : 43, 69 : 44, 81 : 45, 85 : 46
-        }
+        
         for i in range(self.rows):
             (top, bottom) = (i == 0, i == self.rows-1)
             for j in range(self.columns):
@@ -83,28 +74,7 @@ class Grid(WindowComponent):
                 el: StateElement = self.map[i, j]
                 if el is EmptyElement: continue
 
-                # has neighboor
-                (t,  r,  b,  l )  = (False, False, False, False)
-                (tr, rb, bl, lt)  = (False, False, False, False)
-
-                # 4 neighboors
-                # side is calculated if there is no OOB risk
-                t = (not top)    and (self.map[i-1, j].id == el.id)
-                r = (not right)  and (self.map[i, j+1].id == el.id)
-                b = (not bottom) and (self.map[i+1, j].id == el.id)
-                l = (not left)   and (self.map[i, j-1].id == el.id)
-
-                # 8 neighboors
-                # corner is calculated if the 2 connected sides match with the current tile 
-                tr = (t and r) and (self.map[i-1,j+1].id == el.id)
-                rb = (r and b) and (self.map[i+1,j+1].id == el.id)
-                bl = (b and l) and (self.map[i+1,j-1].id == el.id)
-                lt = (l and t) and (self.map[i-1,j-1].id == el.id)
-
-                # score calculation uses base2 to base10 system
-                score = sum([((1<<i)*border) for i, border in enumerate([t, tr, r, rb, b, bl, l, lt])])
-
-                el.state = scoring_table[score]
+                el.state = palette.elements[el.id].script.compute_state(self.map, palette, (top, right, bottom, left), el.id, (i,j))
                 el.image = palette.elements[el.id].spritesheet[el.state]
 
     def put_tile(self, mouse_coord: v2, palette: Palette) -> None:

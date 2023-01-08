@@ -23,10 +23,12 @@ DEFAULT_PALETTE_COLUMNS : int = 13  # default 13
 DEFAULT_BACKGROUND      : Asset = assets.ASSETS[0]
 
 DEFAULT_PALETTE: list[Asset] = [
-    assets.ASSETS[1],
+    assets.ASSETS[5],
     assets.ASSETS[2],
+    assets.ASSETS[4],
+    assets.ASSETS[1],
     assets.ASSETS[3],
-    assets.ASSETS[4]
+    assets.ASSETS[6]
 ]
 # END OF CONFIG, DO NOT EDIT AFTER THIS LINE
 SPRITE_TILE_SIZE         : int = 16

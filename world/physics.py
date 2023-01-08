@@ -2,17 +2,24 @@ from pygame import Rect, Vector2 as v2
 from pygame.mask import Mask
 
 from config import GameConfig, GameState
+from assets.scripts.gameobject_attributes import Damaged, Damager
 
-def update_pos(world, obj) -> None:
+from math import sqrt
+
+def update_entity(world, obj) -> None:
     
-    pos_avant = v2(obj.position.x,obj.position.y)
 
+    pos_avant = v2(obj.position)
+    velo_avant = v2(obj.velocity)
     # keyboard inputs
     obj.update()
 
-    obj.acceleration.x -= obj.velocity.x / (GameState.PhysicDT * (10 + 30 * obj.is_flying))
-    obj.velocity.x += obj.acceleration.x * GameState.PhysicDT
-    obj.position.x += obj.velocity.x * GameState.PhysicDT
+    ######### X AXIS
+
+    obj.acceleration.x -= obj.velocity.x / (GameState.physicDT * (10 + 30 * obj.is_flying))
+    obj.velocity.x += obj.acceleration.x * GameState.physicDT
+    obj.position.x += obj.velocity.x * GameState.physicDT
+    obj.acceleration.x = 0
 
     dir = obj.position - pos_avant
 
@@ -45,12 +52,17 @@ def update_pos(world, obj) -> None:
 
         obj.position.x += -1 * correction
         obj.velocity.x = 0.0
+    
+    damage(obj, velo_avant, blocks_collide, 0)
+
+    ######### Y AXIS
 
     # Gravity
     obj.acceleration.y += obj.mass * GameConfig.Gravity * GameConfig.BLOCK_SIZE
 
-    obj.velocity.y += obj.acceleration.y * GameState.PhysicDT
-    obj.position.y += obj.velocity.y * GameState.PhysicDT
+    obj.velocity.y += obj.acceleration.y * GameState.physicDT
+    obj.position.y += obj.velocity.y * GameState.physicDT
+    obj.acceleration.y = 0
 
     dir = obj.position - pos_avant
 
@@ -58,6 +70,7 @@ def update_pos(world, obj) -> None:
     if not 0 <= obj.position_matrix_center.y <= 63:
         obj.position.y = pos_avant.y
         obj.velocity.y = 0.0
+
 
     blocks_collide = collide(world, obj)
 
@@ -94,7 +107,7 @@ def update_pos(world, obj) -> None:
     else:
         obj.is_flying = True
 
-    obj.acceleration = v2(0.0)
+    damage(obj, velo_avant, blocks_collide, 1)
 
 def collide(world, obj):
     # we get all 9 blocs based on the centered position of the player (0)
@@ -127,3 +140,24 @@ def collide(world, obj):
                 blocks_arround[key]["overlap_rect"] = None
             
     return blocks_arround
+
+def damage(obj, velo_avant, blocks_collide, axis):
+    #0 or +-1
+    dir = abs(velo_avant[axis])/(velo_avant[axis] + (velo_avant[axis] == 0))
+
+    # in addition of being a Damaged, obj has to have life, so has basically to be the Player for now 
+    if isinstance(obj, Damaged):
+        for key in range(len(blocks_collide)):
+            if not isinstance(blocks_collide[key]["ref"], Damager): continue
+            if blocks_collide[key]["collide"]:
+                if(obj.hurt_time == 0):                   
+                    obj.health -= blocks_collide[key]["ref"].damage
+                    obj.hurt_time = blocks_collide[key]["ref"].hurt_time
+                    
+                obj.velocity[axis] = 0
+                #if no movement when getting hit, bumb is vertical
+                #bump in opposite movement direction
+                obj.acceleration[axis] += sqrt(2 * GameConfig.Gravity * blocks_collide[key]["ref"].bump_factor * obj.mass) / GameState.physicDT * GameConfig.BLOCK_SIZE * -dir
+
+                break
+    

@@ -4,7 +4,7 @@ from pygame_gui.elements.ui_button import UIButton
 from pygame_gui.windows.ui_file_dialog import UIFileDialog
 from pygame_gui.elements.ui_selection_list import UISelectionList
 
-from config import *
+from mapeditor.config import *
 from assets import MAP_DIR
 from serializer import Serializer
 from gamestates import GameStates

@@ -9,7 +9,7 @@ from input import Input
 
 # entity
 from assets.scripts.animable import Animable
-from assets.scripts.lightsource import LightSource
+from assets.scripts.gameobject_attributes import LightSource
 
 def load_frame(spritesheet: Surface, current_frame: int, animation_index: int, size: v2, flip: bool) -> Surface:
     TILE_SIZE = 18

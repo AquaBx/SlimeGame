@@ -3,7 +3,7 @@ from pygame import Surface
 from pygame.time import Clock
 from pygame_gui import UIManager
 
-import config
+from mapeditor import config
 
 class GameStates:
     """Application wide variables
