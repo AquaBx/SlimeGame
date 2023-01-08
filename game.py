@@ -6,7 +6,7 @@ import pygame as pg
 from pygame.time import Clock
 
 from text import Text
-from menu_screen import Menu
+from menu_screen import MenuManager
 from input import Input
 from world import World
 from config import GameConfig, GameState
@@ -38,7 +38,7 @@ class Game(Listener):
         Input.init()
         Text.init(GameState.WINDOW, GameConfig.FONT_DATA, GameConfig.FONT_SIZE)
         ButtonManager.init(GameState.WINDOW)
-        Menu.init()
+        MenuManager.init(GameState.WINDOW)
         SpritesheetManager.initialize()
 
         self.physics: Thread = Thread(target=self.__update)
@@ -52,22 +52,23 @@ class Game(Listener):
         pg.quit()
 
     def loop(self) -> None:
-        Menu.open_menu("title_screen")
+        MenuManager.open_menu("title_screen")
         self.physics.start()
         while not self.should_quit:
             Input.update()
 
             self.__process_events()
 
-            if not Menu.is_open():
-                GameState.graphicDT = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.Graphics.MaxFPS
+            if not MenuManager.is_open():
+                GameState.graphicDT = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.gameGraphics.MaxFPS
                 GameState.GAME_SURFACE.fill('Black')
                 self.__draw()
 
             EventManager.flush()
+            MenuManager.draw_menus()
             ButtonManager.update()
             pg.display.update()
-            self.clock.tick(GameConfig.Graphics.MaxFPS)
+            self.clock.tick(GameConfig.gameGraphics.MaxFPS)
 
     def notify(self, ce: CustomEvent) -> None:
         match ce.key:
@@ -77,7 +78,7 @@ class Game(Listener):
                 if tse.action == "menu.title.continue":
                     self.world = World()
                     self.paused = False
-                    Menu.close_menu("title_screen")
+                    MenuManager.close_menu("title_screen")
                 elif tse.action == "menu.title.settings":
                     ...
                 elif tse.action == "menu.title.quit":
@@ -89,7 +90,7 @@ class Game(Listener):
                     self.save_and_quit()
                 elif me.action == "menu.ingame.resume":
                     self.paused = False
-                    Menu.close_menu("ingame_pause")
+                    MenuManager.close_menu("ingame_pause")
                 elif me.action == "menu.ingame.settings":
                     ...
 
@@ -105,18 +106,18 @@ class Game(Listener):
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 self.should_quit = True
-        if Input.is_pressed_once(pg.K_ESCAPE) and not Menu.is_open("title_screen"):
+        if Input.is_pressed_once(pg.K_ESCAPE) and not MenuManager.is_open("title_screen"):
             if self.paused:
                 self.paused = False
-                Menu.close_menu("ingame_pause")
+                MenuManager.close_menu("ingame_pause")
             else:
                 self.paused = True
-                Menu.open_menu("ingame_pause")
+                MenuManager.open_menu("ingame_pause")
 
     def __update(self) -> None:
         clock = Clock()
         while not self.should_quit:
-            if not Menu.is_open():
+            if not MenuManager.is_open():
                 self.world.update()
             GameState.physicDT = 1. / (clock.get_fps() + (clock.get_fps() == 0.) * GameConfig.PhysicTick)
             clock.tick(GameConfig.PhysicTick)
@@ -135,7 +136,6 @@ def main() -> None:
     game.loop()
     pg.quit()
     # del game
-
 
 if __name__ == "__main__":
     main()

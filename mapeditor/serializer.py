@@ -77,7 +77,6 @@ class Serializer:
             ),
             table
         )
-
         # on lit ensuite les dimensions de la grille
         (grid_rows, grid_columns) = struct.unpack("@bb", f.read(2))
         data_grid = np.full((grid_rows, grid_columns), EmptyElement)

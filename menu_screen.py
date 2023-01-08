@@ -1,15 +1,24 @@
-from pygame import Rect, Color
-from pygame import image, mouse
+from pygame import Rect, Color, Surface
+from pygame import image, transform, mouse
 
 from buttons import ButtonManager, Button
 from button_script import ButtonScript
-from assets import UI_DIR
+from assets import UI_DIR, SPRITE_DIR
 from config import GameConfig
 
 from eventlistener import EventManager
 from customevents import TitleScreenEvent, MenuEvent
 
-class Menu :
+class Menu:
+    def __init__(self, buttons: list[str], buttons_rect: Rect, menu_rect: Rect, background: Surface) -> None:
+        self.buttons: list[str] = buttons
+        self.buttons_rect: Rect = buttons_rect
+        self.menu_rect: Rect = menu_rect
+        self.background: Surface = background
+
+        print(self.menu_rect.size)
+
+class MenuManager :
     """
     Cette classe permet d'afficher deux menus : le menu principal hors-partie et le menu en jeu
 
@@ -18,24 +27,28 @@ class Menu :
     Un rectangle par option de menu
     Dans chaque rectangle, on affiche une option
     """
-    __menus: dict = dict()
+
+    window: Surface
+    __menus: dict[str, Menu] = dict()
     __open_menus: set[str] = set()
 
-    def init():
-        Menu.__menus = { name: fct() for name, fct in {
-            "ingame_pause": Menu.__create_ingame_menu,
-            "title_screen": Menu.__create_title_screen
+    def init(window: Surface):
+        MenuManager.window = window
+
+        MenuManager.__menus = { name: fct() for name, fct in {
+            "ingame_pause": MenuManager.__create_ingame_menu,
+            "title_screen": MenuManager.__create_title_screen
         }.items()}
 
     def open_menu(menu: str) -> None:
-        ButtonManager.set_alive(*Menu.__menus[menu])
-        Menu.__open_menus.add(menu)
+        ButtonManager.set_alive(*MenuManager.__menus[menu].buttons)
+        MenuManager.__open_menus.add(menu)
         mouse.set_visible(True)
 
     def close_menu(menu: str) -> None:
-        ButtonManager.kill(*Menu.__menus[menu])
-        if menu in Menu.__open_menus: Menu.__open_menus.remove(menu)
-        mouse.set_visible(Menu.is_open())
+        ButtonManager.kill(*MenuManager.__menus[menu].buttons)
+        if menu in MenuManager.__open_menus: MenuManager.__open_menus.remove(menu)
+        mouse.set_visible(MenuManager.is_open())
 
     def is_open(menu: str = None) -> bool:
         """Indique si un menu est ouvert.
@@ -47,11 +60,11 @@ class Menu :
             bool: True si le menu est ouvert, False sinon.
         """
         if menu is None:
-            return len(Menu.__open_menus) != 0
+            return len(MenuManager.__open_menus) != 0
 
-        return menu in Menu.__open_menus
+        return menu in MenuManager.__open_menus
 
-    def __create_menu(menu_rect: Rect, interval_ratio: int, *props_buttons: list[dict[str]]) -> list[str]:
+    def __create_menu(buttons_rect: Rect, interval_ratio: int, menu_rect: Rect, background_path: str, *props_buttons: list[dict[str]]) -> Menu:
         """_summary_
 
         Args:
@@ -62,22 +75,32 @@ class Menu :
         Returns:
             list[str]: list of button ids
         """
-        interval_height = menu_rect.height // ((len(props_buttons)-1)+(interval_ratio*len(props_buttons)))
+        interval_height = buttons_rect.height // ((len(props_buttons)-1)+(interval_ratio*len(props_buttons)))
         button_height = interval_ratio * interval_height
+        
         for k, props in enumerate(props_buttons):
-            props["hitbox"] = Rect(menu_rect.left, menu_rect.top + k*(interval_height+button_height) , menu_rect.width, button_height)
-        return [Button(**props).id for props in props_buttons]
+            props["hitbox"] = Rect(buttons_rect.left, buttons_rect.top + k*(interval_height+button_height) , buttons_rect.width, button_height)
+        
+        buttons = [Button(**props).id for props in props_buttons]
+        background = transform.scale(image.load(background_path),menu_rect.size)
+        menu = Menu(buttons, buttons_rect, menu_rect, background)
+        return menu
 
-    def __create_ingame_menu() -> list[str]:
+    def __create_ingame_menu() -> Menu:
         texture = image.load(f"{UI_DIR}/button1.png")
         texture_disabled = image.load(f"{UI_DIR}/button1_disabled.png")
 
-        top: int = int(0.1 * GameConfig.Graphics.WindowHeight)
-        left: int = int(0.325*GameConfig.Graphics.WindowWidth)
-        width: int = int(0.35*GameConfig.Graphics.WindowWidth)
-        height: int = int(0.8 * GameConfig.Graphics.WindowHeight)
+        left_m = int(0.3 * GameConfig.gameGraphics.WindowWidth)
+        top_m = int(0.05 * GameConfig.gameGraphics.WindowHeight)
+        width_m =  int(0.4 * GameConfig.gameGraphics.WindowWidth)
+        height_m = int(0.9 * GameConfig.gameGraphics.WindowHeight)
 
-        return Menu.__create_menu(Rect(left,top,width,height), 2, {
+        left_b: int = int(0.325*GameConfig.gameGraphics.WindowWidth)
+        top_b: int = int(0.1 * GameConfig.gameGraphics.WindowHeight)
+        width_b: int = int(0.35*GameConfig.gameGraphics.WindowWidth)
+        height_b: int = int(0.8 * GameConfig.gameGraphics.WindowHeight)
+
+        return MenuManager.__create_menu(Rect(left_b,top_b,width_b,height_b), 2, Rect(left_m, top_m, width_m, height_m), f"{SPRITE_DIR}/backgrounds/ingame_background.png", {
                 "id":          "menu.ingame.resume",
                 "label":       "Continuer",
                 "script":      ButtonScript(EventManager.push_event, MenuEvent("menu.ingame.resume")),
@@ -98,18 +121,17 @@ class Menu :
                 "script":      ButtonScript(EventManager.push_event, MenuEvent("menu.ingame.save_and_quit")),
                 "textures":    [texture, texture, texture_disabled],
                 "label_color": Color("gray90")
-            }
-        )
+            })
 
-    def __create_title_screen() -> list[str]:
+    def __create_title_screen() -> Menu:
         texture = image.load(f"{UI_DIR}/button1.png")
         texture_disabled = image.load(f"{UI_DIR}/button1_disabled.png")
-
-        top: int = int(0.1 * GameConfig.Graphics.WindowHeight)
-        left: int = int(0.325*GameConfig.Graphics.WindowWidth)
-        width: int = int(0.35*GameConfig.Graphics.WindowWidth)
-        height: int = int(0.8 * GameConfig.Graphics.WindowHeight)
-        return Menu.__create_menu(Rect(left, top, width, height), 2, {
+        
+        top_b: int = int(0.4 * GameConfig.gameGraphics.WindowHeight)
+        left_b: int = int(0.325*GameConfig.gameGraphics.WindowWidth)
+        width_b: int = int(0.35*GameConfig.gameGraphics.WindowWidth)
+        height_b: int = int(0.5 * GameConfig.gameGraphics.WindowHeight)
+        return MenuManager.__create_menu(Rect(left_b, top_b, width_b, height_b), 2, Rect((0,0),GameConfig.gameGraphics.WindowSize), f"{SPRITE_DIR}/backgrounds/title_screen_menu.png", {
                 "id": "menu.title.continue",
                 "label": "Continuer",
                 "script": ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.continue")),
@@ -132,3 +154,8 @@ class Menu :
                 "label_color": Color("gray90")
             }
         )
+
+    def draw_menus() -> None:
+        for menu_id in MenuManager.__open_menus:
+            menu = MenuManager.__menus[menu_id]
+            MenuManager.window.blit(menu.background, menu.menu_rect.topleft)
