@@ -5,6 +5,7 @@ from pygame.mask import Mask
 import assets.saves
 from assets.scripts.player import Player
 from assets.scripts.enemy import Enemy
+from utils import v2_to_coords, coords_to_v2
 from config import GameConfig, GameState
 from camera import Camera
 
@@ -20,19 +21,20 @@ class World:
                 "occupied": True,
                 "last_map": "test_damages",
                 "player": {
-                    "position": (20, 40) # ici il faudra mettre la position qui convient dans la map par défaut soit ici stage2
+                    "position": (59, 5) # ici il faudra mettre la position qui convient dans la map par défaut soit ici stage2
                 }
             }
 
         self.deserialize(GameState.save["data"]["last_map"])
         position: tuple[int, int] = GameState.save["data"]["player"]["position"]
-        self.player = Player(v2(position[0], position[1])*GameConfig.BLOCK_SIZE, 18*v2(1, 1),5)
+        self.player = Player(coords_to_v2(position), 18*v2(1, 1),5)
         self.ennemies = []
         GameState.camera = Camera(self.player)
 
+        self.ennemies.append(Enemy(coords_to_v2(position), 18*v2(1, 1),5,(4*GameConfig.BLOCK_SIZE,13*GameConfig.BLOCK_SIZE)))
+        self.ennemies.append(Enemy(v2(23, position[0])*GameConfig.BLOCK_SIZE, 18*v2(1, 1),5,(23*GameConfig.BLOCK_SIZE,39*GameConfig.BLOCK_SIZE)))
 
-
-    def update(self) -> None:        
+    def update(self) -> None:
         self.update_entity(self.player)
         for ennemy in self.ennemies:
             offset: v2 = ennemy.position - self.player.position
@@ -44,11 +46,15 @@ class World:
             self.update_entity(ennemy)
         GameState.camera.update()
 
+    def save(self) -> None:
+        GameState.save["data"]["player"]["position"] = v2_to_coords(self.player.position)
+        assets.saves.save(GameState.save["data"], GameState.save["state"])
+
     def deserialize(self, file: str) -> None:
         serializer.deserialize(self, file)
 
     def draw(self) -> None:
         graphics.draw(self)
-    
+
     def update_entity(self, obj) -> None:
         physics.update_entity(self, obj)

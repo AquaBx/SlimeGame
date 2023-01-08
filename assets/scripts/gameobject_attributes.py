@@ -33,9 +33,9 @@ class LightSource(ABC):
     def __init__(self, radius: int = 3*GameConfig.BLOCK_SIZE, glow: Color = Color(230, 199, 119), centered: bool = True) -> None:
         self.radius: int = radius
         self.__glow: Color = glow
-        self.centered: bool = centered   
+        self.centered: bool = centered
 
-        self.__generate_light_mask()
+        self.light_mask: Surface = self.__generate_light_mask()
         LightSource.sources.append(self)
 
     # il faut la redéfinir pour chaque enfant
@@ -61,7 +61,7 @@ class LightSource(ABC):
             LightSource.filter.blit(light.light_mask, dist)
         GameState.GAME_SURFACE.blit(LightSource.filter, (0, 0), special_flags=pg.BLEND_MULT)
 
-    def __generate_light_mask(self) -> None:
+    def __generate_light_mask(self) -> Surface:
         surface = Img.new("RGBA", (3*self.radius, 3*self.radius), (0, 0, 0, 0))
         draw = ImageDraw.Draw(surface)
 
@@ -73,7 +73,7 @@ class LightSource(ABC):
         draw.ellipse(shape, fill=(self.glow.r, self.glow.g, self.glow.b, self.glow.a))
 
         surface_blured = surface.filter(ImageFilter.GaussianBlur(self.radius/5))
-        self.light_mask: Surface = pg.transform.scale(pil_to_surface(surface_blured), (2*self.radius, 2*self.radius))
+        return pg.transform.scale(pil_to_surface(surface_blured), (2*self.radius, 2*self.radius))
 
     @property
     def glow(self) -> Color:
@@ -84,8 +84,7 @@ class LightSource(ABC):
         if color == self.__glow: return
         
         self.__glow = color
-        self.__generate_light_mask()
-
+        self.light_mask = self.__generate_light_mask()
 
 class Damager(ABC):
 
