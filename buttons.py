@@ -25,7 +25,7 @@ class Button:
         # Default, Hover, Disabled
         if isinstance(textures, Surface):
             self.__textures = [transform.scale(textures, hitbox.size)] * 3
-        else: self.__textures = textures
+        else: self.__textures = [transform.scale(texture, hitbox.size) for texture in textures]
 
         ButtonManager.register_buttons(self)
         if alive: ButtonManager.set_alive(id)
@@ -136,7 +136,7 @@ class ButtonManager():
 
     # optimisable ?
     def __update_states():
-        motion = Input.get_motion() != v2(0,0)
+        motion = Input.get_motion() != v2(0.0)
         click = Input.is_clicked_once()
         for id in ButtonManager.__alives:
             button = ButtonManager.__buttons[id]
@@ -148,8 +148,8 @@ class ButtonManager():
                 ButtonManager.__handle_click(button)
                 
     def __draw():
-        for button in ButtonManager.__alives:
-            ButtonManager.__buttons[button].draw(ButtonManager.__window)
+        for id in ButtonManager.__alives:
+            ButtonManager.__buttons[id].draw(ButtonManager.__window)
 
     def update():
         ButtonManager.__update_states()

@@ -22,6 +22,7 @@ class Enemy(Animable, LightSource):
         Animable.__init__(self, position, SpritesheetManager.SlimeAnimations["ghost"], size)
         LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(200,200,200))
         self.mask: pg.mask.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
+
         self.path: tuple[int] = path
         self.mass: int = mass
         self.health: int = 300
@@ -47,7 +48,7 @@ class Enemy(Animable, LightSource):
         elif self.position.x > self.path[1]:
             self.direction = "left"
         
-        self.acceleration.x += (2*int(self.direction=="right")-1 )* 0.5 *  GameConfig.BLOCK_SIZE / GameState.PhysicDT * ( 1 - 0.75 * self.is_flying)
+        self.acceleration.x += (2*int(self.direction=="right")-1 )* 0.5 *  GameConfig.BLOCK_SIZE / GameState.physicDT * ( 1 - 0.75 * self.is_flying)
 
         # if Input.is_pressed(GameConfig.KeyBindings.up) and not self.is_flying:
         #     hauteur = 4 # hauteur en blocks
@@ -55,7 +56,7 @@ class Enemy(Animable, LightSource):
         #     # v² = 2*g*m*h 
         #     # sans la masse ça fait pas le bon saut
         #     # testé avec 2 valeurs de masse, de hauteur et de gravité, on saute bien à la hauteur souhaitée
-        #     self.acceleration.y -= sqrt(2 * GameConfig.Gravity * hauteur * self.mass) / GameState.PhysicDT * GameConfig.BLOCK_SIZE 
+        #     self.acceleration.y -= sqrt(2 * GameConfig.Gravity * hauteur * self.mass) / GameState.physicDT * GameConfig.BLOCK_SIZE 
         #     self.acceleration.y -= GameConfig.Gravity * self.mass * GameConfig.BLOCK_SIZE
         #     self.is_flying = True
 
@@ -68,7 +69,7 @@ class Enemy(Animable, LightSource):
             self.current_animation = f"idle-{self.direction}"
 
     def update_frame(self) -> None:
-        self.status_frame = (self.status_frame+10*GameState.dt) % 10
+        self.status_frame = (self.status_frame+10*GameState.graphicDT) % 10
 
         if self.current_animation == f"jump-{self.direction}":
             h = 4
@@ -83,5 +84,5 @@ class Enemy(Animable, LightSource):
             frame = max(min(7, frame), 1)
             self.current_frame = frame
         else:
-            self.status_frame -= GameState.dt
+            self.status_frame -= GameState.graphicDT
             self.current_frame = int(self.status_frame % len(self.animations[self.current_animation]))

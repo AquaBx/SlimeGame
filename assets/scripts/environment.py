@@ -6,7 +6,7 @@ from abc import ABC, abstractclassmethod
 from typing import Any
 
 # utils
-from config import GameConfig
+from utils import coords_to_v2
 from assets.palette import Palette
 
 # entity
@@ -30,7 +30,7 @@ class MapElement(Renderable, ABC):
             texture (pg.Surface): une référence vers la texture à afficher.
             collidable (bool, optional): Si Vrai alors le `mask` correspond à la texture, sinon le `mask` est vide. Défaut à True.
         """
-        Renderable.__init__(self, v2(coords[1], coords[0]) * GameConfig.BLOCK_SIZE, texture)
+        Renderable.__init__(self, coords_to_v2(coords), texture)
         self.mask: Mask = pg.mask.from_surface(self.texture) if collidable else Mask((0, 0))
     
     def compute_state(map, palette, edges, id, coords) -> int: 
