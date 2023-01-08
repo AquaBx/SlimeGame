@@ -28,5 +28,5 @@ def draw(world) -> None:
         ennemy.draw(GameState.camera)
 
     """ draw lights """
-    if GameConfig.Graphics.EnableLights:
+    if GameConfig.gameGraphics.EnableLights:
         LightSource.draw(GameState.camera)

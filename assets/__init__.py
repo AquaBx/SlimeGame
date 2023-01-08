@@ -21,7 +21,7 @@ SPRITE_TILE_SIZE: int = 16
 
 ASSETS: dict[int, Asset] = {
     id: Asset(id, f"{SPRITE_DIR}/{path}", script, name) for id,(name,path,script) in enumerate([
-        ("brick_background", "background/brick_background.png", Background),
+        ("brick_background", "backgrounds/brick_background.png", Background),
         
         ("stone", "statics/stone.png", Platform),
         ("wood", "statics/wood_ground.png", Platform),

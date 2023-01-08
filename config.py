@@ -45,7 +45,7 @@ class GameConfig:
         WindowWidth:  int  = 640
         MaxFPS:       int  = 144
         Fullscreen:  bool  = False
-
+        
         @property
         def WindowSize(self) -> v2:
             return v2(self.WindowWidth, self.WindowHeight)
@@ -53,6 +53,8 @@ class GameConfig:
         @property
         def WindowRatio(self) -> v2:
             return v2(self.WindowWidth/self.WindowHeight, 1.0)
+
+    gameGraphics = Graphics()
 
 class GameState:
     
@@ -76,15 +78,15 @@ class GameState:
 
         GameState.__initialize_game_configuration(GameConfig, GameState.save["GameConfig"])
 
-        flags = pg.FULLSCREEN if GameConfig.Graphics().Fullscreen else 0
+        flags = pg.FULLSCREEN if GameConfig.gameGraphics.Fullscreen else 0
 
-        if GameConfig.Graphics().WindowAutoSize:
-            setattr( GameConfig.Graphics, "WindowWidth", pg.display.Info().current_w )
-            setattr( GameConfig.Graphics, "WindowHeight", pg.display.Info().current_h )
+        if GameConfig.gameGraphics.WindowAutoSize:
+            setattr( GameConfig.gameGraphics, "WindowWidth", pg.display.Info().current_w )
+            setattr( GameConfig.gameGraphics, "WindowHeight", pg.display.Info().current_h )
         
         GameState.DEFAULT_FONT = Font(GameConfig.FONT_DATA["PressStart2P"], GameConfig.FONT_SIZE)
-        GameState.WINDOW = pg.display.set_mode(GameConfig.Graphics().WindowSize, flags=flags )
-        GameState.GAME_SURFACE = pg.Surface(GameConfig.Graphics().WindowRatio*GameConfig.BLOCKS_HEIGHT)
+        GameState.WINDOW = pg.display.set_mode(GameConfig.gameGraphics.WindowSize, flags=flags )
+        GameState.GAME_SURFACE = pg.Surface(GameConfig.gameGraphics.WindowRatio*GameConfig.BLOCKS_HEIGHT)
 
         pg.display.set_caption("Slime Game")
         pg.display.set_icon(pg.image.load("assets/UI/icon.png"))

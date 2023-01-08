@@ -7,7 +7,7 @@ from mapeditor.config import *
 from grid import Grid
 from input import Input
 from palette import Palette
-from gui import GUI
+from mapeditor.gui import GUI
 
 from gamestates import GameStates
 
