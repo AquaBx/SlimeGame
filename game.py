@@ -104,8 +104,7 @@ class Game(Listener):
     def __process_events(self) -> None:
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
-                self.save_and_quit()
-                # self.should_quit = True
+                self.should_quit = True
         if Input.is_pressed_once(pg.K_ESCAPE) and not Menu.is_open("title_screen"):
             if self.paused:
                 self.paused = False
