@@ -22,5 +22,5 @@ def save(data: dict, number: int) -> None:
         data (dict): données à rajouter au fichier de sauvegarde
         number (int): 1, 2 ou 3
     """
-    with open(f"{SAVE_DIR}/savefile{number}.json", "a+") as f:
+    with open(f"{SAVE_DIR}/savefile{number}.json", "w") as f:
         json.dump(data, f)

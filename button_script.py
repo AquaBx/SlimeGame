@@ -11,3 +11,6 @@ class ButtonScript:
 
     def set_quit(game):
         game.should_quit = True
+    
+    def set_resume(game):
+        game.resume = True

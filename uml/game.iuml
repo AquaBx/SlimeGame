@@ -132,8 +132,8 @@ class GameState {
     {static} + DEFAULT_FONT
     {static} + WINDOW 
     {static} + GAME_SURFACE
-    {static} + PhysicDT
-    {static} + GraphicDT
+    {static} + physicDT
+    {static} + graphicDT
     {static} + save
     {static} + camera
 
