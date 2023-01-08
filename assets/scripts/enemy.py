@@ -5,7 +5,7 @@ from pygame import Surface, Color, Rect, Vector2 as v2
 # utils
 from camera import Camera
 from config import GameState, GameConfig
-from input import Input
+from assets.spritesheet import SpritesheetManager
 
 # entity
 from assets.scripts.animable import Animable
@@ -17,27 +17,9 @@ def load_frame(spritesheet: Surface, current_frame: int, animation_index: int, s
 
 class Enemy(Animable, LightSource):
 
-    __default_animations: list[tuple[str, int]] = [
-        ("idle", 10),
-        ("jump", 10),
-        ("walk", 5),
-    ]
-
     def __init__(self, position: v2, size: v2, mass: int, path) -> None:
-        spritesheet: Surface = pg.image.load("assets/Sprites/Dynamics/ennemy_spritesheet.png").convert_alpha()
-        animations: dict[str, list[Surface]] = {}
-        for animation_index, (name, frame_count) in enumerate(Enemy.__default_animations):
-            for direction in ["right", "left"]:
-                animation: list[Surface] = []
-                for frame_index in range(frame_count):
-                    animation.append(load_frame(spritesheet, frame_index, animation_index, size, direction=="left"))
-                animations[f"{name}-{direction}"] = animation
         
-        # animations: dict[str, list[Surface]] = {
-        #     name: [load_frame(spritesheet, frame_index, animation_index, size, direction=="left") for frame_index in range(0, frame_count-1) ] for animation_index, (name, frame_count) in enumerate(Player.__default_animations) for direction in ["right", "left"]
-        # }
-
-        Animable.__init__(self, position, animations, size)
+        Animable.__init__(self, position, SpritesheetManager.SlimeAnimations["ghost"], size)
         LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(200,200,200))
         self.mask: pg.mask.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
         self.path: tuple[int] = path
