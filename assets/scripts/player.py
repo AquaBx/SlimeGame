@@ -9,7 +9,7 @@ from config import GameState, GameConfig
 from input import Input
 from eventlistener import EventManager
 from customevents import PlayerActionEvent
-from Gui import Gui, HealthBar
+from gui import GUI, HealthBar
 from assets.spritesheet import SpritesheetManager
 
 # entity
@@ -36,7 +36,7 @@ class Player(Animable, LightSource, Damaged):
         self.status_frame: float = 0.0
         self.hurt_time: int = 0
 
-        Gui.add_component(HealthBar(self))
+        GUI.add_component(HealthBar(self))
     @property
     def emit_position(self) -> v2:
         return v2(self.rect.center)
