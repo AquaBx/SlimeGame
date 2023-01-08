@@ -3,7 +3,7 @@ from abc import ABC,abstractclassmethod
 import pygame as pg
 from config import GameState
 
-class GuiComponent(ABC):
+class GUIComponent(ABC):
     def __init__(self, position: v2, size: v2) -> None:
         self.position: v2 = position
         self.size: v2 = size
@@ -12,10 +12,10 @@ class GuiComponent(ABC):
     @abstractclassmethod
     def surface(self) -> Surface : ...
     
-class HealthBar(GuiComponent):
+class HealthBar(GUIComponent):
     def __init__(self, link):
         self.texture = pg.image.load("assets/UI/healthbar.png").convert_alpha()
-        GuiComponent.__init__(self, v2(10,GameState.GAME_SURFACE.get_size()[1]-self.texture.get_size()[1]-10), self.texture.get_size())
+        GUIComponent.__init__(self, v2(10,GameState.GAME_SURFACE.get_size()[1]-self.texture.get_size()[1]-10), self.texture.get_size())
         self.link = link
 
     @property
@@ -28,13 +28,13 @@ class HealthBar(GuiComponent):
 
         return surface
     
-class Gui:
+class GUI:
     components: set = set()
     
-    def add_component(Component: GuiComponent) -> None:
-        Gui.components.add(Component)
+    def add_component(Component: GUIComponent) -> None:
+        GUI.components.add(Component)
 
     def draw(window : Surface) -> None:
-        for gc in Gui.components:
+        for gc in GUI.components:
             window.blit(gc.surface,gc.position)
 

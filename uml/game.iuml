@@ -40,9 +40,9 @@ class Game {
     - __draw()
 }
 
-class Gui {
+class GUI {
     {static} + components
-    {static} + add_component(GuiComponent)
+    {static} + add_component(GUIComponent)
     {static} + draw(Surface)
 }
 
@@ -51,7 +51,7 @@ class HealthBar{
     + link
 }
 
-abstract GuiComponent{
+abstract GUIComponent{
     + position
     + size
     + surface()
@@ -189,16 +189,16 @@ Button        ---> Text
 ButtonManager <--> Button
 ButtonManager ---> Input
 
-GuiComponent     <|-- HealthBar
+GUIComponent     <|-- HealthBar
 
-Gui ---> GuiComponent
+GUI ---> GUIComponent
 
 Game          ---> Menu
 Game          ---> Input
 Game          ---> World
 Game          ---> EventManager
 Game          ---> ButtonManager
-Game          ---> Gui
+Game          ---> GUI
 
 Menu --> ButtonManager
 Menu ---> Text
