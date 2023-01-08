@@ -10,41 +10,19 @@ from input import Input
 from eventlistener import EventManager
 from customevents import PlayerActionEvent
 from Gui import Gui, HealthBar
+from assets.spritesheet import SpritesheetManager
 
 # entity
 from assets.scripts.animable import Animable
 from assets.scripts.gameobject_attributes import LightSource, Damaged
 
-def load_frame(spritesheet: Surface, current_frame: int, animation_index: int, size: v2, flip: bool) -> Surface:
-    TILE_SIZE = 18
-    return pg.transform.flip(pg.transform.scale(spritesheet.subsurface(Rect(current_frame*TILE_SIZE,animation_index*TILE_SIZE,TILE_SIZE,TILE_SIZE)), size), flip, False)
-
 class Player(Animable, LightSource, Damaged):
 
     JUMP_HEIGHT: int = 4
-
-    __default_animations: list[tuple[str, int]] = [
-        ("idle", 10),
-        ("jump", 10),
-        ("walk", 5),
-        ("hurt", 4),
-    ]
-
+               
     def __init__(self, position: v2, size: v2, mass: int) -> None:
-        spritesheet: Surface = pg.image.load("assets/Sprites/Dynamics/slime_spritesheet.png").convert_alpha()
-        animations: dict[str, list[Surface]] = {}
-        for animation_index, (name, frame_count) in enumerate(Player.__default_animations):
-            for direction in ["right", "left"]:
-                animation: list[Surface] = []
-                for frame_index in range(frame_count):
-                    animation.append(load_frame(spritesheet, frame_index, animation_index, size, direction=="left"))
-                animations[f"{name}-{direction}"] = animation
-        
-        # animations: dict[str, list[Surface]] = {
-        #     name: [load_frame(spritesheet, frame_index, animation_index, size, direction=="left") for frame_index in range(0, frame_count-1) ] for animation_index, (name, frame_count) in enumerate(Player.__default_animations) for direction in ["right", "left"]
-        # }
 
-        Animable.__init__(self, position, animations, size)
+        Animable.__init__(self, position, SpritesheetManager.SlimeAnimations["green"], size)
         LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(119,230,119))
         self.mask: pg.mask.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
 
@@ -68,9 +46,15 @@ class Player(Animable, LightSource, Damaged):
     def health(self) -> int:
         return self.__health
 
+    __life_to_color = ["ghost", "red", "orange", "green"]
+    __life_to_glow = [(200, 200, 255, 128), (230,119,119), (255,140,16), (119,230,119)]
     @health.setter
     def health(self, v) -> None:
         self.__health = max(0, v)
+        # 0 -> dead; 1-100 -> red; 101-200 -> orange; 201-300 -> green
+        life_state = 3*(self.__health+(self.max_health//3-1))//self.max_health
+        self.animations = SpritesheetManager.SlimeAnimations[Player.__life_to_color[life_state]]
+        self.glow = Color(Player.__life_to_glow[life_state])
         
     def draw(self, camera: Camera) -> None:
         Animable.update(self)
