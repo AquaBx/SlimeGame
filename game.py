@@ -7,6 +7,7 @@ from config import GameConfig, GameState
 from input import Input
 from text import Text
 from world import World
+from assets.spritesheet import SpritesheetManager
 import threading
 
 from eventlistener import EventManager
@@ -20,8 +21,10 @@ class Game:
         Input.init()
         Text.init(GameState.WINDOW, GameConfig.FONT_DATA, GameConfig.FONT_SIZE)
         ButtonManager.init(GameState.WINDOW)
+        SpritesheetManager.initialize()
         EventManager.initialize(["player_action"])
         Menu.init(self)
+
         self.clock: Clock = Clock()
         self.should_quit: bool = False
 

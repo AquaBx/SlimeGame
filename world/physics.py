@@ -158,6 +158,7 @@ def damage(obj, velo_avant, blocks_collide, axis):
                 #if no movement when getting hit, bumb is vertical
                 #bump in opposite movement direction
                 obj.acceleration[axis] += sqrt(2 * GameConfig.Gravity * blocks_collide[key]["ref"].bump_factor * obj.mass) / GameState.physicDT * GameConfig.BLOCK_SIZE * -dir
+                obj.is_flying = True
 
                 break
     

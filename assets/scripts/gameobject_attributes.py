@@ -32,23 +32,10 @@ class LightSource(ABC):
 
     def __init__(self, radius: int = 3*GameConfig.BLOCK_SIZE, glow: Color = Color(230, 199, 119), centered: bool = True) -> None:
         self.radius: int = radius
-        self.glow: Color = glow
-        self.centered: bool = centered
+        self.__glow: Color = glow
+        self.centered: bool = centered   
 
-        surface = Img.new("RGBA", (3*self.radius, 3*self.radius), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(surface)
-
-
-        w, h = surface.size
-        p1 = (w/2 - (self.radius*0.90), h/2 - (self.radius*0.9))
-        p2 = (w/2 + (self.radius*0.9), h/2 + (self.radius*0.9))
-        shape = (p1,p2)
-
-        draw.ellipse(shape, fill=(self.glow.r, self.glow.g, self.glow.b, self.glow.a))
-
-        surface_blured = surface .filter(ImageFilter.GaussianBlur(self.radius/5))
-
-        self.light_mask: Surface = pg.transform.scale(pil_to_surface(surface_blured), (2*self.radius, 2*self.radius))
+        self.__generate_light_mask()
         LightSource.sources.append(self)
 
     # il faut la redéfinir pour chaque enfant
@@ -73,6 +60,32 @@ class LightSource(ABC):
             dist: v2 = camera.transform_coord(light.emit_position-(v2(light.radius)*light.centered))
             LightSource.filter.blit(light.light_mask, dist)
         GameState.GAME_SURFACE.blit(LightSource.filter, (0, 0), special_flags=pg.BLEND_MULT)
+
+    def __generate_light_mask(self) -> None:
+        surface = Img.new("RGBA", (3*self.radius, 3*self.radius), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(surface)
+
+        w, h = surface.size
+        p1 = (w/2 - (self.radius*0.90), h/2 - (self.radius*0.9))
+        p2 = (w/2 + (self.radius*0.9), h/2 + (self.radius*0.9))
+        shape = (p1,p2)
+
+        draw.ellipse(shape, fill=(self.glow.r, self.glow.g, self.glow.b, self.glow.a))
+
+        surface_blured = surface.filter(ImageFilter.GaussianBlur(self.radius/5))
+        self.light_mask: Surface = pg.transform.scale(pil_to_surface(surface_blured), (2*self.radius, 2*self.radius))
+
+    @property
+    def glow(self) -> Color:
+        return self.__glow
+    
+    @glow.setter
+    def glow(self, color) -> None:
+        if color == self.__glow: return
+        
+        self.__glow = color
+        self.__generate_light_mask()
+
 
 class Damager(ABC):
 
