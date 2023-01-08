@@ -37,6 +37,7 @@ class Player(Animable, LightSource, Damaged):
         self.hurt_time: int = 0
 
         GUI.add_component(HealthBar(self))
+
     @property
     def emit_position(self) -> v2:
         return v2(self.rect.center)
@@ -55,7 +56,7 @@ class Player(Animable, LightSource, Damaged):
         life_state = 3*(self.__health+(self.max_health//3-1))//self.max_health
         self.animations = SpritesheetManager.SlimeAnimations[Player.__life_to_color[life_state]]
         self.glow = Color(Player.__life_to_glow[life_state])
-        
+
     def draw(self, camera: Camera) -> None:
         Animable.update(self)
         dest: v2 = camera.transform_coord(self.position)
