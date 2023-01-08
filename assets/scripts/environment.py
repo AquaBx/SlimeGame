@@ -3,7 +3,7 @@ import pygame as pg
 from pygame import Surface, Color, Vector2 as v2
 from pygame.mask import Mask
 from abc import ABC, abstractclassmethod
-from typing import Any
+from config import GameConfig
 
 # utils
 from utils import coords_to_v2
