@@ -4,7 +4,6 @@ from threading import Thread
 # libraries
 import pygame as pg
 from pygame.time import Clock
-
 from text import Text
 from menu_screen import MenuManager
 from input import Input
@@ -15,6 +14,7 @@ from assets.spritesheet import SpritesheetManager
 from eventlistener import EventManager
 from buttons import ButtonManager
 from gui import GUI
+from sounds import Sounds
 
 from world import World
 
@@ -36,10 +36,13 @@ class Game(Listener):
         Listener.__init__(self, ["menu", "title_screen", "quit"])
 
         Input.init()
+        Sounds.init()
         Text.init(GameState.WINDOW, GameConfig.FONT_DATA, GameConfig.FONT_SIZE)
         ButtonManager.init(GameState.WINDOW)
         MenuManager.init(GameState.WINDOW)
         SpritesheetManager.initialize()
+
+        Sounds.audios_preparation()
 
         self.physics: Thread = Thread(target=self.__update)
         self.clock: Clock = Clock()
@@ -53,10 +56,11 @@ class Game(Listener):
 
     def loop(self) -> None:
         MenuManager.open_menu("title_screen")
+        Input.update()
+        Sounds.play_audio("title")
         self.physics.start()
         while not self.should_quit:
             Input.update()
-
             self.__process_events()
 
             if not MenuManager.is_open():
@@ -76,6 +80,7 @@ class Game(Listener):
             case "title_screen":
                 tse: TitleScreenEvent = ce
                 if tse.action == "menu.title.continue":
+                    Sounds.from_title_to_theme()
                     self.world = World()
                     self.paused = False
                     MenuManager.close_menu("title_screen")
@@ -89,6 +94,7 @@ class Game(Listener):
                 if me.action == "menu.ingame.save_and_quit":
                     self.save_and_quit()
                 elif me.action == "menu.ingame.resume":
+                    Sounds.from_title_to_theme()
                     self.paused = False
                     MenuManager.close_menu("ingame_pause")
                 elif me.action == "menu.ingame.settings":
@@ -107,11 +113,14 @@ class Game(Listener):
             if ev.type == pg.QUIT:
                 self.should_quit = True
         if Input.is_pressed_once(pg.K_ESCAPE) and not MenuManager.is_open("title_screen"):
-            if self.paused:
+            Sounds.play_audio("button")
+            if MenuManager.is_open():
                 self.paused = False
+                Sounds.from_title_to_theme()
                 MenuManager.close_menu("ingame_pause")
             else:
                 self.paused = True
+                Sounds.from_theme_to_title()
                 MenuManager.open_menu("ingame_pause")
 
     def __update(self) -> None:
@@ -131,7 +140,7 @@ class Game(Listener):
         GameState.WINDOW.blit(pg.transform.scale(GameState.GAME_SURFACE, GameState.WINDOW.get_size()),(0,0))
 
 # to avoid global variable instances in main function
-def main() -> None:
+def main() -> None:    
     game = Game()
     game.loop()
     pg.quit()

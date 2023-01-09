@@ -38,6 +38,18 @@ class GameConfig:
         left : int = pg.K_LEFT
         right: int = pg.K_RIGHT
 
+    class Volume:
+        title      : int = 0.25
+        theme      : int = 0.25
+        victory    : int = 0.25
+        failure    : int = 0.25
+        # new_object : int = 0.25
+        jump       : int = 0.125
+        # land       : int = 0.125
+        # walk       : int = 0.125
+        button     : int = 0.125
+        damage     : int = 0.125
+
     class Graphics:
         EnableLights: bool = True
         WindowAutoSize: bool  = True

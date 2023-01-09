@@ -8,6 +8,7 @@ from assets.scripts.environment import MapElement
 from assets.scripts.enemy import Enemy
 from assets.scripts.gameobject import GameObject
 from assets.scripts.gameobject_attributes import Damagable, Damager, Dynamic
+from sounds import Sounds
 
 class BlockCollide:
     def __init__(self, ref: MapElement = None, collide: bool = False, overlap_rect: Rect = None):
@@ -158,6 +159,7 @@ def bump(obj: Union[GameObject, Dynamic, Damagable], damager: Damager, dir: v2, 
     #bump in opposite movement direction
     obj.acceleration[axis] += -1 * dir[axis] * sqrt(2 * GameConfig.Gravity * damager.bump_factor * obj.mass) / GameState.physicDT * GameConfig.BLOCK_SIZE / (1+(axis==1 and dir[axis] == -1))
     obj.is_flying = True
+    Sounds.play_audio("damage")
 
 def deal_damage(obj: Union[GameObject, Dynamic, Damagable], damager: Damager, dir: v2, axis: int = -1) -> None:
     if(obj.hurt_time == 0):                   
