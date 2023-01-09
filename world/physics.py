@@ -178,7 +178,7 @@ def blocks_damage(obj: Union[GameObject, Dynamic] , velo_avant: v2, blocks_colli
         if not isinstance(block, Damager): continue
         if blocks_collide[key].collide:
             dir = v2(0,0)
-            if velo_avant.length() == 0 or (axis == 1 and dir[1] == 0):
+            if velo_avant.length() == 0 or (axis == 1 and dir[1] == 0 and not obj.is_flying):
                 dir = v2(0,1)
             else: dir[axis] = abs(velo_avant[axis])/(velo_avant[axis] + (velo_avant[axis]==0))
             deal_damage(obj, block, dir, axis)
