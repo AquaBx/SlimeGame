@@ -6,6 +6,7 @@ class Input:
     """
     __keys: Sequence[bool]
     __keys_once: Sequence[bool]
+    # __keys_released_once: Sequence[bool]
     __click: tuple[bool]
     __click_once: tuple[bool]
     __mouse_motion: v2
@@ -50,6 +51,17 @@ class Input:
             bool: True if the key just got pressed
         """
         return Input.__keys_once[key]
+
+    # def is_just_released(key: int) -> bool:
+    #     """Checks if a key just got released
+
+    #     Args:
+    #         key (int): the given keyboard key
+
+    #     Returns:
+    #         bool: True if the key just got released
+    #     """
+    #     return Input.__keys_released_once[key]
 
     def is_clicked(button: int = None) -> bool:
         """Checks if a mouse button is currently pressed
@@ -100,7 +112,7 @@ class Input:
 
         Input.__keys_once = key.ScancodeWrapper(tuple(not l_keys[i] and l_states[i] for i in range(len(key_states))))
 
-
+        # Input.__keys_released_once = key.ScancodeWrapper(tuple(l_keys[i] and not l_states[i] for i in range(len(key_states))))
         Input.__keys = key_states
 
 

@@ -5,6 +5,7 @@ from pygame import Color
 from input import Input
 from button_script import ButtonScript
 from text import Text
+from sounds import Sounds
 
 class Button:
 
@@ -38,6 +39,7 @@ class Button:
         Text.display_message(self.__label, v2(self.__hitbox.center), self.__font, self.__label_color, True)
 
     def run(self):
+        Sounds.play_audio("button")
         self.__script()
 
     @property
