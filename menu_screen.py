@@ -16,8 +16,6 @@ class Menu:
         self.menu_rect: Rect = menu_rect
         self.background: Surface = background
 
-        print(self.menu_rect.size)
-
 class MenuManager :
     """
     Cette classe permet d'afficher deux menus : le menu principal hors-partie et le menu en jeu

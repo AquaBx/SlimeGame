@@ -116,17 +116,9 @@ class Spike(MapElement, Damager, LightSource):
 
     def __init__(self, coords: tuple[int, int], texture: Surface):
         MapElement.__init__(self, coords, texture)
+        Damager.__init__(self, 50, 2, 3)
         LightSource.__init__(self, radius=int(0.9*GameConfig.BLOCK_SIZE), glow=Color(230, 230, 230, 128))
         
-    @property
-    def damage(self) -> int: return 50
-
-    @property
-    def hurt_time(self) -> int: return 2
-
-    @property
-    def bump_factor(self) -> int: return 3
-
     @property
     def emit_position(self) -> v2:
         return self.rect.center

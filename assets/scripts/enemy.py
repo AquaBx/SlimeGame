@@ -9,56 +9,34 @@ from assets.spritesheet import SpritesheetManager
 
 # entity
 from assets.scripts.animable import Animable
-from assets.scripts.gameobject_attributes import LightSource
+from assets.scripts.gameobject_attributes import LightSource, Dynamic, Damager
 
 def load_frame(spritesheet: Surface, current_frame: int, animation_index: int, size: v2, flip: bool) -> Surface:
     TILE_SIZE = 18
     return pg.transform.flip(pg.transform.scale(spritesheet.subsurface(Rect(current_frame*TILE_SIZE,animation_index*TILE_SIZE,TILE_SIZE,TILE_SIZE)), size), flip, False)
 
-class Enemy(Animable, LightSource):
+class Enemy(Animable, LightSource, Dynamic, Damager):
 
-    def __init__(self, position: v2, size: v2, mass: int, path) -> None:
-        
+    def __init__(self, position: v2, size: v2, mass: int, path: v2) -> None:
         Animable.__init__(self, position, SpritesheetManager.SlimeAnimations["ghost"], size)
         LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(200,200,200))
-        self.mask: pg.mask.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
+        Dynamic.__init__(self, mass, pg.image.load("assets/sprites/dynamics/slime_hitbox.png"))
+        Damager.__init__(self, 50, 2, 2)
 
-        self.path: tuple[int] = path
-        self.mass: int = mass
-        self.health: int = 300
-        self.max_health: int = 300
-        self.is_flying: bool = True
-        self.size: v2 = size
-        self.velocity: v2 = v2(0.0)
-        self.acceleration: v2 = v2(0.0)
-        self.status_frame: float = 0.0
+        #x1, x2
+        self.path: v2 = path
 
     @property
     def emit_position(self) -> v2:
         return v2(self.rect.center)
 
-    def draw(self, camera: Camera) -> None:
-        Animable.update(self)
-        dest: v2 = camera.transform_coord(self.position)
-        GameState.GAME_SURFACE.blit(self.texture, dest)
-
     def update(self) -> None:
-        if self.position.x <= self.path[0]:
+        if self.position_matrix_center.x * GameConfig.BLOCK_SIZE <= self.path[0]:
             self.direction = "right"
-        elif self.position.x > self.path[1]:
+        elif self.position_matrix_center.x * GameConfig.BLOCK_SIZE > self.path[1]:
             self.direction = "left"
         
         self.acceleration.x += (2*int(self.direction=="right")-1 )* 0.5 *  GameConfig.BLOCK_SIZE / GameState.physicDT * ( 1 - 0.75 * self.is_flying)
-
-        # if Input.is_pressed(GameConfig.KeyBindings.up) and not self.is_flying:
-        #     hauteur = 4 # hauteur en blocks
-
-        #     # v² = 2*g*m*h 
-        #     # sans la masse ça fait pas le bon saut
-        #     # testé avec 2 valeurs de masse, de hauteur et de gravité, on saute bien à la hauteur souhaitée
-        #     self.acceleration.y -= sqrt(2 * GameConfig.Gravity * hauteur * self.mass) / GameState.physicDT * GameConfig.BLOCK_SIZE 
-        #     self.acceleration.y -= GameConfig.Gravity * self.mass * GameConfig.BLOCK_SIZE
-        #     self.is_flying = True
 
     def update_animation(self) -> None:
         if self.is_flying:
