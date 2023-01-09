@@ -11,6 +11,7 @@ from eventlistener import EventManager
 from customevents import PlayerActionEvent
 from gui import GUI, HealthBar
 from assets.spritesheet import SpritesheetManager
+from sounds import Sounds
 
 # entity
 from assets.scripts.animable import Animable
@@ -56,12 +57,19 @@ class Player(Animable, LightSource, Dynamic, Damagable):
         if Input.is_pressed(GameConfig.KeyBindings.left):
             self.acceleration.x -= GameConfig.BLOCK_SIZE / GameState.physicDT * ( 1 - 0.75 * self.is_flying)
 
+        # if (Input.is_pressed_once(GameConfig.KeyBindings.right) or Input.is_pressed_once(GameConfig.KeyBindings.left)) and not self.is_flying:
+        #     Sounds.play_audio("walk")
+
+        # if (Input.is_just_released(GameConfig.KeyBindings.right) and not Input.is_pressed(GameConfig.KeyBindings.left)) or (Input.is_just_released(GameConfig.KeyBindings.left) and not Input.is_pressed(GameConfig.KeyBindings.right)) or self.is_flying:
+        #     Sounds.stop_audio("walk")
+
         if Input.is_pressed(GameConfig.KeyBindings.up) and not self.is_flying:
+            Sounds.play_audio("jump")
             # v² = 2*g*m*h 
             # sans la masse ça fait pas le bon saut
             # testé avec 2 valeurs de masse, de hauteur et de gravité, on saute bien à la hauteur souhaitée
             self.acceleration.y -= sqrt(2 * GameConfig.Gravity * Player.JUMP_HEIGHT * self.mass) / GameState.physicDT * GameConfig.BLOCK_SIZE 
-            # on annule la gravité
+            # on annule la sssgravité
             self.acceleration.y -= GameConfig.Gravity * self.mass * GameConfig.BLOCK_SIZE
             self.is_flying = True
 
