@@ -98,7 +98,13 @@ class Game(Listener):
                     self.paused = False
                     MenuManager.close_menu("ingame_pause")
                 elif me.action == "menu.ingame.settings":
-                    ...
+                    if GameConfig.Graphics.EnableLights: 
+                        GameConfig.Graphics.EnableLights = False
+                        ButtonManager.rename_menu("menu.ingame.settings", "RTX off")
+                    else: 
+                        GameConfig.Graphics.EnableLights = True
+                        ButtonManager.rename_menu("menu.ingame.settings", "RTX on")
+
 
             case "quit":
                 self.should_quit = True
