@@ -61,6 +61,6 @@ class World:
     def summon_enemies(self):
         match GameState.save["data"]["last_map"]:
             case "stage2":
-                self.enemies.append(Enemy(coords_to_v2((59, 4)), v2(18), 5, coords_to_v2((14,5))))
+                self.enemies.append(Enemy(coords_to_v2((59, 9)), v2(18), 5, coords_to_v2((14,9))))
                 self.enemies.append(Enemy(coords_to_v2((59,23)), v2(18), 5, coords_to_v2((40,24))))
 

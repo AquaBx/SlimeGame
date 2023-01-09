@@ -85,9 +85,6 @@ class MenuManager :
         return menu
 
     def __create_ingame_menu() -> Menu:
-        texture = image.load(f"{UI_DIR}/button1.png")
-        texture_disabled = image.load(f"{UI_DIR}/button1_disabled.png")
-
         left_m = int(0.3 * GameConfig.gameGraphics.WindowWidth)
         top_m = int(0.05 * GameConfig.gameGraphics.WindowHeight)
         width_m =  int(0.4 * GameConfig.gameGraphics.WindowWidth)
@@ -102,29 +99,22 @@ class MenuManager :
                 "id":          "menu.ingame.resume",
                 "label":       "Continuer",
                 "script":      ButtonScript(EventManager.push_event, MenuEvent("menu.ingame.resume")),
-                "textures":    [texture, texture, texture_disabled],
                 "label_color": Color("gray90")
             },
             {
                 "id":          "menu.ingame.settings",
-                "label":       "Paramètres",
+                "label":       f"RTX {'on' if GameConfig.Graphics.EnableLights else 'off'}",
                 "script":      ButtonScript(EventManager.push_event, MenuEvent("menu.ingame.settings")),
-                "textures":    [texture, texture, texture_disabled],
-                "label_color": Color("gray90"),
-                "enabled": False
+                "label_color": Color("gray90")
             },
             {
                 "id":          "menu.ingame.save_and_quit",
                 "label":       "Sauver & Quitter",
                 "script":      ButtonScript(EventManager.push_event, MenuEvent("menu.ingame.save_and_quit")),
-                "textures":    [texture, texture, texture_disabled],
                 "label_color": Color("gray90")
             })
 
-    def __create_title_screen() -> Menu:
-        texture = image.load(f"{UI_DIR}/button1.png")
-        texture_disabled = image.load(f"{UI_DIR}/button1_disabled.png")
-        
+    def __create_title_screen() -> Menu:     
         top_b: int = int(0.4 * GameConfig.gameGraphics.WindowHeight)
         left_b: int = int(0.325*GameConfig.gameGraphics.WindowWidth)
         width_b: int = int(0.35*GameConfig.gameGraphics.WindowWidth)
@@ -133,14 +123,12 @@ class MenuManager :
                 "id": "menu.title.continue",
                 "label": "Continuer",
                 "script": ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.continue")),
-                "textures": [texture, texture, texture_disabled],
                 "label_color": Color("gray90")
             },
             {
                 "id": "menu.title.settings",
                 "label": "Paramètres",
                 "script": ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.settings")),
-                "textures": [texture, texture, texture_disabled],
                 "label_color": Color("gray90"),
                 "enabled": False
             },
@@ -148,7 +136,6 @@ class MenuManager :
                 "id": "menu.title.quit",
                 "label": "Quitter",
                 "script": ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.quit")),
-                "textures": [texture, texture, texture_disabled],
                 "label_color": Color("gray90")
             }
         )
