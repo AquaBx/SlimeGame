@@ -16,7 +16,6 @@ class BlockCollide:
         self.overlap_rect: Rect = overlap_rect
 
 def update_entity(world, obj: Union[GameObject, Dynamic]) -> None:
-    
     pos_avant = v2(obj.position)
     velo_avant = v2(obj.velocity)
     # keyboard inputs
@@ -157,7 +156,7 @@ def bump(obj: Union[GameObject, Dynamic, Damagable], damager: Damager, dir: v2, 
     obj.velocity[axis] = 0
     #if no movement when getting hit, bumb is vertical
     #bump in opposite movement direction
-    obj.acceleration[axis] += -1 * dir[axis] * sqrt(2 * GameConfig.Gravity * damager.bump_factor * obj.mass) / GameState.physicDT * GameConfig.BLOCK_SIZE
+    obj.acceleration[axis] += -1 * dir[axis] * sqrt(2 * GameConfig.Gravity * damager.bump_factor * obj.mass) / GameState.physicDT * GameConfig.BLOCK_SIZE / (1+(axis==1 and dir[axis] == -1))
     obj.is_flying = True
 
 def deal_damage(obj: Union[GameObject, Dynamic, Damagable], damager: Damager, dir: v2, axis: int = -1) -> None:
