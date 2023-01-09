@@ -14,8 +14,8 @@ def compute_grid_tile_size(window_size: tuple[int, int], grid_dimensions: tuple[
 WINDOW_W                : int = 750 # default 750
 WINDOW_H                : int = 700 # default 700
 
-DEFAULT_GRID_ROWS       : int = 64  # default 64
-DEFAULT_GRID_COLUMNS    : int = 64  # default 64
+DEFAULT_GRID_ROWS       : int = 18  # default 64
+DEFAULT_GRID_COLUMNS    : int = 32  # default 64
 
 DEFAULT_PALETTE_ROWS    : int = 30  # default 30
 DEFAULT_PALETTE_COLUMNS : int = 13  # default 13
