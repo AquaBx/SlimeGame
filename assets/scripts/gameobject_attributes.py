@@ -88,16 +88,51 @@ class LightSource(ABC):
 
 class Damager(ABC):
 
-    @property
-    @abstractclassmethod
-    def damage(self) -> int: ...
+    def __init__(self, damage, hurt_time, bump_factor):
+        self.__damage = damage
+        self.__hurt_time = hurt_time
+        self.__bump_factor = bump_factor
 
     @property
-    @abstractclassmethod
-    def hurt_time(self) -> int: ...
+    def damage(self) -> int: return self.__damage
 
     @property
-    @abstractclassmethod
-    def bump_factor(self) -> int: ...
+    def hurt_time(self) -> int: return self.__hurt_time
 
-class Damaged(ABC): ...
+    @property
+    def bump_factor(self) -> int: return self.__bump_factor
+
+class Damagable(ABC): 
+    def __init__(self, max_health: int, health: int = -1):
+        """Instanciate Damaged objects
+
+        Args:
+            max_health (int): the maximum health of the entity
+            health (int, optional): the current health of the entity. Default -1 means max_health
+        """
+        self.hurt_time: int = 0
+        self.max_health = max_health
+        if(health == -1): self._health = max_health
+        else: self._health = health
+
+    @property
+    def health(self) -> int:
+        return self._health
+
+    @health.setter
+    def health(self, v: int) -> None:
+        self._set_health(v)
+
+    def _set_health(self, v: int) -> None:
+        self._health = max(0, v)
+
+class Dynamic(ABC):
+    def __init__(self, mass: int, mask: Surface):
+        self.mass: int = mass
+        self.is_flying: bool = True
+        self.velocity: v2 = v2(0.0)
+        self.acceleration: v2 = v2(0.0)
+        self.mask = pg.mask.from_surface(mask)
+
+    @abstractclassmethod
+    def update() -> None: ...

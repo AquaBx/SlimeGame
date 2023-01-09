@@ -1,6 +1,6 @@
 # libraries
 import pygame as pg
-from pygame import Surface, Color, Rect, Vector2 as v2
+from pygame import Color, Vector2 as v2
 from math import sqrt
 
 # utils
@@ -14,9 +14,9 @@ from assets.spritesheet import SpritesheetManager
 
 # entity
 from assets.scripts.animable import Animable
-from assets.scripts.gameobject_attributes import LightSource, Damaged
+from assets.scripts.gameobject_attributes import LightSource, Damagable, Dynamic
 
-class Player(Animable, LightSource, Damaged):
+class Player(Animable, LightSource, Dynamic, Damagable):
 
     JUMP_HEIGHT: int = 4
                
@@ -24,45 +24,20 @@ class Player(Animable, LightSource, Damaged):
 
         Animable.__init__(self, position, SpritesheetManager.SlimeAnimations["green"], size)
         LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(119,230,119))
-        # self.mask: pg.mask.Mask = pg.mask.Mask(self.animations["idle-right"][0].get_size(), fill=True)
-        self.mask: pg.mask.Mask = pg.mask.from_surface(self.animations["idle-right"][0])
-        self.mask: pg.mask.Mask = pg.mask.from_surface(pg.image.load("assets/sprites/dynamics/slime_hitbox.png"))
-
-        self.mass: int = mass
-        self.__health: int = 300
-        self.max_health: int = 300
-        self.is_flying: bool = True
-        self.size: v2 = size
-        self.velocity: v2 = v2(0.0)
-        self.acceleration: v2 = v2(0.0)
-        self.status_frame: float = 0.0
-        self.hurt_time: int = 0
+        Dynamic.__init__(self, mass, pg.image.load("assets/sprites/dynamics/slime_hitbox.png"))
+        Damagable.__init__(self, 300)
 
         GUI.add_component(HealthBar(self))
 
-    @property
-    def emit_position(self) -> v2:
-        return v2(self.rect.center)
-        
-
-    @property
-    def health(self) -> int:
-        return self.__health
-
+    # Damaged
     __life_to_color = ["ghost", "red", "orange", "green"]
     __life_to_glow = [(200, 200, 255, 128), (230,119,119), (255,140,16), (119,230,119)]
-    @health.setter
-    def health(self, v) -> None:
-        self.__health = max(0, v)
+    def _set_health(self, v: int) -> None:
+        self._health = max(0, v)
         # 0 -> dead; 1-100 -> red; 101-200 -> orange; 201-300 -> green
-        life_state = 3*(self.__health+(self.max_health//3-1))//self.max_health
+        life_state = 3*(self._health+(self.max_health//3-1))//self.max_health
         self.animations = SpritesheetManager.SlimeAnimations[Player.__life_to_color[life_state]]
-        self.glow = Color(Player.__life_to_glow[life_state])
-
-    def draw(self, camera: Camera) -> None:
-        Animable.update(self)
-        dest: v2 = camera.transform_coord(self.position)
-        GameState.GAME_SURFACE.blit(self.texture, dest)
+        self.glow = Color(Player.__life_to_glow[life_state])      
 
     # LigthSource
     @property
@@ -70,7 +45,6 @@ class Player(Animable, LightSource, Damaged):
         return v2(self.rect.center)
 
     def update(self) -> None:
-
         self.hurt_time = max(0, self.hurt_time - GameState.physicDT)
 
         if Input.is_pressed(pg.K_SPACE):
