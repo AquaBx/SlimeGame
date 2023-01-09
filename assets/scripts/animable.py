@@ -3,7 +3,8 @@ from pygame import Surface, Vector2 as v2
 from abc import ABC, abstractclassmethod
 
 # utils
-from config import GameConfig
+from config import GameConfig, GameState
+from camera import Camera
 
 # entity
 from assets.scripts.gameobject import GameObject
@@ -20,14 +21,17 @@ class Animable(GameObject, ABC):
         self.current_animation: str = f"idle-{self.direction}"
         self.current_frame: int = 0
         self.animations: dict[str, list[Surface]] = animations
+        self.status_frame: float = 0.0
 
     @property
     def texture(self):
         return self.animations[self.current_animation][self.current_frame]
 
-    def update(self) -> None:
+    def draw(self, camera : Camera):
         self.update_animation()
         self.update_frame()
+        dest: v2 = camera.transform_coord(self.position)
+        GameState.GAME_SURFACE.blit(self.texture, dest)
 
     @abstractclassmethod
     def update_animation(self) -> None: ...
