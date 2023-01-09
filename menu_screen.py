@@ -126,6 +126,13 @@ class MenuManager :
                 "label_color": Color("gray90")
             },
             {
+                "id":           "menu.title.reset",
+                "label":        "Recommencer du début",
+                "script":       ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.reset")), # il faut implémenter reset maintenant, comment faire ?
+                "label_color":  Color("gray90"),
+                "enabled": False
+            },
+            {
                 "id": "menu.title.settings",
                 "label": "Paramètres",
                 "script": ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.settings")),
