@@ -1,20 +1,22 @@
 from pygame import Rect, Surface, Vector2 as v2
-from pygame import transform
+from pygame import transform, image
 from pygame import Color
 
 from input import Input
 from button_script import ButtonScript
 from text import Text
+from assets import UI_DIR
 from sounds import Sounds
 
 class Button:
 
-    DEFAULT: int  = 0
+    IDLE: int  = 0
     HOVER: int    = 1
     DISABLED: int = 2
     
+    DEFAULT_TEXTURES: list[Surface] = []
     # ne plus init les boutons comme ca, creer un ButtonManager.create qui retourne la ref du bouton
-    def __init__(self, id: str, label: str, hitbox: Rect, script: ButtonScript, textures: Surface | list[Surface], alive : bool = False, enabled : bool = True, font: str = "PressStart2P", label_color: Color = Color("white")) -> None:
+    def __init__(self, id: str, label: str, hitbox: Rect, script: ButtonScript, textures: Surface | list[Surface] = None, alive : bool = False, enabled : bool = True, font: str = "PressStart2P", label_color: Color = Color("white")) -> None:
         self.__id = id
         self.__label = label
         self.__hitbox = hitbox
@@ -24,6 +26,11 @@ class Button:
         self.__label_color = label_color
 
         # Default, Hover, Disabled
+        if textures is None:
+            # load default textures if needed
+            if Button.DEFAULT_TEXTURES == []: 
+                Button.DEFAULT_TEXTURES = [image.load(f"{UI_DIR}/button_{state}.png") for state in ["idle", "hover", "disabled"]]
+            textures = Button.DEFAULT_TEXTURES 
         if isinstance(textures, Surface):
             self.__textures = [transform.scale(textures, hitbox.size)] * 3
         else: self.__textures = [transform.scale(texture, hitbox.size) for texture in textures]
@@ -51,7 +58,7 @@ class Button:
         return self.__label
 
     @label.setter
-    def text(self, value: str) -> None:
+    def label(self, value: str) -> None:
         self.__label = value
 
     @property
@@ -93,6 +100,7 @@ class ButtonManager():
 
     is_init: bool = False
 
+    
 
     def init(window: Surface) -> None:
         if not Input.is_init:
@@ -122,13 +130,17 @@ class ButtonManager():
     def is_alive(id: str) -> bool:
         return id in ButtonManager.__alives
 
+    def rename_menu(id: str, new_label: str) -> None:
+        if id in ButtonManager.__buttons:
+            ButtonManager.__buttons[id].label = new_label
+
     def __handle_motion(button: Button, mouse: v2) -> None:
         if button.hitbox.collidepoint(mouse):
-            if button.state == Button.DEFAULT:
+            if button.state == Button.IDLE:
                 button.state = Button.HOVER
                 # print(f"hovering button {button.id}")
         elif button.state == Button.HOVER: 
-            button.state = Button.DEFAULT
+            button.state = Button.IDLE
             # print(f"unhovering button {button.id}")
 
     def __handle_click(button: Button) -> None:
