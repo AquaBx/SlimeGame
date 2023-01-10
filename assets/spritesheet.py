@@ -35,9 +35,10 @@ class SpritesheetManager:
             "ghost" :("assets/sprites/dynamics/ghost_slime_spritesheet.png",  18),
            },
            animations=[
-            ("idle", 10),
-            ("jump", 10),
-            ("walk", 5),
-            ("hurt", 4),
+            ("idle",  10),
+            ("jump",  10),
+            ("walk",  5),
+            ("hurt",  4),
+            ("death", 3)
            ]
         )

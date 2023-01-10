@@ -7,7 +7,7 @@ from config import GameConfig, GameState
 from assets import SPRITE_DIR
 
 from eventlistener import EventManager
-from customevents import TitleScreenEvent, MenuEvent
+from customevents import TitleScreenEvent, MenuEvent, DeathScreenEvent
 
 class Menu:
     def __init__(self, buttons: list[str], buttons_rect: Rect, menu_rect: Rect, background: Surface) -> None:
@@ -35,7 +35,8 @@ class MenuManager :
 
         MenuManager.__menus = { name: fct() for name, fct in {
             "ingame_pause": MenuManager.__create_ingame_menu,
-            "title_screen": MenuManager.__create_title_screen
+            "title_screen": MenuManager.__create_title_screen,
+            "death_screen": MenuManager.__create_death_menu 
         }.items()}
 
     def open_menu(menu: str) -> None:
@@ -150,8 +151,36 @@ class MenuManager :
             }
         )
 
+    def __create_death_menu() -> Menu:
+        top_b: int = int(0.4 * GameConfig.gameGraphics.WindowHeight)
+        left_b: int = int(0.325*GameConfig.gameGraphics.WindowWidth)
+        width_b: int = int(0.35*GameConfig.gameGraphics.WindowWidth)
+        height_b: int = int(0.36 * GameConfig.gameGraphics.WindowHeight)
+        
+        return MenuManager.__create_menu(Rect(left_b, top_b, width_b, height_b), 2, Rect((0,0), GameConfig.gameGraphics.WindowSize), f"{SPRITE_DIR}/backgrounds/title_screen_menu.png",
+            {
+                "id": "menu.death.info",
+                "label": "Vous êtes mort",
+                "script": ButtonScript(None, None),
+                "label_color": Color("gray90"),
+                "enabled": False
+            },
+            {
+                "id": "menu.death.continue",
+                "label": "Continuer",
+                "script": ButtonScript(EventManager.push_event, DeathScreenEvent("menu.death.continue")),
+                "label_color": Color("gray90")
+            },
+            {
+                "id": "menu.death.quit",
+                "label": "Quitter",
+                "script": ButtonScript(EventManager.push_event, DeathScreenEvent("menu.death.quit")),
+                "label_color": Color("gray90")
+            }
+        )
+
     def draw_menus() -> None:
-        opens = list(MenuManager.__open_menus)
-        for menu_id in opens:
-            menu = MenuManager.__menus[menu_id]
+        to_draw_ids = list(MenuManager.__open_menus)
+        for id in to_draw_ids:
+            menu = MenuManager.__menus[id]
             MenuManager.window.blit(menu.background, menu.menu_rect.topleft)

@@ -12,6 +12,8 @@ from world import World
 from config import GameConfig, GameState
 from assets.spritesheet import SpritesheetManager
 
+from time import sleep
+
 from eventlistener import EventManager
 from buttons import ButtonManager
 from gui import GUI
@@ -20,15 +22,8 @@ from sounds import Sounds
 from world import World
 
 from eventlistener import Listener
-from customevents import CustomEvent, TitleScreenEvent, MenuEvent, QuitEvent, FlushPygameEvent
+from customevents import CustomEvent, TitleScreenEvent, MenuEvent, QuitEvent, FlushPygameEvent, ChangeStageEvent
 
-try:
-    from pypresence import Presence
-
-    rpc = Presence("1062462846325248081")
-    rpc.connect()
-
-except : pass
 
 
 class Game(Listener):
@@ -41,16 +36,20 @@ class Game(Listener):
 
         EventManager.initialize([
             "player_action",
+            "player_death",
             
             "change_stage",
             
             "title_screen",
+            "death_screen",
             "menu",
             "quit",
             
             "flush_pygame"
         ])
-        Listener.__init__(self, ["menu", "title_screen", "quit", "flush_pygame"], "game")
+
+        # Game listens to all these events :
+        Listener.__init__(self, ["menu", "title_screen", "death_screen", "quit", "change_stage", "flush_pygame"], "game")
 
         Input.init()
         Sounds.init()
@@ -96,7 +95,6 @@ class Game(Listener):
 
     def notify(self, ce: CustomEvent) -> None:
         match ce.key:
-
             case "title_screen":
                 tse: TitleScreenEvent = ce
                 if tse.action == "menu.title.continue":
@@ -126,10 +124,39 @@ class Game(Listener):
                     else: 
                         GameConfig.Graphics.EnableLights = True
                         ButtonManager.rename_menu("menu.ingame.settings", "RTX on")
+            case "death_screen":
+                me: MenuEvent = ce
+                if me.action == "menu.death.continue":
+                    self.world.leave()
+                    self.world = World()
 
+                    Sounds.stop_audio("failure")
+                    Sounds.unpause_audio("theme")
 
-            case "quit":
-                self.should_quit = True
+                    MenuManager.close_menu("death_screen")
+
+                elif me.action == "menu.death.quit":
+                    self.world.leave()
+                    self.world = None
+
+                    Sounds.stop_audio("failure")
+                    Sounds.unpause_audio("title")
+
+                    MenuManager.close_menu("death_screen")
+                    MenuManager.open_menu("title_screen")
+            case "change_stage":
+                cse: ChangeStageEvent = ce
+                
+                GameState.paused = True
+                sleep(0.1)
+
+                self.world.leave()
+                GameState.save["data"]["last_map"] = cse.next_map
+                GameState.save["data"]["player"]["position"] = cse.next_position
+                GameState.save["data"]["last_warp_exit"] = cse.next_position
+                self.world = World()
+
+                GameState.paused = False
 
             case "flush_pygame":
                 fpe: FlushPygameEvent = ce
@@ -140,26 +167,22 @@ class Game(Listener):
                         if not GameState.paused:
                             Sounds.play_audio("button")
                             Sounds.from_theme_to_title()
-                            MenuManager.open_menu("ingame_pause")
-                            
-                    
 
+                            MenuManager.open_menu("ingame_pause")    
+                    
     def save_and_quit_world(self) -> None:
         self.world.save()
         self.world.leave()
         MenuManager.close_menu("ingame_pause")
         MenuManager.open_menu("title_screen")
 
+
     def __update(self) -> None:
         clock = Clock()
         while not self.should_quit:
             Input.update()
             ButtonManager.update()
-            try:
-                stage = GameState.save["metadata"]['1']['next_stage']
-                rpc.update(state=f"Playing {stage}",details="github.com/aquabx/slimegame",large_image="image")
-            except: pass
-            
+                    
             if not GameState.paused:
                 self.world.update()
 
@@ -177,7 +200,7 @@ class Game(Listener):
 
     def __draw(self) -> None:
         self.world.draw()
-        GUI.draw(GameState().GAME_SURFACE)
+        GUI.draw(GameState.GAME_SURFACE)
         
         """ blit fenetre """
         # upscale sur la taille de la fenetre
