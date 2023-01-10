@@ -55,6 +55,7 @@ class Game(Listener):
         self.physics: Thread = Thread(target=self.__update)
         self.clock: Clock = Clock()
         self.should_quit: bool = False
+        self.paused: bool = True
 
         self.world: World = None
 
@@ -126,6 +127,13 @@ class Game(Listener):
                 for ev in fpe.events:
                     if ev.type == pg.QUIT:
                         self.should_quit = True
+                    elif ev.type == pg.WINDOWFOCUSLOST:
+                        if not self.paused:
+                            Sounds.play_audio("button")
+                            Sounds.from_theme_to_title()
+                            MenuManager.open_menu("ingame_pause")
+                            
+                    
 
     def save_and_quit_world(self) -> None:
         self.world.leave()
