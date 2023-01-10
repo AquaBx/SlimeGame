@@ -105,6 +105,7 @@ class Game(Listener):
                 elif tse.action == "menu.title.reset":
                     with open("assets/saves/savefile1.json","w") as f:
                         json.dump({"occupied": False}, f)
+                        GameState.save["data"] = {}
                     EventManager.push_event(TitleScreenEvent("menu.title.continue"))
                 elif tse.action == "menu.title.quit":
                     self.should_quit = True
