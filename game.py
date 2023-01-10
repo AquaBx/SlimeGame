@@ -136,8 +136,8 @@ class Game(Listener):
                     
 
     def save_and_quit_world(self) -> None:
-        self.world.leave()
         self.world.save()
+        self.world.leave()
         MenuManager.close_menu("ingame_pause")
         MenuManager.open_menu("title_screen")
 
