@@ -9,7 +9,7 @@ class Listener(ABC):
         self.events_that_i_need_to_listen_to: list[str] = events
         self.id: str = id
 
-        EventManager.register_listener(self)
+        EventManager.upsert_listener(self)
 
     @abstractclassmethod
     def notify(self, ce: CustomEvent) -> None: ...
@@ -35,8 +35,10 @@ class EventManager:
             for listener in EventManager.listeners[ce.key]:
                 listener.notify(ce)
 
-    def register_listener(listener: Listener) -> None:
+    def upsert_listener(listener: Listener) -> None:
         for ce_key in listener.events_that_i_need_to_listen_to:
+            if listener in EventManager.listeners[ce_key]:
+                EventManager.listeners[ce_key].remove(listener)
             EventManager.listeners[ce_key].add(listener)
 
     def push_event(ce: CustomEvent) -> None:

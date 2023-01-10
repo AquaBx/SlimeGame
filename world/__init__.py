@@ -1,6 +1,8 @@
 from pygame import Vector2 as v2
 from numpy import ndarray
 
+from time import sleep
+
 from . import serializer, graphics, physics
 import assets.saves
 from assets.scripts.environment import MapElement
@@ -51,6 +53,8 @@ class World(Listener):
         GameState.camera.update()
 
     def leave(self) -> None:
+        self.player = None
+        GameState.camera = None
         LightSource.sources.clear()
         self.enemies.clear()
 
@@ -75,19 +79,21 @@ class World(Listener):
                 self.enemies.append(Enemy(coords_to_v2((59, 9)), v2(18), 5, coords_to_v2((14,9))))
                 self.enemies.append(Enemy(coords_to_v2((59,23)), v2(18), 5, coords_to_v2((40,24))))
 
-
     def notify(self, ce: CustomEvent) -> None:
+        # on écoute uniquement les ChangeStageEvent
         cse: ChangeStageEvent = ce
-        
+
         GameState.paused = True
         # NOTE: save au changement de map ?
+        sleep(0.1)
         GameState.save["data"]["last_map"] = cse.next_map
-        
+
+        args = (coords_to_v2(cse.next_position), v2(self.player.size), self.player.mass, self.player.health)
         self.leave()
         self.deserialize(cse.next_map)
         self.summon_enemies()
-        
-        self.player: Player = Player(coords_to_v2(cse.next_position), self.player.size, self.player.mass, self.player.health)
-        
+
+        self.player: Player = Player(*args)
+
         GameState.camera = Camera(self.player)
         GameState.paused = False

@@ -116,3 +116,4 @@ class GameState:
     paused: bool = True
 
     save: dict = {}
+    camera: object
