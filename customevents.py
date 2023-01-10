@@ -1,3 +1,5 @@
+from pygame.event import Event
+
 class CustomEvent:
     
     def __init__(self, key: str) -> None:
@@ -25,3 +27,16 @@ class QuitEvent(CustomEvent):
     
     def __init__(self) -> None:
         CustomEvent.__init__(self, "quit")
+
+class ChangeStageEvent(CustomEvent):
+    
+    def __init__(self, next_map: str, next_position) -> None:
+        CustomEvent.__init__(self, "change_stage")
+        self.next_map: str = next_map
+        self.next_position: tuple[int, int] = next_position
+
+class FlushPygameEvent(CustomEvent):
+    
+    def __init__(self, events: list[Event]) -> None:
+        CustomEvent.__init__(self, "flush_pygame")
+        self.events: list[Event] = events

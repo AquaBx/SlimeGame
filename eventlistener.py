@@ -5,12 +5,20 @@ from customevents import CustomEvent
 
 class Listener(ABC):
     
-    def __init__(self, events: list[str]) -> None:
+    def __init__(self, events: list[str], id: str) -> None:
         self.events_that_i_need_to_listen_to: list[str] = events
+        self.id: str = id
+
         EventManager.register_listener(self)
 
     @abstractclassmethod
     def notify(self, ce: CustomEvent) -> None: ...
+
+    def __eq__(self, __o: object) -> bool:
+        return isinstance(__o, Listener) and self.id == __o.id
+
+    def __hash__(self) -> int:
+        return hash(self.id)
 
 class EventManager:
     
