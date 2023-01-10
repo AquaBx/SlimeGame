@@ -1,5 +1,6 @@
 # standard
 from threading import Thread
+import json
 
 # libraries
 import pygame as pg
@@ -93,15 +94,17 @@ class Game(Listener):
                     self.world = World()
                     self.paused = False
                     MenuManager.close_menu("title_screen")
-                elif tse.action == "menu.title.settings":
-                    ...
+                elif tse.action == "menu.title.reset":
+                    with open("assets/saves/savefile1.json","w") as f:
+                        json.dump({"occupied": False}, f)
+                    EventManager.push_event(TitleScreenEvent("menu.title.continue"))
                 elif tse.action == "menu.title.quit":
                     self.should_quit = True
 
             case "menu":
                 me: MenuEvent = ce
                 if me.action == "menu.ingame.save_and_quit":
-                    self.save_and_quit()
+                    self.save_and_quit_world()
                 elif me.action == "menu.ingame.resume":
                     Sounds.from_title_to_theme()
                     self.paused = False
@@ -124,10 +127,11 @@ class Game(Listener):
                     if ev.type == pg.QUIT:
                         self.should_quit = True
 
-    def save_and_quit(self) -> None:
-        if not self.world is None:
-            self.world.save()
-        self.should_quit = True
+    def save_and_quit_world(self) -> None:
+        self.world.leave()
+        self.world.save()
+        MenuManager.close_menu("ingame_pause")
+        MenuManager.open_menu("title_screen")
 
     def __update(self) -> None:
         clock = Clock()

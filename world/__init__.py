@@ -8,13 +8,12 @@ from assets.scripts.player import Player
 from assets.scripts.enemy import Enemy
 from assets.scripts.gameobject_attributes import LightSource
 from utils import coords_to_v2
-from config import GameConfig, GameState
+from config import GameState
 from camera import Camera
 
 from eventlistener import Listener
 from customevents import CustomEvent, ChangeStageEvent
 
-from time import time
 
 class World(Listener):
 
@@ -51,6 +50,10 @@ class World(Listener):
         
         GameState.camera.update()
 
+    def leave(self) -> None:
+        LightSource.sources.clear()
+        self.enemies.clear()
+
     def save(self) -> None:
         GameState.save["data"]["player"]["position"] = tuple(int(n) for n in self.player.position_matrix_center.yx)
         GameState.save["data"]["player"]["health"] = self.player.health
@@ -77,12 +80,12 @@ class World(Listener):
         cse: ChangeStageEvent = ce
         
         GameState.paused = True
+        # NOTE: save au changement de map ?
         GameState.save["data"]["last_map"] = cse.next_map
         
-        LightSource.sources.clear()
-        self.enemies.clear()
-        self.summon_enemies()
+        self.leave()
         self.deserialize(cse.next_map)
+        self.summon_enemies()
         
         self.player: Player = Player(coords_to_v2(cse.next_position), self.player.size, self.player.mass, self.player.health)
         

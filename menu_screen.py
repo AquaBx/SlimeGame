@@ -44,6 +44,7 @@ class MenuManager :
         GameState.paused = True
         mouse.set_visible(True)
 
+    # TODO default value to str -> close all
     def close_menu(menu: str) -> None:
         ButtonManager.kill(*MenuManager.__menus[menu].buttons)
         if menu in MenuManager.__open_menus: MenuManager.__open_menus.remove(menu)
@@ -121,7 +122,8 @@ class MenuManager :
         left_b: int = int(0.325*GameConfig.gameGraphics.WindowWidth)
         width_b: int = int(0.35*GameConfig.gameGraphics.WindowWidth)
         height_b: int = int(0.5 * GameConfig.gameGraphics.WindowHeight)
-        return MenuManager.__create_menu(Rect(left_b, top_b, width_b, height_b), 2, Rect((0,0),GameConfig.gameGraphics.WindowSize), f"{SPRITE_DIR}/backgrounds/title_screen_menu.png", {
+        return MenuManager.__create_menu(Rect(left_b, top_b, width_b, height_b), 2, Rect((0,0),GameConfig.gameGraphics.WindowSize), f"{SPRITE_DIR}/backgrounds/title_screen_menu.png", 
+            {
                 "id": "menu.title.continue",
                 "label": "Continuer",
                 "script": ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.continue")),
@@ -129,16 +131,15 @@ class MenuManager :
             },
             {
                 "id":           "menu.title.reset",
-                "label":        "Recommencer du début",
-                "script":       ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.reset")), # il faut implémenter reset maintenant, comment faire ?
-                "label_color":  Color("gray90"),
-                "enabled": False
+                "label":        "Recommencer",
+                "script":       ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.reset")), 
+                "label_color":  Color("gray90")
             },
             {
-                "id": "menu.title.settings",
-                "label": "Paramètres",
-                "script": ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.settings")),
-                "label_color": Color("gray90"),
+                "id":           "menu.title.settings",
+                "label":        "Paramètres",
+                "script":       ButtonScript(EventManager.push_event, TitleScreenEvent("menu.title.settings")), 
+                "label_color":  Color("gray50"),
                 "enabled": False
             },
             {
