@@ -4,6 +4,8 @@ from pygame_gui.elements.ui_button import UIButton
 from pygame_gui.windows.ui_file_dialog import UIFileDialog
 from pygame_gui.elements.ui_selection_list import UISelectionList
 
+import json
+
 from mapeditor.config import *
 from assets import MAP_DIR
 from serializer import Serializer
@@ -84,6 +86,8 @@ class GUI:
             object_id="map_saving"
         )
         GameStates.menu_open = True
+        with open("assets/saves/metadata.json", "w") as f:
+            json.dump(self.editor.grid.metadata, f)
 
     def load_map(self) -> None:
         """Opens map loading menu

@@ -1,11 +1,17 @@
+# libraries
 import pygame as pg
 from pygame import Surface, Color, Vector2 as v2
 from PIL import Image as Img, ImageFilter, ImageDraw
 from PIL.Image import Image
+
+# standard
 from abc import ABC, abstractclassmethod
 
+# utils
 from camera import Camera
 from config import GameConfig, GameState
+from eventlistener import EventManager, Listener
+from customevents import CustomEvent, ChangeStageEvent, PlayerActionEvent
 
 def surface_to_pil(surf: Surface) -> Image:
     arr = pg.surfarray.array3d(surf)
@@ -100,7 +106,7 @@ class Damager(ABC):
     def hurt_time(self) -> int: return self.__hurt_time
 
     @property
-    def bump_factor(self) -> int: return self.__bump_factor
+    def bump_factor(self) -> int: return self.__bump_factor   
 
 class Damagable(ABC): 
     def __init__(self, max_health: int, health: int = -1):
@@ -136,3 +142,20 @@ class Dynamic(ABC):
 
     @abstractclassmethod
     def update() -> None: ...
+
+class Warp(Listener, ABC):
+
+    def __init__(self, uuid: int, next_map: str, next_position: tuple[int, int]) -> None:
+        Listener.__init__(self, ["player_action"], f"warp{uuid}")
+        self.next_map: str = next_map
+        self.next_position: tuple[int, int] = next_position
+
+    @property
+    @abstractclassmethod
+    def warp_zone(self) -> pg.Rect:
+        ...
+
+    def notify(self, ce: CustomEvent) -> None:
+        pae: PlayerActionEvent = ce
+        if self.warp_zone.colliderect(pae.player.rect):
+            EventManager.push_event(ChangeStageEvent(self.next_map, self.next_position))
