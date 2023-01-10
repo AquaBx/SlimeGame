@@ -127,7 +127,7 @@ class Game(Listener):
                 for ev in fpe.events:
                     if ev.type == pg.QUIT:
                         self.should_quit = True
-                    elif ev.type == pg.WINDOWFOCUSLOST:
+                    elif ev.type == pg.WINDOWFOCUSLOST or ev.type == pg.WINDOWMOVED:
                         if not self.paused:
                             Sounds.play_audio("button")
                             Sounds.from_theme_to_title()
