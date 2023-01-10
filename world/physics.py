@@ -159,9 +159,10 @@ def bump(obj: Union[GameObject, Dynamic, Damagable], damager: Damager, dir: v2, 
     #bump in opposite movement direction
     obj.acceleration[axis] += -1 * dir[axis] * sqrt(2 * GameConfig.Gravity * damager.bump_factor * obj.mass) / GameState.physicDT * GameConfig.BLOCK_SIZE / (1+(axis==1 and dir[axis] == -1))
     obj.is_flying = True
-    Sounds.play_audio("damage")
 
 def deal_damage(obj: Union[GameObject, Dynamic, Damagable], damager: Damager, dir: v2, axis: int = -1) -> None:
+    if obj.hurt_time < damager.hurt_time*0.8 and not Sounds.is_busy("damage"):
+        Sounds.play_audio("damage")
     if(obj.hurt_time == 0):                   
         obj.health -= damager.damage
         obj.hurt_time = damager.hurt_time

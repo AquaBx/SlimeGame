@@ -127,6 +127,7 @@ class Damagable(ABC):
 
     @health.setter
     def health(self, v: int) -> None:
+        if self._health == 0: return
         self._set_health(v)
 
     def _set_health(self, v: int) -> None:

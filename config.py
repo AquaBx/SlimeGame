@@ -106,6 +106,19 @@ class GameState:
         pg.display.set_icon(pg.image.load("assets/UI/icon.png"))
         pg.font.init()
 
+        try:
+            print("trying to connect rpc")
+
+            from pypresence import Presence
+            GameState.rpc = Presence("1062462846325248081")
+            GameState.rpc.connect()
+
+            GameState.has_rpc = True
+            print("rpc loaded")
+        except : 
+            GameState.has_rpc = False
+            print("rpc loading failed")
+
     DEFAULT_FONT: Font = None
     
     WINDOW: Surface = None
@@ -117,3 +130,6 @@ class GameState:
 
     save: dict = {}
     camera: object
+
+    rpc: object
+    has_rpc: bool
