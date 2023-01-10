@@ -33,7 +33,7 @@ class Player(Animable, LightSource, Dynamic, Damagable):
         Animable.__init__(self, position, SpritesheetManager.SlimeAnimations[Player.__life_to_color[life_state]], size)
         LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(Player.__life_to_glow[life_state]))
 
-        GUI.add_component(HealthBar(self))
+        GUI.upsert_component(HealthBar(self, "health_bar_player"))
 
     def _set_health(self, v: int) -> None:
         self._health = max(0, v)

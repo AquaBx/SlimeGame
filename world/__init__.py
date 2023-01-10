@@ -74,13 +74,17 @@ class World(Listener):
 
 
     def notify(self, ce: CustomEvent) -> None:
-        GameState.paused = True
         cse: ChangeStageEvent = ce
+        
+        GameState.paused = True
+        GameState.save["data"]["last_map"] = cse.next_map
+        
         LightSource.sources.clear()
         self.enemies.clear()
-        GameState.save["data"]["last_map"] = cse.next_map
-        self.deserialize(cse.next_map)
         self.summon_enemies()
-        self.player = Player(coords_to_v2(cse.next_position), self.player.size, self.player.mass, self.player.health)
+        self.deserialize(cse.next_map)
+        
+        self.player: Player = Player(coords_to_v2(cse.next_position), self.player.size, self.player.mass, self.player.health)
+        
         GameState.camera = Camera(self.player)
         GameState.paused = False
