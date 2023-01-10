@@ -55,7 +55,7 @@ class Game(Listener):
         self.physics: Thread = Thread(target=self.__update)
         self.clock: Clock = Clock()
         self.should_quit: bool = False
-        self.paused: bool = True
+        GameState.paused: bool = True
 
         self.world: World = None
 
@@ -93,7 +93,7 @@ class Game(Listener):
                 if tse.action == "menu.title.continue":
                     Sounds.from_title_to_theme()
                     self.world = World()
-                    self.paused = False
+                    GameState.paused = False
                     MenuManager.close_menu("title_screen")
                 elif tse.action == "menu.title.reset":
                     with open("assets/saves/savefile1.json","w") as f:
@@ -108,7 +108,7 @@ class Game(Listener):
                     self.save_and_quit_world()
                 elif me.action == "menu.ingame.resume":
                     Sounds.from_title_to_theme()
-                    self.paused = False
+                    GameState.paused = False
                     MenuManager.close_menu("ingame_pause")
                 elif me.action == "menu.ingame.settings":
                     if GameConfig.Graphics.EnableLights: 
@@ -128,7 +128,7 @@ class Game(Listener):
                     if ev.type == pg.QUIT:
                         self.should_quit = True
                     elif ev.type == pg.WINDOWFOCUSLOST or ev.type == pg.WINDOWMOVED:
-                        if not self.paused:
+                        if not GameState.paused:
                             Sounds.play_audio("button")
                             Sounds.from_theme_to_title()
                             MenuManager.open_menu("ingame_pause")
