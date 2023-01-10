@@ -8,7 +8,7 @@ from camera import Camera
 from config import GameState, GameConfig
 from input import Input
 from eventlistener import EventManager
-from customevents import PlayerActionEvent
+from customevents import PlayerActionEvent, PlayerDeathEvent
 from gui import GUI, HealthBar
 from assets.spritesheet import SpritesheetManager
 from sounds import Sounds
@@ -22,8 +22,8 @@ class Player(Animable, LightSource, Dynamic, Damagable):
     JUMP_HEIGHT: int = 4
 
     # Damaged
-    __life_to_color = ["ghost", "red", "orange", "green"]
-    __life_to_glow = [(200, 200, 255, 128), (230,119,119), (255,140,16), (119,230,119)]
+    __life_to_color = ["red", "red", "orange", "green"]
+    __life_to_glow = [(230, 119, 119), (230,119,119), (255,140,16), (119,230,119)]
 
     def __init__(self, position: v2, size: v2, mass: int, health: int = 300) -> None:
         Damagable.__init__(self, 300, health)
@@ -37,6 +37,9 @@ class Player(Animable, LightSource, Dynamic, Damagable):
 
     def _set_health(self, v: int) -> None:
         self._health = max(0, v)
+        if(self._health == 0):
+            EventManager.push_event(PlayerDeathEvent())
+            return
         # 0 -> dead; 1-100 -> red; 101-200 -> orange; 201-300 -> green
         life_state = 3*(self._health+(self.max_health//3-1))//self.max_health
         self.animations = SpritesheetManager.SlimeAnimations[Player.__life_to_color[life_state]]
@@ -77,7 +80,9 @@ class Player(Animable, LightSource, Dynamic, Damagable):
 
     # Animables
     def update_animation(self) -> None:
-        if self.hurt_time != 0:
+        if self.health == 0:
+            self.current_animation = f"death-{self.direction}"
+        elif self.hurt_time != 0:
             self.current_animation = f"hurt-{self.direction}"
         elif self.is_flying:
             self.current_animation = f"jump-{self.direction}"

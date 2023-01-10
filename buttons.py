@@ -159,5 +159,6 @@ class ButtonManager():
                 ButtonManager.__handle_click(button)
                 
     def draw():
-        for id in ButtonManager.__alives:
+        to_draw_ids = list(ButtonManager.__alives)
+        for id in to_draw_ids:
             ButtonManager.__buttons[id].draw(ButtonManager.__window)
