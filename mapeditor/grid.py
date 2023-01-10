@@ -4,17 +4,26 @@ from numpy import ndarray
 from pygame import Rect, Surface, Vector2 as v2
 from pygame import transform, image
 
+import json
+from io import TextIOWrapper
+
 from mapeditor.config import *
 from palette import Palette
 from window_component import WindowComponent
 from gamestates import GameStates
 
-from assets import Asset, ASSETS
+from assets import Asset, SAVE_DIR
 from elements import StateElement, EmptyElement
 
 class Grid(WindowComponent):
 
     tile_size: int = GRID_TILE_SIZE
+    metadata_file: TextIOWrapper
+    metadata: dict[str, dict[str]]
+    
+    def initialize() -> None:
+        with open(f"{SAVE_DIR}/metadata.json", "r") as f:
+            Grid.metadata = json.load(f)
 
     def __init__(self, rect : Rect, background: Asset, grid: ndarray = None) -> None:
         """Holds the tiles of the map
@@ -58,13 +67,6 @@ class Grid(WindowComponent):
         Args:
             palette (Palette): Palette of the current map
         """
-
-        # Each neighboor is associated with a weight (base2 bit), each weight is associated with a state.
-        # Note that diagonal neighboors might be irrelevant so we ignore them under specific conditions
-        # scoring of X:
-        # 128 1   2
-        # 64  X   4
-        # 32  16  8
         
         for i in range(self.rows):
             (top, bottom) = (i == 0, i == self.rows-1)
@@ -88,7 +90,13 @@ class Grid(WindowComponent):
             return
         i, j = (int(mouse_coord.y)//Grid.tile_size, int(mouse_coord.x)//Grid.tile_size)
         if self.map[i, j].id != palette.selected.id:
-            self.map[i, j] = StateElement(palette.selected.id, palette.selected.state, palette.selected.uuid, v2(j*Grid.tile_size, i*Grid.tile_size), palette.selected.image)
+            asset: Asset = palette.table[palette.selected.id]
+            uuid: int = 0x0000
+            if asset.script.require_uuid:
+                uuid = Grid.metadata["last_uuid"]
+                Grid.metadata["last_uuid"] += 1
+            Grid.metadata[f"{uuid}"] = asset.script.default_metadata
+            self.map[i, j] = StateElement(palette.selected.id, palette.selected.state, uuid, v2(j, i)*Grid.tile_size, palette.selected.image)
 
     def remove_tile(self, mouse_coord: v2) -> None:
         """Removes a tile from the current map
@@ -97,6 +105,10 @@ class Grid(WindowComponent):
             mouse_coord (v2): Coordinates of the click
         """
         i, j = (int(mouse_coord.y)//Grid.tile_size, int(mouse_coord.x)//Grid.tile_size)
+        if self.map[i, j].uuid != 0x0000:
+            # on retire 1 si l'élément qu'on retire est le dernier uuid
+            Grid.metadata["last_uuid"] -= (self.map[i, j].uuid == Grid.metadata["last_uuid"]-1)
+            del Grid.metadata[f"{self.map[i, j].uuid}"]
         self.map[i, j] = EmptyElement
     
     def clear(self) -> None:

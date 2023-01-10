@@ -7,8 +7,8 @@
         },
         "Graphics": {
             "WindowAutoSize": true,
-            "WindowHeight": 360,
-            "WindowWidth": 640,
+            "WindowHeight": 720,
+            "WindowWidth": 1280,
             "MaxFPS": 144,
             "EnableLights": true,
             "Fullscreen":false

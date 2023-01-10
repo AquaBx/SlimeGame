@@ -28,7 +28,8 @@ DEFAULT_PALETTE: list[Asset] = [
     assets.ASSETS[4],
     assets.ASSETS[1],
     assets.ASSETS[3],
-    assets.ASSETS[6]
+    assets.ASSETS[6],
+    assets.ASSETS[7]
 ]
 # END OF CONFIG, DO NOT EDIT AFTER THIS LINE
 SPRITE_TILE_SIZE         : int = 16

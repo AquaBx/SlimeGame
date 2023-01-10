@@ -50,7 +50,12 @@ class Input:
         Returns:
             bool: True if the key just got pressed
         """
+
+        
+        # might break because of threading 
+        # (if you loop faster than the thread that holds Input.update())
         return Input.__keys_once[key]
+        
 
     # def is_just_released(key: int) -> bool:
     #     """Checks if a key just got released

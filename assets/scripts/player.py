@@ -20,19 +20,21 @@ from assets.scripts.gameobject_attributes import LightSource, Damagable, Dynamic
 class Player(Animable, LightSource, Dynamic, Damagable):
 
     JUMP_HEIGHT: int = 4
-               
-    def __init__(self, position: v2, size: v2, mass: int) -> None:
-
-        Animable.__init__(self, position, SpritesheetManager.SlimeAnimations["green"], size)
-        LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(119,230,119))
-        Dynamic.__init__(self, mass, pg.image.load("assets/sprites/dynamics/slime_hitbox.png"))
-        Damagable.__init__(self, 300)
-
-        GUI.add_component(HealthBar(self))
 
     # Damaged
     __life_to_color = ["ghost", "red", "orange", "green"]
     __life_to_glow = [(200, 200, 255, 128), (230,119,119), (255,140,16), (119,230,119)]
+
+    def __init__(self, position: v2, size: v2, mass: int, health: int = 300) -> None:
+        Damagable.__init__(self, 300, health)
+        Dynamic.__init__(self, mass, pg.image.load("assets/sprites/dynamics/slime_hitbox.png"))
+
+        life_state = 3*(self._health+(self.max_health//3-1))//self.max_health
+        Animable.__init__(self, position, SpritesheetManager.SlimeAnimations[Player.__life_to_color[life_state]], size)
+        LightSource.__init__(self, radius = 2*GameConfig.BLOCK_SIZE, glow=Color(Player.__life_to_glow[life_state]))
+
+        GUI.add_component(HealthBar(self))
+
     def _set_health(self, v: int) -> None:
         self._health = max(0, v)
         # 0 -> dead; 1-100 -> red; 101-200 -> orange; 201-300 -> green
@@ -48,7 +50,7 @@ class Player(Animable, LightSource, Dynamic, Damagable):
     def update(self) -> None:
         self.hurt_time = max(0, self.hurt_time - GameState.physicDT)
 
-        if Input.is_pressed(pg.K_SPACE):
+        if Input.is_pressed_once(pg.K_SPACE):
             EventManager.push_event(PlayerActionEvent(self))
         
         if Input.is_pressed(GameConfig.KeyBindings.right):

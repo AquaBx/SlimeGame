@@ -16,7 +16,7 @@ class GameConfig:
     # ambient_color_world = ( 10,  10,  30) # obscurity
 
 
-    PhysicTick = 120
+    PhysicTick = 300
 
     FONT_SIZE: int = 25
     FONT_DIR: str = "assets/fonts"
@@ -87,6 +87,8 @@ class GameState:
             GameState.save = json.load(file)
             GameState.save["state"] = 1
             GameState.save["data"] = dict()
+        with open("assets/saves/metadata.json") as file:
+            GameState.save["metadata"] = json.load(file)
 
         GameState.__initialize_game_configuration(GameConfig, GameState.save["GameConfig"])
 
@@ -111,5 +113,6 @@ class GameState:
     
     physicDT = 1/GameConfig.PhysicTick
     graphicDT: float = 1/60
+    paused: bool = True
 
     save: dict = {}

@@ -19,9 +19,12 @@ from sounds import Sounds
 from world import World
 
 from eventlistener import Listener
-from customevents import CustomEvent, TitleScreenEvent, MenuEvent, QuitEvent
+from customevents import CustomEvent, TitleScreenEvent, MenuEvent, QuitEvent, FlushPygameEvent
 
 class Game(Listener):
+    
+    events: list[pg.event.Event] = []
+    
     def __init__(self) -> None:
         pg.init()
         GameState.initialize()
@@ -29,11 +32,15 @@ class Game(Listener):
         EventManager.initialize([
             "player_action",
             
+            "change_stage",
+            
             "title_screen",
             "menu",
-            "quit"
+            "quit",
+            
+            "flush_pygame"
         ])
-        Listener.__init__(self, ["menu", "title_screen", "quit"])
+        Listener.__init__(self, ["menu", "title_screen", "quit", "flush_pygame"], "game")
 
         Input.init()
         Sounds.init()
@@ -49,7 +56,6 @@ class Game(Listener):
         self.should_quit: bool = False
 
         self.world: World = None
-        self.paused: bool = True
 
     def __del__(self) -> None:
         pg.quit()
@@ -59,18 +65,21 @@ class Game(Listener):
         Input.update()
         Sounds.play_audio("title")
         self.physics.start()
-        while not self.should_quit:
-            Input.update()
-            self.__process_events()
+        while not self.should_quit and self.physics.is_alive():
+            # on récupère les évènements de pygame dans la boucle principale
+            # car on ne peut pas le faire dans un thread secondaire
+            evs = pg.event.get()
+            EventManager.push_event(FlushPygameEvent(evs.copy()))
+            EventManager.flush()
 
-            if not MenuManager.is_open():
-                GameState.graphicDT = 1 / self.clock.get_fps() if self.clock.get_fps() != 0 else 1 / GameConfig.gameGraphics.MaxFPS
+            if not GameState.paused:
+                # 1 / FPS_actuel ou si 0 FPS actuellement, 1/maxFPS
+                GameState.graphicDT = 1 / (self.clock.get_fps() + (self.clock.get_fps() == 0)*GameConfig.gameGraphics.MaxFPS)
                 GameState.GAME_SURFACE.fill('Black')
                 self.__draw()
 
-            EventManager.flush()
             MenuManager.draw_menus()
-            ButtonManager.update()
+            ButtonManager.draw()
             pg.display.update()
             self.clock.tick(GameConfig.gameGraphics.MaxFPS)
 
@@ -109,31 +118,35 @@ class Game(Listener):
             case "quit":
                 self.should_quit = True
 
+            case "flush_pygame":
+                fpe: FlushPygameEvent = ce
+                for ev in fpe.events:
+                    if ev.type == pg.QUIT:
+                        self.should_quit = True
+
     def save_and_quit(self) -> None:
         if not self.world is None:
             self.world.save()
         self.should_quit = True
 
-    def __process_events(self) -> None:
-        for ev in pg.event.get():
-            if ev.type == pg.QUIT:
-                self.should_quit = True
-        if Input.is_pressed_once(pg.K_ESCAPE) and not MenuManager.is_open("title_screen"):
-            Sounds.play_audio("button")
-            if MenuManager.is_open():
-                self.paused = False
-                Sounds.from_title_to_theme()
-                MenuManager.close_menu("ingame_pause")
-            else:
-                self.paused = True
-                Sounds.from_theme_to_title()
-                MenuManager.open_menu("ingame_pause")
-
     def __update(self) -> None:
         clock = Clock()
         while not self.should_quit:
-            if not MenuManager.is_open():
+            Input.update()
+            ButtonManager.update()
+
+            if not GameState.paused:
                 self.world.update()
+
+            if Input.is_pressed_once(pg.K_ESCAPE) and not MenuManager.is_open("title_screen"):
+                Sounds.play_audio("button")
+                if GameState.paused:
+                    Sounds.from_title_to_theme()
+                    MenuManager.close_menu("ingame_pause")
+                else:
+                    Sounds.from_theme_to_title()
+                    MenuManager.open_menu("ingame_pause")
+
             GameState.physicDT = 1. / (clock.get_fps() + (clock.get_fps() == 0.) * GameConfig.PhysicTick)
             clock.tick(GameConfig.PhysicTick)
 

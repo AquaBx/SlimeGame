@@ -6,7 +6,7 @@ from window_component import WindowComponent
 from elements import PaletteElement
 from gamestates import GameStates
 from assets import Asset, ASSETS
-from assets.scripts.environment import Spike
+from assets.scripts.environment import Door
 
 class Palette(WindowComponent):
     
@@ -38,20 +38,19 @@ class Palette(WindowComponent):
             self.hitboxes.append((local_id, rect))
             self.elements[local_id] = PaletteElement(local_id, asset.script.default_state(), asset.script, rect.topleft, image.load(asset.path))
         
-        
         # Manually add a new asset to the palette of a map
-        # local_id = 5
-        # global_id = 6
-        # type = Spike
-        # path = "assets/sprites/statics/spike.png"
-        # rect: Rect = Rect(
-        #     PALETTE_X+Palette.tile_size*(local_id%DEFAULT_PALETTE_COLUMNS),
-        #     Palette.tile_size*(local_id//DEFAULT_GRID_COLUMNS),
-        #     Palette.tile_size, Palette.tile_size
-        # )
-        # self.hitboxes.append((local_id, rect))
-        # self.elements[local_id] = PaletteElement(local_id, type.default_state, type, rect.topleft, image.load(path))
-        # self.table.append(ASSETS[global_id])
+        local_id = len(table)
+        global_id = 7
+        type = Door
+        path = "assets/sprites/statics/placeholder.png"
+        rect: Rect = Rect(
+            PALETTE_X+Palette.tile_size*(local_id%DEFAULT_PALETTE_COLUMNS),
+            Palette.tile_size*(local_id//DEFAULT_GRID_COLUMNS),
+            Palette.tile_size, Palette.tile_size
+        )
+        self.hitboxes.append((local_id, rect))
+        self.elements[local_id] = PaletteElement(local_id, type.default_state(), type, rect.topleft, image.load(path))
+        self.table.append(ASSETS[global_id])
     
     def draw(self) -> None:
         for el in self.elements.values():
