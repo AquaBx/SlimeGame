@@ -5,16 +5,19 @@ import wave
 
 class Sounds:
 
+    path: str
+    __audios: dict[str, tuple[str, int]]
+
     def init() -> None :
         Sounds.path : str = "assets/sounds"
 
-        Sounds.__audios : dict[str, tuple(str, int)] = {
+        Sounds.__audios : dict[str, tuple[str, int]] = {
             "title": ("Track_6.wav", 1),
             "theme": ("night_theme_2.wav", 0),
             "victory": ("Fanfare_3.wav", 1),
             "failure": ("Game_Over_3.wav", 1),
             # "new_object": ("Fanfare_1.wav", 1),
-            "jump" : ("jump_2.wav", 2),
+            "jump" : ("jump.wav", 2),
             "button": ("button_pressed.wav", 2),
             "damage": ("damage.wav", 2)
             # "walk": ("walk_2.wav", 2),
