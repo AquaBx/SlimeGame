@@ -77,7 +77,10 @@ class World(Listener):
         GameState.paused = True
         cse: ChangeStageEvent = ce
         LightSource.sources.clear()
+        self.enemies.clear()
+        GameState.save["data"]["last_map"] = cse.next_map
         self.deserialize(cse.next_map)
+        self.summon_enemies()
         self.player = Player(coords_to_v2(cse.next_position), self.player.size, self.player.mass, self.player.health)
         GameState.camera = Camera(self.player)
         GameState.paused = False
