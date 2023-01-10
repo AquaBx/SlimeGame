@@ -11,6 +11,10 @@ class PlayerActionEvent(CustomEvent):
         CustomEvent.__init__(self, "player_action")
         self.player = player
 
+class PlayerDeathEvent(CustomEvent):
+    def __init__(self) -> None:
+        CustomEvent.__init__(self, "player_death")
+
 class MenuEvent(CustomEvent):
     
     def __init__(self, action: str) -> None:
@@ -23,6 +27,13 @@ class TitleScreenEvent(CustomEvent):
         CustomEvent.__init__(self, "title_screen")
         self.action: str = action
 
+class DeathScreenEvent(CustomEvent):
+
+    def __init__(self, action: str) -> None:
+        CustomEvent.__init__(self, "death_screen")
+        self.action: str = action
+
+# Unused
 class QuitEvent(CustomEvent):
     
     def __init__(self) -> None:
