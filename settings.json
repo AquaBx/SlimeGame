@@ -6,7 +6,7 @@
             "up": 122
         },
         "Graphics": {
-            "WindowAutoSize": true,
+            "WindowAutoSize": false,
             "WindowHeight": 720,
             "WindowWidth": 1280,
             "MaxFPS": 144,

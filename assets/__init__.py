@@ -29,6 +29,7 @@ ASSETS: dict[int, Asset] = {
         ("copper", "statics/copper_full.png", Platform),
         ("light", "statics/light.png", Lamp),
         ("spikes", "statics/spike.png", Spike),
-        ("door", "statics/placeholder.png", Door)
+        ("door", "statics/door.png", Door),
+        ("victory", "backgrounds/victory_background.png", Background)
     ])
 }
