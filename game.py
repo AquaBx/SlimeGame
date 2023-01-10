@@ -157,7 +157,7 @@ class Game(Listener):
             ButtonManager.update()
             try:
                 stage = GameState.save["metadata"]['1']['next_stage']
-                rpc.update(state=f"Playing {stage}",details="https://github.com/aquabx/slimegame",large_image="image")
+                rpc.update(state=f"Playing {stage}",details="github.com/aquabx/slimegame",large_image="image")
             except: pass
             
             if not GameState.paused:
