@@ -16,6 +16,8 @@ class MapEditor:
     def __init__(self) -> None:
         Input.init()
 
+        Grid.initialize()
+
         self.palette = Palette(Rect(PALETTE_X, 0, DEFAULT_PALETTE_WIDTH, DEFAULT_PALETTE_HEIGHT))
         self.grid = Grid(Rect(0, 0, DEFAULT_GRID_WIDTH, DEFAULT_GRID_HEIGHT), DEFAULT_BACKGROUND)
         self.gui: GUI = GUI(self)
@@ -56,7 +58,7 @@ class MapEditor:
         # handy shortcut
         if Input.is_pressed_once(pg.K_DELETE):
             self.grid.clear()
-        
+
         # palette shortcut
         for key in range(49,58): # 1 (&) to 0 (à) keyboard buttons
             if Input.is_pressed_once(key):
@@ -79,7 +81,7 @@ class MapEditor:
         for e in event.get():
             if e.type == pg.QUIT:
                 GameStates.should_quit = True
-                
+
             # évènements ajoutés par nous ou pygame_gui
             elif e.type == pg.USEREVENT:
                 if e.user_type == pygame_gui.UI_BUTTON_PRESSED:

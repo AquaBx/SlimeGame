@@ -138,18 +138,15 @@ class ButtonManager():
         if button.hitbox.collidepoint(mouse):
             if button.state == Button.IDLE:
                 button.state = Button.HOVER
-                # print(f"hovering button {button.id}")
         elif button.state == Button.HOVER: 
             button.state = Button.IDLE
-            # print(f"unhovering button {button.id}")
 
     def __handle_click(button: Button) -> None:
         if button.state == Button.HOVER:
             button.run()
-            # print(f"clicking button {button.id}")
 
     # optimisable ?
-    def __update_states():
+    def update():
         motion = Input.get_motion() != v2(0.0)
         click = Input.is_clicked_once()
         for id in ButtonManager.__alives:
@@ -161,10 +158,6 @@ class ButtonManager():
             if click:
                 ButtonManager.__handle_click(button)
                 
-    def __draw():
+    def draw():
         for id in ButtonManager.__alives:
             ButtonManager.__buttons[id].draw(ButtonManager.__window)
-
-    def update():
-        ButtonManager.__update_states()
-        ButtonManager.__draw()

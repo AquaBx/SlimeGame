@@ -3,7 +3,7 @@ import pygame as pg
 from pygame import Surface, Color, Vector2 as v2
 from pygame.mask import Mask
 from abc import ABC, abstractclassmethod
-from config import GameConfig
+from config import GameConfig, GameState
 
 # utils
 from utils import coords_to_v2
@@ -11,7 +11,7 @@ from assets.palette import Palette
 
 # entity
 from assets.scripts.renderable import Renderable
-from assets.scripts.gameobject_attributes import LightSource, Damager
+from assets.scripts.gameobject_attributes import LightSource, Damager, Warp
 
 class MapElement(Renderable, ABC):
     """Élément nécessaire pour construire le niveau du jeu\n
@@ -19,9 +19,12 @@ class MapElement(Renderable, ABC):
     - Hérite de Renderable <- GameObject
     """
 
+    require_uuid: bool = False
+    default_metadata: dict[str] = {}
+
     @abstractclassmethod
     def create(coords: tuple[int, int], id: int, state: int, uuid: int) -> None: ...
-        
+
     def __init__(self, coords: tuple[int, int], texture: Surface, collidable: bool = True) -> None:
         """MapElement(constructeur)
 
@@ -33,10 +36,9 @@ class MapElement(Renderable, ABC):
         Renderable.__init__(self, coords_to_v2(coords), texture)
         self.mask: Mask = pg.mask.from_surface(self.texture) if collidable else Mask((0, 0))
     
-    def compute_state(map, palette, edges, id, coords) -> int: 
+    def compute_state(map, palette, edges, id: int, coords: tuple[int, int]) -> int: 
         return 0
 
-    
     def default_state() -> int:
         return 0
 
@@ -60,7 +62,7 @@ class Platform(MapElement):
             197: 42, 71 : 43, 69 : 44, 81 : 45, 85 : 46
         }
 
-    def compute_state(map, palette, edges, id, coords) -> int: 
+    def compute_state(map, palette, edges, id: int, coords: tuple[int, int]) -> int: 
         # has neighboor
         (t,  r,  b,  l )  = (False, False, False, False)
         (tr, rb, bl, lt)  = (False, False, False, False)
@@ -122,3 +124,24 @@ class Spike(MapElement, Damager, LightSource):
     @property
     def emit_position(self) -> v2:
         return self.rect.center
+
+class Door(MapElement, Warp):
+    
+    require_uuid: bool = True
+    default_metadata: dict[str] = {
+        "next_stage": "stage2",
+        "position": (58, 5)
+    }
+
+    def create(coords: tuple[int, int], id: int, state: int, uuid: int):
+        metadata: dict[str] = GameState.save["metadata"][f"{uuid}"]
+        return Door(uuid, coords, Palette.get_texture(id, state), metadata["next_stage"], metadata["position"])
+    
+    def __init__(self, uuid: int, coords: tuple[int, int], texture: Surface, next_map: str, position: tuple[int, int]) -> None:
+        MapElement.__init__(self, coords, texture, False)
+        Warp.__init__(self, uuid, next_map, position)
+
+
+    @property
+    def warp_zone(self) -> pg.Rect:
+        return self.rect

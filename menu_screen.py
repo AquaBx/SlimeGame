@@ -3,8 +3,8 @@ from pygame import image, transform, mouse
 
 from buttons import ButtonManager, Button
 from button_script import ButtonScript
-from assets import UI_DIR, SPRITE_DIR
-from config import GameConfig
+from config import GameConfig, GameState
+from assets import SPRITE_DIR
 
 from eventlistener import EventManager
 from customevents import TitleScreenEvent, MenuEvent
@@ -41,11 +41,13 @@ class MenuManager :
     def open_menu(menu: str) -> None:
         ButtonManager.set_alive(*MenuManager.__menus[menu].buttons)
         MenuManager.__open_menus.add(menu)
+        GameState.paused = True
         mouse.set_visible(True)
 
     def close_menu(menu: str) -> None:
         ButtonManager.kill(*MenuManager.__menus[menu].buttons)
         if menu in MenuManager.__open_menus: MenuManager.__open_menus.remove(menu)
+        GameState.paused = MenuManager.is_open()
         mouse.set_visible(MenuManager.is_open())
 
     def is_open(menu: str = None) -> bool:
@@ -148,6 +150,7 @@ class MenuManager :
         )
 
     def draw_menus() -> None:
-        for menu_id in MenuManager.__open_menus:
+        opens = list(MenuManager.__open_menus)
+        for menu_id in opens:
             menu = MenuManager.__menus[menu_id]
             MenuManager.window.blit(menu.background, menu.menu_rect.topleft)

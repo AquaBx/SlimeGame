@@ -1,1 +1,3 @@
-{"occupied": true, "last_map": "map_demo", "player": {"position": [3,3]}}
+{
+    "occupied": false
+}

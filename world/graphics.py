@@ -1,9 +1,8 @@
 import pygame as pg
-from pygame import transform,Rect,Vector2 as v2
+from pygame import Vector2 as v2
 
 from config import GameConfig, GameState
 from assets.scripts.gameobject_attributes import LightSource
-from debug import debug
 
 def draw(world) -> None:
 
