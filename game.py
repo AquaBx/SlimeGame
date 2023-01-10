@@ -22,6 +22,15 @@ from world import World
 from eventlistener import Listener
 from customevents import CustomEvent, TitleScreenEvent, MenuEvent, QuitEvent, FlushPygameEvent
 
+try:
+    from pypresence import Presence
+
+    rpc = Presence("1062462846325248081")
+    rpc.connect()
+
+except : pass
+
+
 class Game(Listener):
     
     events: list[pg.event.Event] = []
@@ -146,7 +155,11 @@ class Game(Listener):
         while not self.should_quit:
             Input.update()
             ButtonManager.update()
-
+            try:
+                stage = GameState.save["metadata"]['1']['next_stage']
+                rpc.update(state=f"Playing {stage}",details="https://github.com/aquabx/slimegame",large_image="image")
+            except: pass
+            
             if not GameState.paused:
                 self.world.update()
 
