@@ -1,1 +1,1 @@
-{"last_uuid": 3, "1": {}, "0": {}, "2": {"next_stage": "map_victory", "position": [11, 12]}}
+{"last_uuid": 4, "1": {"next_stage": "map_victory", "position": [11, 12]}, "0": {}, "2": {"next_stage": "stage2", "position": [59, 55]}, "3": {"next_stage": "stage2", "position": [19, 25]}}
