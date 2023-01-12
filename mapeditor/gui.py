@@ -55,6 +55,8 @@ class GUI:
             elif("map_saving" in button.object_ids):
                 file: str = self.file_selections["save"].current_file_path.name
                 Serializer.serialize(self.editor.grid, self.editor.palette, file if file.endswith(".map") else f"{file}.map")
+                with open("assets/saves/metadata.json", "w") as f:
+                    json.dump(self.editor.grid.metadata, f)
                 self.file_selections["save"] = None
 
         # non menu buttons
@@ -86,8 +88,6 @@ class GUI:
             object_id="map_saving"
         )
         GameStates.menu_open = True
-        with open("assets/saves/metadata.json", "w") as f:
-            json.dump(self.editor.grid.metadata, f)
 
     def load_map(self) -> None:
         """Opens map loading menu
