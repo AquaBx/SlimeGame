@@ -6,7 +6,6 @@ from window_component import WindowComponent
 from elements import PaletteElement
 from gamestates import GameStates
 from assets import Asset, ASSETS
-from assets.scripts.environment import Door
 
 class Palette(WindowComponent):
     
@@ -39,18 +38,7 @@ class Palette(WindowComponent):
             self.elements[local_id] = PaletteElement(local_id, asset.script.default_state(), asset.script, rect.topleft, image.load(asset.path))
         
         # Manually add a new asset to the palette of a map
-        local_id = len(table)
-        global_id = 7
-        type = Door
-        path = "assets/sprites/statics/placeholder.png"
-        rect: Rect = Rect(
-            PALETTE_X+Palette.tile_size*(local_id%DEFAULT_PALETTE_COLUMNS),
-            Palette.tile_size*(local_id//DEFAULT_GRID_COLUMNS),
-            Palette.tile_size, Palette.tile_size
-        )
-        self.hitboxes.append((local_id, rect))
-        self.elements[local_id] = PaletteElement(local_id, type.default_state(), type, rect.topleft, image.load(path))
-        self.table.append(ASSETS[global_id])
+        # self.__manual_add(table, 7, "assets/sprites/statics/placeholder.png", Door)
     
     def draw(self) -> None:
         for el in self.elements.values():
@@ -75,3 +63,15 @@ class Palette(WindowComponent):
             id (int): the index of the element in the palette
         """
         if id < len(self.elements.items()) : self.selected = self.elements[id]
+
+    def __manual_add(self, table, global_id: int, path: str, asset_type: type, local_id: int = -1):
+        l_id = local_id if local_id != -1 else len(table)
+        rect: Rect = Rect(
+            PALETTE_X+Palette.tile_size*(l_id%DEFAULT_PALETTE_COLUMNS),
+            Palette.tile_size*(l_id//DEFAULT_GRID_COLUMNS),
+            Palette.tile_size, Palette.tile_size
+        )
+        if(local_id == -1):
+            self.hitboxes.append((l_id, rect))     
+        self.elements[l_id] = PaletteElement(l_id, asset_type.default_state(), asset_type, rect.topleft, image.load(path))
+        self.table.append(ASSETS[global_id])
