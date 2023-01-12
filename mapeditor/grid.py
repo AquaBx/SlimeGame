@@ -97,6 +97,7 @@ class Grid(WindowComponent):
                 Grid.metadata["last_uuid"] += 1
             Grid.metadata[f"{uuid}"] = asset.script.default_metadata
             self.map[i, j] = StateElement(palette.selected.id, palette.selected.state, uuid, v2(j, i)*Grid.tile_size, palette.selected.image)
+            print(i,j)
 
     def remove_tile(self, mouse_coord: v2) -> None:
         """Removes a tile from the current map
